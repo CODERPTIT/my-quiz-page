@@ -6,15 +6,17 @@
   <style>
     /* Toàn bộ nền trang */
     body {
-      background-color: #f5f5d5;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-size: cover; /* Làm ảnh phủ toàn màn hình */
-      background-position: center center; /* Căn giữa ảnh */
-      background-attachment: fixed; /* Ảnh nền cố định khi cuộn trang */
-      color: white; /* Màu chữ trắng để dễ nhìn trên nền ảnh */
+        background-color: #f5f5d5;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-image: url('https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/481991066_122213714294208789_7853133421708875158_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=cc71e4&_nc_eui2=AeHBndSeSUFZbXagC4S5yXoSYKHxubolCh5gofG5uiUKHtJODAnYnT93PMwWSVTg3rZE2O5oZJdqp2rdDALS3goh&_nc_ohc=v0JOz99ERZ4Q7kNvwEgghAO&_nc_oc=AdmI04h6D9feS_MtWEVma4Lfyojh0sAHJEc-HcYtTQPy4pkrAS-9PfGaf1XkM4X0CTw&_nc_zt=23&_nc_ht=scontent.fhan14-3.fna&_nc_gid=aYjLApiLGi1FgecumI5S8g&oh=00_AfLpe11BiXQg6APhnl52WFvXwc5mrg1bWuKrIcgLnzT_iQ&oe=6828FD57');
+        background-size: cover;
+        background-position: center center;
+        background-attachment: fixed;
+        color: white;
     }
+
 
     /* Header */
     header {
@@ -23,7 +25,7 @@
       font-size: 2.5em;
       font-weight: bold;
       color: white;
-      background-color: rgba(0, 0, 0, 0.7); /* Nền mờ để dễ đọc chữ */
+      background-color: rgba(0, 0, 0, 0.7);
       position: absolute;
       top: 0;
       width: 100%;
@@ -31,27 +33,27 @@
 
     /* Quiz container */
     .quiz-container {
-        max-width: 700px;
-        margin: 100px auto;
-        background-image: url('https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474068BDm/sleeping-pikachu-wallpapers_032428574.jpg'); /* Chèn ảnh nền tại đây */
-        background-size: cover; /* Làm ảnh phủ toàn màn hình */
-        background-position: center center; /* Căn giữa ảnh */
-        color: white; /* Màu chữ trắng để dễ nhìn trên nền ảnh */
-        padding: 20px;
-        border-radius: 10px;
-        border: 2px solid orange; /* 🎯 Viền cam đậm */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 👌 Thêm bóng nhẹ nếu muốn nổi bật */
+      max-width: 700px;
+      margin: 100px auto;
+      background-image: url('https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474068BDm/sleeping-pikachu-wallpapers_032428574.jpg');
+      background-size: cover;
+      background-position: center center;
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid orange;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      position: relative; /* Để chứa đồng hồ ở góc phải */
     }
 
-
     .options label {
-        display: block;
-        margin: 10px 0;
-        padding: 8px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background 0.3s;
-        color: black; /* Đặt màu chữ của câu trả lời là đen */
+      display: block;
+      margin: 10px 0;
+      padding: 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      color: black;
     }
 
     .options input[type="radio"] {
@@ -91,6 +93,7 @@
     #result {
       margin-top: 15px;
     }
+
     #final-result {
       font-size: 1.5em;
       margin-top: 30px;
@@ -102,29 +105,93 @@
       margin-top: 20px;
       background-color: #28a745;
     }
+
     #question {
-        color: #ff0026; /* Màu xanh cho câu hỏi */
-        font-size: 1.5em; /* Tăng cỡ chữ cho câu hỏi */
-        font-weight: bold;
+      color: #ff0026;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .quiz-container h2 {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+      color: black;
+    }
+
+    /* Đồng hồ tròn */
+    .timer-container {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 60px;
+      height: 60px;
+    }
+
+    svg {
+      transform: rotate(-90deg);
+    }
+
+    circle {
+      fill: none;
+      stroke-width: 6;
+    }
+
+    .bg {
+      stroke: #ddd;
+    }
+
+    .progress {
+      stroke: #00aaff;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear;
+    }
+
+    .time-label {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: #333;
     }
   </style>
 </head>
 <body>
+  <!-- Header với tiêu đề -->
+  <header>
+    KIẾN TRÚC MÁY TÍNH
+  </header>
 
-    <!-- Header với tiêu đề -->
-    <header>
-        KIẾN TRÚC MÁY TÍNH
-    </header>
-
-    <!-- Quiz content -->
-    <div class="quiz-container" id="quiz-container">
-        <div id="question"></div>
-        <div class="options" id="options"></div>
-        <div id="result"></div>
-        <div class="button-group" id="controls">
-        <button id="submit">Nộp</button>
-        </div>
+  <!-- Quiz content -->
+  <div class="quiz-container" id="quiz-container">
+    <h2>Câu hỏi trắc nghiệm</h2>
+    <div class="timer-container">
+      <svg width="60" height="60">
+        <circle class="bg" cx="30" cy="30" r="27" />
+        <circle class="progress" cx="30" cy="30" r="27" id="progressCircle" />
+      </svg>
+      <div class="time-label" id="timeText">15</div>
     </div>
+    <div id="question"></div>
+    <div class="options" id="options"></div>
+    <div id="result"></div>
+    <div class="button-group" id="controls">
+      <button id="submit">Nộp</button>
+    </div>
+  </div>
+
+
+    <audio id="tick-tock" loop>
+    <source src="clock.mp3" type="audio/mpeg">
+    </audio>
+
 
     <script>
         const questions = [
@@ -2037,8 +2104,51 @@
     let currentQuestion = 0;
     let score = 0;
     let selectedQuestions = questions;
+    let timer;
+    let countdownInterval;
+    let audio = document.getElementById('tick-tock');
+
+    const circle = document.getElementById('progressCircle');
+    const timeText = document.getElementById('timeText');
+    const radius = 27;
+    const circumference = 2 * Math.PI * radius;
+
+    circle.style.strokeDasharray = circumference;
+
+    function setProgress(time) {
+      const offset = circumference - (time / 15) * circumference;
+      circle.style.strokeDashoffset = offset;
+    }
+
+    function startCountdown() {
+      let seconds = 15;
+      timeText.textContent = seconds;
+      setProgress(seconds);
+
+      countdownInterval = setInterval(() => {
+        seconds--;
+        timeText.textContent = seconds;
+        setProgress(seconds);
+        if (seconds <= 0) {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
+    }
+
+    function stopCountdown() {
+      clearInterval(countdownInterval);
+    }
 
     function displayQuestion() {
+      // Reset đồng hồ
+      const timerContainer = document.querySelector('.timer-container');
+      timerContainer.style.display = 'block';
+      startCountdown();
+
+      // Phát âm thanh tik tak
+      audio.currentTime = 0;
+      audio.play();
+
       const q = selectedQuestions[currentQuestion];
       document.getElementById('question').innerHTML = `<h3>Câu ${currentQuestion + 1}: ${q.question}</h3>`;
 
@@ -2055,21 +2165,68 @@
       document.getElementById('result').innerHTML = '';
       document.getElementById('result').className = '';
       document.getElementById('submit').style.display = 'inline-block';
+
+      // Bắt đầu bộ đếm 15 giây
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        autoShowAnswer();
+      }, 15000);
+    }
+
+    function autoShowAnswer() {
+      const selected = document.querySelector('input[name="answer"]:checked');
+      const resultDiv = document.getElementById('result');
+      const q = selectedQuestions[currentQuestion];
+
+      // Dừng âm thanh, đồng hồ và đếm ngược
+      audio.pause();
+      document.querySelector('.timer-container').style.display = 'none';
+      stopCountdown();
+
+      // Vô hiệu hóa radio
+      document.querySelectorAll('input[name="answer"]').forEach(radio => {
+        radio.disabled = true;
+      });
+
+      // Tô màu đáp án đúng
+      document.querySelectorAll('input[name="answer"]').forEach(radio => {
+        const label = radio.parentElement;
+        if (radio.value === q.correct) {
+          label.classList.add('correct');
+        }
+      });
+
+      resultDiv.innerHTML = `<span class="incorrect">Hết giờ! Đáp án đúng là: ${q.correct}</span>`;
+      document.getElementById('submit').style.display = 'none';
+
+      // Thêm nút "Tiếp"
+      addNextButton();
     }
 
     function checkAnswer() {
+      clearTimeout(timer);
+      audio.pause();
+      document.querySelector('.timer-container').style.display = 'none';
+      stopCountdown();
+
       const selected = document.querySelector('input[name="answer"]:checked');
       const resultDiv = document.getElementById('result');
 
       if (!selected) {
         alert("Vui lòng chọn một đáp án!");
+        audio.play();
+        document.querySelector('.timer-container').style.display = 'block';
+        startCountdown();
+        timer = setTimeout(() => {
+          autoShowAnswer();
+        }, 15000);
         return;
       }
 
       const answer = selected.value;
       const q = selectedQuestions[currentQuestion];
 
-      // Vô hiệu hóa radio sau khi nộp
+      // Vô hiệu hóa radio
       document.querySelectorAll('input[name="answer"]').forEach(radio => {
         radio.disabled = true;
       });
@@ -2087,16 +2244,16 @@
 
       if (answer === q.correct) {
         score++;
-        resultDiv.innerHTML = `<span class="correct">Đúng! 🎉🎉🎉</span>`;
+        resultDiv.innerHTML = `<span class="correct">Tuyệt Vời! 🎉🎉🎉</span>`;
       } else {
-        resultDiv.innerHTML = `
-          <span class="incorrect">Sai tè le 😞😞😞
-        `;
+        resultDiv.innerHTML = `<span class="incorrect">Sai mất rùi! 😞😞😞</span>`;
       }
 
       document.getElementById('submit').style.display = 'none';
+      addNextButton();
+    }
 
-      // Thêm nút "Tiếp"
+    function addNextButton() {
       const controls = document.getElementById('controls');
       if (!document.getElementById('next-btn')) {
         const nextBtn = document.createElement('button');
@@ -2116,6 +2273,9 @@
     }
 
     function showResult() {
+      audio.pause();
+      document.querySelector('.timer-container').style.display = 'none';
+      stopCountdown();
       const percentage = (score / selectedQuestions.length) * 100;
       let message = '';
       if (percentage === 100) {
@@ -2128,21 +2288,20 @@
         message = "Bạn cần ôn tập thêm nhé! 📚";
       }
 
-        const finalResultDiv = document.createElement('div');
-        finalResultDiv.id = 'final-result';
-        finalResultDiv.innerHTML = `
+      const finalResultDiv = document.createElement('div');
+      finalResultDiv.id = 'final-result';
+      finalResultDiv.innerHTML = `
         <h2>Kết quả của bạn</h2>
         <p>Bạn trả lời đúng <span class="correct">${score}</span>/<span class="total">${questions.length}</span> câu.</p>
         <p>Tỷ lệ đúng: ${percentage.toFixed(2)}%</p>
         <p>${message}</p>
         <button onclick="location.reload()">Làm lại</button>
-        `;
-        document.body.appendChild(finalResultDiv);
+      `;
+      document.body.appendChild(finalResultDiv);
     }
 
     document.getElementById('submit').addEventListener('click', checkAnswer);
     displayQuestion();
   </script>
-
 </body>
 </html>
