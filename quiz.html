@@ -1,0 +1,2148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz</title>
+  <style>
+    /* Toàn bộ nền trang */
+    body {
+      background-color: #f5f5d5;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-size: cover; /* Làm ảnh phủ toàn màn hình */
+      background-position: center center; /* Căn giữa ảnh */
+      background-attachment: fixed; /* Ảnh nền cố định khi cuộn trang */
+      color: white; /* Màu chữ trắng để dễ nhìn trên nền ảnh */
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 20px;
+      font-size: 2.5em;
+      font-weight: bold;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.7); /* Nền mờ để dễ đọc chữ */
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+
+    /* Quiz container */
+    .quiz-container {
+        max-width: 700px;
+        margin: 100px auto;
+        background-image: url('https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474068BDm/sleeping-pikachu-wallpapers_032428574.jpg'); /* Chèn ảnh nền tại đây */
+        background-size: cover; /* Làm ảnh phủ toàn màn hình */
+        background-position: center center; /* Căn giữa ảnh */
+        color: white; /* Màu chữ trắng để dễ nhìn trên nền ảnh */
+        padding: 20px;
+        border-radius: 10px;
+        border: 2px solid orange; /* 🎯 Viền cam đậm */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 👌 Thêm bóng nhẹ nếu muốn nổi bật */
+    }
+
+
+    .options label {
+        display: block;
+        margin: 10px 0;
+        padding: 8px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s;
+        color: black; /* Đặt màu chữ của câu trả lời là đen */
+    }
+
+    .options input[type="radio"] {
+      margin-right: 10px;
+    }
+
+    .correct {
+      background-color: #d4edda;
+      color: green;
+      font-weight: bold;
+    }
+
+    .incorrect {
+      background-color: #f8d7da;
+      color: red;
+      font-weight: bold;
+    }
+
+    .button-group {
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      margin-top: 15px;
+    }
+    #final-result {
+      font-size: 1.5em;
+      margin-top: 30px;
+      color: black;
+      text-align: center;
+    }
+
+    #final-result button {
+      margin-top: 20px;
+      background-color: #28a745;
+    }
+    #question {
+        color: #ff0026; /* Màu xanh cho câu hỏi */
+        font-size: 1.5em; /* Tăng cỡ chữ cho câu hỏi */
+        font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+    <!-- Header với tiêu đề -->
+    <header>
+        KIẾN TRÚC MÁY TÍNH
+    </header>
+
+    <!-- Quiz content -->
+    <div class="quiz-container" id="quiz-container">
+        <div id="question"></div>
+        <div class="options" id="options"></div>
+        <div id="result"></div>
+        <div class="button-group" id="controls">
+        <button id="submit">Nộp</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+    {
+        "question": "Máy tính điện tử là gì?",
+        "options": {
+            "A": "Thiết bị lưu trữ thông tin",
+            "B": "Thiết bị số hóa và biến đổi thông tin",
+            "C": "Thiết bị lưu trữ và xử lý thông tin",
+            "D": "Thiết bị tạo và biến đổi thông tin"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Ở thời kỳ đầu, các mạch điện tử trong máy tính được chế tạo bằng:",
+        "options": {
+            "A": "Transistor lưỡng cực",
+            "B": "Transistor trường",
+            "C": "Đèn điện tử",
+            "D": "IC bán dẫn"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Trong các phát biểu sau, phát biểu nào đúng?",
+        "options": {
+            "A": "Phần cứng của máy tính bao gồm các đối tượng vật lý như: bảng mạch chính, bộ nhớ RAM, bộ nhớ ROM, đĩa cứng, màn hình và chương trình được cài đặt trong ROM",
+            "B": "Phần cứng của máy tính chính là bộ xử lý trung tâm",
+            "C": "Phần cứng của máy tính không bao gồm màn hình",
+            "D": "Phần cứng của máy tính chỉ bao gồm bộ nhớ"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Trong các bộ phận sau, bộ phận nào không thuộc bộ xử lý trung tâm?",
+        "options": {
+            "A": "Bộ nhớ trong",
+            "B": "Khối số học và logic",
+            "C": "Tập các thanh ghi đa năng",
+            "D": "Khối điều khiển"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Trong các bộ phận sau, bộ phận nào thuộc bộ xử lý trung tâm?",
+        "options": {
+            "A": "Bộ nhớ trong",
+            "B": "Đơn vị phối ghép vào ra",
+            "C": "Tập các thanh ghi đa năng",
+            "D": "Khối điều khiển Bus hệ thống"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Tại sao bộ nhớ trong của máy tính được gọi là bộ nhớ truy cập ngẫu nhiên?",
+        "options": {
+            "A": "Vì các ô nhớ là ngẫu nhiên",
+            "B": "Thời gian truy cập vào một ô nhớ bất kỳ là như nhau",
+            "C": "Bộ nhớ gồm các module có thứ tự sắp xếp ngẫu nhiên",
+            "D": "Vì dữ liệu được lưu trữ ngẫu nhiên"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Tốc độ đồng hồ hệ thống được đo bằng đơn vị gì?",
+        "options": {
+            "A": "Bit/s",
+            "B": "Baud",
+            "C": "Byte",
+            "D": "Hz"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Người ta đánh giá sự phát triển của máy tính điện tử qua các giai đoạn dựa vào tiêu chí nào trong các tiêu chí sau đây?",
+        "options": {
+            "A": "Tốc độ tính toán của máy tính",
+            "B": "Mức độ tích hợp của các vi mạch điện tử trong máy tính",
+            "C": "Chức năng của máy tính",
+            "D": "Cả 3 tiêu chí trên"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Chọn một phương án đúng trong các phương án sau:",
+        "options": {
+            "A": "Máy Turing gồm một bảng ghi (tape) và một bộ xử lý trung tâm",
+            "B": "Máy Turing gồm một bộ chuyển trạng thái bằng hàm, một bảng ghi, và một đầu đọc ghi",
+            "C": "Máy Turing gồm một bộ xử lý trung tâm và một cơ cấu lưu trữ gồm các IC nhớ",
+            "D": "Máy Turing chỉ gồm một bảng ghi"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Thông tin được lưu trữ và truyền bên trong máy tính dưới dạng:",
+        "options": {
+            "A": "Nhị phân",
+            "B": "Mã ASCII",
+            "C": "Thập phân",
+            "D": "Kết hợp chữ cái và chữ số"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Theo nguyên lý Von Neumann, việc cài đặt dữ liệu vào máy tính được thực hiện bằng:",
+        "options": {
+            "A": "Đục lỗ trên bảng giấy",
+            "B": "Đục lỗ trên bảng đục bằng tay",
+            "C": "Xung điện",
+            "D": "Xung điện tử"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Hãy chỉ ra khẳng định sai trong các khẳng định sau:",
+        "options": {
+            "A": "Hệ đếm là tập hợp các ký hiệu và quy tắc sử dụng tập ký hiệu đó",
+            "B": "Tổng số ký số của một hệ đếm được gọi là cơ số",
+            "C": "Mọi hệ đếm được xây dựng trên một tập ký số vô hạn",
+            "D": "Hệ đếm La Mã là hệ đếm không có số 0"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Hệ đếm là gì?",
+        "options": {
+            "A": "Hệ thống các ký hiệu để biểu diễn các số",
+            "B": "Tập hợp các ký hiệu và quy tắc sử dụng tập để biểu diễn và xác định giá trị các số",
+            "C": "Tập hợp các ký hiệu để biểu diễn các cấu trúc âm",
+            "D": "Tập hợp các quy tắc sử dụng ký hiệu"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Trong số dấu chấm động biểu diễn dạng 32 bit trong máy tính, thành phần định trị có độ dài bao nhiêu bit?",
+        "options": {
+            "A": "1 bit",
+            "B": "18 bit",
+            "C": "20 bit",
+            "D": "24 bit"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Trong số dấu chấm động biểu diễn dạng 32 bit trong máy tính, thành phần số mũ có độ dài bao nhiêu bit?",
+        "options": {
+            "A": "6 bit",
+            "B": "7 bit",
+            "C": "8 bit",
+            "D": "9 bit"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Chữ số L trong hệ đếm La Mã tương ứng với giá trị nào trong các giá trị sau đây?",
+        "options": {
+            "A": "50",
+            "B": "100",
+            "C": "500",
+            "D": "1000"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Chữ số C trong hệ đếm La Mã tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "20",
+            "B": "100",
+            "C": "200",
+            "D": "500"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Chữ số D trong hệ đếm La Mã tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "100",
+            "B": "200",
+            "C": "500",
+            "D": "1000"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Chữ số M trong hệ đếm La Mã tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "50",
+            "B": "100",
+            "C": "500",
+            "D": "1000"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Số La Mã CD tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "600",
+            "B": "400",
+            "C": "200",
+            "D": "500"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Số La Mã DC tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "600",
+            "B": "400",
+            "C": "500",
+            "D": "200"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Số La Mã CDL tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "350",
+            "B": "450",
+            "C": "550",
+            "D": "650"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Số La Mã MD tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "1400",
+            "B": "1500",
+            "C": "1600",
+            "D": "1700"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Số La Mã CM tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "1600",
+            "B": "1500",
+            "C": "1100",
+            "D": "900"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Số La Mã MCL tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "1150",
+            "B": "1050",
+            "C": "950",
+            "D": "650"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Số La Mã MCC tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "600",
+            "B": "700",
+            "C": "1100",
+            "D": "1200"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Số La Mã MCD tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "1150",
+            "B": "1050",
+            "C": "1450",
+            "D": "1650"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Số La Mã DC tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "400",
+            "B": "600",
+            "C": "800",
+            "D": "1200"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Số La Mã MCD tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "1400",
+            "B": "1450",
+            "C": "1600",
+            "D": "1650"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Trong hệ La Mã số MCMXXVI nhận giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "1846",
+            "B": "2756",
+            "C": "2866",
+            "D": "2976"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Trong hệ nhị phân số 11101.11 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "26.75",
+            "B": "29.75",
+            "C": "29.65",
+            "D": "26.65"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Trong hệ nhị phân số 10101.11 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "21.75",
+            "B": "23.75",
+            "C": "21.65",
+            "D": "23.65"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Trong hệ nhị phân số 10101.01 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "23.75",
+            "B": "21.75",
+            "C": "21.25",
+            "D": "23.25"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Trong hệ nhị phân số 11101.01 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "23.75",
+            "B": "29.75",
+            "C": "27.25",
+            "D": "29.25"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Trong hệ nhị phân số 10111.1 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "23.5",
+            "B": "23.25",
+            "C": "25.5",
+            "D": "25.25"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Trong hệ nhị phân số 11001.01 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "27.75",
+            "B": "29.75",
+            "C": "25.75",
+            "D": "29.25"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Trong hệ nhị phân số 11001.11 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "27.75",
+            "B": "29.75",
+            "C": "25.75",
+            "D": "29.25"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Trong hệ đếm bát phân, số 235.64 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "157.8125",
+            "B": "165.8125",
+            "C": "157.825",
+            "D": "165.825"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Trong hệ đếm bát phân, số 237.64 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "157.8125",
+            "B": "159.8125",
+            "C": "157.825",
+            "D": "159.825"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Trong hệ đếm bát phân, số 237.04 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "157.0625",
+            "B": "157.8125",
+            "C": "159.0625",
+            "D": "159.8125"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Trong hệ đếm thập lục phân số 34F5 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "13557",
+            "B": "15775",
+            "C": "15459",
+            "D": "13267"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Trong hệ đếm thập lục phân số 4371 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "15577",
+            "B": "15875",
+            "C": "18459",
+            "D": "17505"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Trong hệ đếm thập lục phân số 34BF tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "13557",
+            "B": "13407",
+            "C": "15459",
+            "D": "13267"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Trong hệ đếm thập lục phân số 3CFD tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "13537",
+            "B": "15725",
+            "C": "15605",
+            "D": "13287"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Số 135(10) tương ứng với giá trị nhị phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "10000111",
+            "B": "10100111",
+            "C": "100101011",
+            "D": "11010111"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Số 231(10) tương ứng với giá trị nhị phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "10000111",
+            "B": "11100111",
+            "C": "11110111",
+            "D": "11010111"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Số 299(10) tương ứng với giá trị nhị phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "100001011",
+            "B": "100011101",
+            "C": "100101011",
+            "D": "10010101"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Số 305(10) tương ứng với giá trị nhị phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "100001001",
+            "B": "100011011",
+            "C": "100101011",
+            "D": "10010101"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Số 837(10) tương ứng với giá trị bát phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "1505",
+            "B": "1603",
+            "C": "1607",
+            "D": "1705"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Số 859(10) tương ứng với giá trị bát phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "1533",
+            "B": "1633",
+            "C": "1637",
+            "D": "1733"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Số 799(10) tương ứng với giá trị bát phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "1545",
+            "B": "1403",
+            "C": "1437",
+            "D": "1565"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Số 785(10) tương ứng với giá trị bát phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "1471",
+            "B": "1461",
+            "C": "1451",
+            "D": "1421"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Số 865(10) tương ứng với giá trị bát phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "1541",
+            "B": "1551",
+            "C": "1561",
+            "D": "1571"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Số 841(10) tương ứng với giá trị bát phân nào trong các giá trị sau đây?",
+        "options": {
+            "A": "1505",
+            "B": "1511",
+            "C": "1531",
+            "D": "1551"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Tổng hai số nhị phân 1010101(2) và 1101011(2) tương ứng với số nhị phân nào trong các số sau?",
+        "options": {
+            "A": "11000000",
+            "B": "10100000",
+            "C": "10010000",
+            "D": "10001000"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Tổng hai số nhị phân 1010101(2) và 1100011(2) tương ứng với số nhị phân nào trong các số sau?",
+        "options": {
+            "A": "10000000",
+            "B": "10101000",
+            "C": "10011000",
+            "D": "10001000"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Tổng hai số nhị phân 1010101(2) và 1101001(2) tương ứng với số nhị phân nào trong các số sau?",
+        "options": {
+            "A": "10011000",
+            "B": "10101000",
+            "C": "10111110",
+            "D": "10111010"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Tổng hai số nhị phân 1011101(2) và 1101011(2) tương ứng với số nhị phân nào trong các số sau?",
+        "options": {
+            "A": "10011000",
+            "B": "11100000",
+            "C": "11010000",
+            "D": "11001000"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Tổng hai số nhị phân 1010101(2) và 1100111(2) tương ứng với số nhị phân nào trong các số sau?",
+        "options": {
+            "A": "10011000",
+            "B": "11000010",
+            "C": "10010000",
+            "D": "10001000"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Tổng hai số nhị phân 1010101(2) và 1100101(2) tương ứng với số nhị phân nào trong các số sau?",
+        "options": {
+            "A": "10010010",
+            "B": "10100000",
+            "C": "1010110",
+            "D": "10001000"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Tổng hai số nhị phân 1010101(2) và 1100110(2) tương ứng với số nhị phân nào trong các số sau?",
+        "options": {
+            "A": "10000110",
+            "B": "10100000",
+            "C": "1010110",
+            "D": "10010000"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Tổng hai số nhị phân 1010101(2) và 1101010(2) tương ứng với số nhị phân nào trong các số sau?",
+        "options": {
+            "A": "10000110",
+            "B": "10011010",
+            "C": "10101010",
+            "D": "10010000"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Tổng hai số nhị phân 1010101(2) và 1101111(2) tương ứng với số nhị phân nào trong các số sau?",
+        "options": {
+            "A": "10000111",
+            "B": "10100111",
+            "C": "10001111",
+            "D": "10010111"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Tổng hai số nhị phân 1010101(2) và 1101100(2) tương ứng với số nhị phân nào trong các số sau?",
+        "options": {
+            "A": "10000100",
+            "B": "10100100",
+            "C": "10101100",
+            "D": "10001100"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Tổng hai số nhị phân 1010101(2) và 1101010(2) tương ứng với số nhị phân nào trong các số sau?",
+        "options": {
+            "A": "10000110",
+            "B": "10000010",
+            "C": "10100110",
+            "D": "10010010"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Số dấu chấm động A được lưu trữ trong máy tính dưới dạng 32 bit là:",
+        "options": {
+            "A": "-0.1101000111101 × 2^3",
+            "B": "-0.1101000111101 × 2^3",
+            "C": "-0.1101000111101 × 2^3",
+            "D": "0.1101000111101 × 2^3"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Số dấu chấm động A được lưu trữ trong máy tính dưới dạng 32 bit là:",
+        "options": {
+            "A": "-0.1101000111101 × 2^3",
+            "B": "-0.1101000111101 × 2^3",
+            "C": "-0.1101000111101 × 2^3",
+            "D": "-0.1101000111101 × 2^3"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Thanh ghi nào được dùng để lưu trữ địa chỉ cổng vào ra khi bộ vi xử lý thao tác với các thiết bị ngoại vi?",
+        "options": {
+            "A": "AX",
+            "B": "BX",
+            "C": "CX",
+            "D": "DX"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Thanh ghi nào được dùng để khai báo số lần thực hiện các vòng lặp của ngôn ngữ Assembly?",
+        "options": {
+            "A": "AX",
+            "B": "BX",
+            "C": "CX",
+            "D": "DX"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Thanh ghi nào được dùng để khai báo số bit được dịch trong các lệnh dịch của ngôn ngữ Assembly?",
+        "options": {
+            "A": "AH",
+            "B": "AL",
+            "C": "BH",
+            "D": "CL"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Thanh ghi cờ (F) của 80286 có bao nhiêu bit?",
+        "options": {
+            "A": "8 bit",
+            "B": "12 bit",
+            "C": "16 bit",
+            "D": "24 bit"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Nếu lấy tổng của hai toán hạng 8 bit mà kết quả vượt quá 255 thì sẽ tác động đến nội dung của cờ nào trong các cờ sau đây?",
+        "options": {
+            "A": "CF",
+            "B": "AF",
+            "C": "OF",
+            "D": "ZF"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Nếu kết quả của một thao tác cho ta giá trị bằng 0 thì sẽ tác động đến nội dung của cờ nào trong các cờ sau đây?",
+        "options": {
+            "A": "CF",
+            "B": "ZF",
+            "C": "SF",
+            "D": "PF"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Nếu ta thực hiện phép cộng hai số nhị phân 10001011(B) và 01101101(B) thì sau phép cộng sẽ đặt nội dung của cờ nào trong các cờ sau đây bằng 1?",
+        "options": {
+            "A": "CF",
+            "B": "SF",
+            "C": "AF",
+            "D": "OF"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Nếu ta đem trừ toán hạng có giá trị 10001001(B) cho toán hạng có giá trị 10001001(B) thì cờ nào sẽ được đặt bằng 1?",
+        "options": {
+            "A": "OF",
+            "B": "AF",
+            "C": "ZF",
+            "D": "SF"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Kích thước nhỏ nhất của một mã lệnh của bộ vi xử lý 8086 bằng bao nhiêu?",
+        "options": {
+            "A": "1 byte",
+            "B": "2 byte",
+            "C": "3 byte",
+            "D": "4 byte"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Kích thước lớn nhất của một mã lệnh của bộ vi xử lý 8086 bằng bao nhiêu?",
+        "options": {
+            "A": "5 byte",
+            "B": "10 byte",
+            "C": "15 byte",
+            "D": "20 byte"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Đối với bộ vi xử lý 8086, hãy chỉ ra khẳng định đúng trong các khẳng định sau:",
+        "options": {
+            "A": "Một địa chỉ vật lý có thể tương ứng với nhiều địa chỉ logic",
+            "B": "Một địa chỉ logic có thể tương ứng với nhiều địa chỉ vật lý",
+            "C": "Một địa chỉ logic chỉ tương ứng với một địa chỉ vật lý duy nhất",
+            "D": "Luật ánh xạ nhất định"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Tính địa chỉ vật lý tương ứng với địa chỉ logic 1F36H:0DA5H",
+        "options": {
+            "A": "20B05H",
+            "B": "20105H",
+            "C": "20C15H",
+            "D": "40005H"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Tính địa chỉ vật lý tương ứng với địa chỉ logic 1D3AH:0DA1H",
+        "options": {
+            "A": "1CB01H",
+            "B": "10101H",
+            "C": "1E141H",
+            "D": "20005H"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Tính địa chỉ vật lý tương ứng với địa chỉ logic 1F48H:0CA5H",
+        "options": {
+            "A": "20B05H",
+            "B": "20105H",
+            "C": "20C15H",
+            "D": "20125H"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Tính địa chỉ vật lý tương ứng với địa chỉ logic 1A43H:0A56H",
+        "options": {
+            "A": "1A5C9H",
+            "B": "1B1C9H",
+            "C": "20C19H",
+            "D": "20105H"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Địa chỉ vật lý 30815H tương ứng với địa chỉ logic nào dưới đây?",
+        "options": {
+            "A": "30805H",
+            "B": "30815H",
+            "C": "30C15H",
+            "D": "40005H"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Địa chỉ vật lý 2FDB2H tương ứng với địa chỉ logic nào dưới đây?",
+        "options": {
+            "A": "2FB02H",
+            "B": "2F102H",
+            "C": "2FDB2H",
+            "D": "30002H"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Địa chỉ vật lý 33035H tương ứng với địa chỉ logic nào dưới đây?",
+        "options": {
+            "A": "30805H",
+            "B": "331A5H",
+            "C": "30C15H",
+            "D": "33035H"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Địa chỉ vật lý 33634H tương ứng với địa chỉ logic nào dưới đây?",
+        "options": {
+            "A": "2A30H:8D34H",
+            "B": "2A20H:8C34H",
+            "C": "3A32H:8E32H",
+            "D": "2A31H:9D34H"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Địa chỉ vật lý 93724H tương ứng với địa chỉ logic nào dưới đây?",
+        "options": {
+            "A": "AA39H:8D24H",
+            "B": "BA20H:8C34H",
+            "C": "3A32H:8E32H",
+            "D": "2A31H:9D34H"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Địa chỉ vật lý 3AE32H tương ứng với địa chỉ logic nào dưới đây?",
+        "options": {
+            "A": "2A30H:8D34H",
+            "B": "3A20H:0E32H",
+            "C": "3A02H:2E32H",
+            "D": "2A31H:9D34H"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Địa chỉ vật lý 93034H tương ứng với địa chỉ logic nào dưới đây?",
+        "options": {
+            "A": "8A30H:8D34H",
+            "B": "8A20H:8C34H",
+            "C": "7A32H:8E32H",
+            "D": "7A31H:8D34H"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Đặc điểm của chế độ MIN đối với bộ vi xử lý 8086 là:",
+        "options": {
+            "A": "CPU tự phát ra các tín hiệu điều khiển cho các Bus",
+            "B": "CPU chỉ phát ra các tín hiệu trạng thái tới chip điều khiển Bus",
+            "C": "CPU đồng thời phát ra tín hiệu điều khiển tới cả Bus và chip điều khiển Bus",
+            "D": "CPU phát ra tín hiệu trạng thái tới chip điều khiển Bus trước, sau đó phát tín hiệu điều khiển các Bus sau"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Trong chế độ MAX của bộ vi xử lý 8086, giá trị chân MN/MX là:",
+        "options": {
+            "A": "(0,0)",
+            "B": "(0,1)",
+            "C": "(1,0)",
+            "D": "(1,1)"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Trong chế độ MIN của bộ vi xử lý 8086, giá trị chân MN/MX là:",
+        "options": {
+            "A": "(0,0)",
+            "B": "(0,1)",
+            "C": "(1,0)",
+            "D": "(1,1)"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Chức năng của chân READY trong bộ vi xử lý 8086 là:",
+        "options": {
+            "A": "Chân đầu ra thông báo cho ngoại vi là bộ vi xử lý đã sẵn sàng",
+            "B": "Chân đầu vào thông báo cho bộ vi xử lý là ngoại vi đã sẵn sàng làm việc",
+            "C": "Chân đầu ra để kích hoạt bộ nhớ",
+            "D": "Chân đầu vào để ngắt bộ vi xử lý"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Hãy chỉ ra phương án đúng trong các phương án sau:",
+        "options": {
+            "A": "Ngắt từ chân INTR có thể che được từ cờ ngắt, còn ngắt từ chân NMI không thể che được từ cờ ngắt",
+            "B": "Ngắt từ chân INTR không thể che được từ cờ ngắt, còn ngắt từ chân NMI có thể che được từ cờ ngắt",
+            "C": "Cả hai ngắt từ chân INTR và NMI đều có thể che được từ cờ ngắt",
+            "D": "Cả hai ngắt từ chân INTR và NMI đều không thể che được từ cờ ngắt"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Bộ vi xử lý 8086 có thể quản lý không gian địa chỉ cổng ngoại vi 8 bit có kích thước hàng bao nhiêu?",
+        "options": {
+            "A": "64K (65536)",
+            "B": "32K (32768)",
+            "C": "16K (16384)",
+            "D": "8K (8192)"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Đối với bộ vi xử lý 8086, nếu chân ALE có mức 1 thì:",
+        "options": {
+            "A": "Địa chỉ của bộ nhớ hoặc ngoại vi được chốt trong CPU",
+            "B": "Cho phép bộ chốt chốt địa chỉ từ CPU gửi trên Bus",
+            "C": "Không cho CPU chốt địa chỉ của bộ nhớ hoặc ngoại vi",
+            "D": "Không cho bộ chốt chốt địa chỉ từ CPU gửi trên Bus"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Tín hiệu nào sau đây của 8288 nếu ở mức tích cực sẽ cho phép đọc dữ liệu từ bộ nhớ vào CPU?",
+        "options": {
+            "A": "IORC",
+            "B": "DEN",
+            "C": "MRDC",
+            "D": "MWDC"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Tín hiệu nào sau đây của 8288 nếu ở mức tích cực sẽ cho phép ghi dữ liệu từ CPU vào bộ nhớ?",
+        "options": {
+            "A": "IORC",
+            "B": "DEN",
+            "C": "MRDC",
+            "D": "MWDC"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Tín hiệu nào sau đây của 8288 nếu ở mức tích cực sẽ cho phép ghi dữ liệu từ CPU vào cổng vào ra?",
+        "options": {
+            "A": "IORC",
+            "B": "IOWC",
+            "C": "MRDC",
+            "D": "MWDC"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Tín hiệu nào sau đây của 8288 nếu ở mức tích cực sẽ cho phép đọc dữ liệu từ cổng vào ra vào CPU?",
+        "options": {
+            "A": "IORC",
+            "B": "DEN",
+            "C": "MRDC",
+            "D": "MWDC"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Tín hiệu nào sau đây của 8288 nếu ở mức tích cực sẽ thông báo cho 8288 biết là CPU nhận yêu cầu ngắt?",
+        "options": {
+            "A": "IORC",
+            "B": "DEN",
+            "C": "INTA",
+            "D": "MCE"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Sau khi Reset bộ vi xử lý 8086, thanh ghi cờ (FLAGS) nhận giá trị nào trong các giá trị sau đây?",
+        "options": {
+            "A": "02H",
+            "B": "03H",
+            "C": "07H",
+            "D": "08H"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Sau khi Reset bộ vi xử lý 8086, thanh ghi IP nhận giá trị nào trong các giá trị sau đây?",
+        "options": {
+            "A": "F000H",
+            "B": "FF00H",
+            "C": "FFF0H",
+            "D": "FFFFH"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Sau khi Reset bộ vi xử lý 8086, thanh ghi CS nhận giá trị nào trong các giá trị sau đây?",
+        "options": {
+            "A": "F000H",
+            "B": "FF00H",
+            "C": "FFF0H",
+            "D": "FFFFH"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Sau khi Reset bộ vi xử lý 8086, thanh ghi DS nhận giá trị nào trong các giá trị sau đây?",
+        "options": {
+            "A": "F000H",
+            "B": "FF00H",
+            "C": "FFF0H",
+            "D": "0000H"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Sau khi Reset bộ vi xử lý 8086, thanh ghi ES nhận giá trị nào trong các giá trị sau đây?",
+        "options": {
+            "A": "F000H",
+            "B": "0000H",
+            "C": "FFF0H",
+            "D": "FFFFH"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Sau khi Reset bộ vi xử lý 8086, cặp thanh ghi CS:IP nhận giá trị nào trong các giá trị sau đây?",
+        "options": {
+            "A": "F000H:FFF0H",
+            "B": "0F00H:F0F0H",
+            "C": "FFF0H:FF0H",
+            "D": "FFFFH:0FD0H"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Trong quá trình xử lý ngắt, thanh ghi nào trong các thanh ghi sau đây chắc chắn sẽ phải thay đổi nội dung?",
+        "options": {
+            "A": "SI",
+            "B": "DI",
+            "C": "ES",
+            "D": "IP"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Sau khi Reset bộ vi xử lý 8086, lệnh đầu tiên được thực hiện là lệnh nào?",
+        "options": {
+            "A": "Lệnh tải địa chỉ F000H:FFF0H",
+            "B": "Lệnh kiểm tra phiên bản hệ điều hành",
+            "C": "Lệnh tải địa chỉ FF00H:FFF0H",
+            "D": "Lệnh tải địa chỉ FF00H:F0F0H"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Khi gặp một ngắt, bộ vi xử lý thực hiện như thế nào?",
+        "options": {
+            "A": "Chạy hết chương trình đang thực hiện rồi phục vụ ngắt",
+            "B": "Thực hiện xong lệnh đang thực hiện rồi quay ra phục vụ ngắt nếu ngắt là hợp lệ",
+            "C": "Bỏ qua ngắt nếu bộ vi xử lý đang thực hiện một chương trình khác",
+            "D": "Dừng chương trình ngay lập tức để phục vụ ngắt"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Sau khi thực hiện xong chương trình con phục vụ ngắt, bộ vi xử lý thực hiện như thế nào?",
+        "options": {
+            "A": "Trở về thực hiện tiếp chương trình đã bị gián đoạn do ngắt",
+            "B": "Khởi động lại hệ thống",
+            "C": "Thực hiện lại lệnh trước khi có ngắt",
+            "D": "Chuyển sang chương trình khác"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Vùng nhớ được dùng để lưu trữ địa chỉ quay về khi chương trình con được gọi là:",
+        "options": {
+            "A": "Nâng vector ngắt",
+            "B": "Vùng nhớ dành riêng cho chương trình",
+            "C": "Vùng nhớ ngăn xếp",
+            "D": "Cặp thanh ghi CS:IP"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Ngắt phát sinh do lỗi phần mềm trong chương trình thì được gọi là ngắt gì trong các loại ngắt sau đây?",
+        "options": {
+            "A": "Ngắt cứng che được bằng cờ ngắt",
+            "B": "Ngắt cứng không che được bằng cờ ngắt",
+            "C": "Ngắt mềm",
+            "D": "Ngoại lệ phát sinh từ chính CPU"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Ngắt phát sinh do yêu cầu từ thiết bị ngoại vi thì được gọi là ngắt gì trong các loại ngắt sau đây?",
+        "options": {
+            "A": "Ngắt cứng che được bằng cờ ngắt",
+            "B": "Ngắt cứng không che được bằng cờ ngắt",
+            "C": "Ngắt mềm",
+            "D": "Ngoại lệ phát sinh từ chính CPU"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Ngắt phát sinh do hỏng hóc phần cứng nghiêm trọng thì được gọi là ngắt gì trong các loại ngắt sau đây?",
+        "options": {
+            "A": "Ngắt cứng che được bằng cờ ngắt",
+            "B": "Ngắt cứng không che được bằng cờ ngắt",
+            "C": "Ngắt mềm",
+            "D": "Ngoại lệ phát sinh từ chính CPU"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Ngắt phát sinh do bội chia cho 0 trong chương trình thì được gọi là ngắt gì trong các loại ngắt sau đây?",
+        "options": {
+            "A": "Ngắt cứng che được bằng cờ ngắt",
+            "B": "Ngắt cứng không che được bằng cờ ngắt",
+            "C": "Ngắt mềm",
+            "D": "Ngoại lệ phát sinh từ chính CPU"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Ngắt phát sinh do tràn bộ nhớ của bộ điều khiển thì được gọi là ngắt gì trong các loại ngắt sau đây?",
+        "options": {
+            "A": "Ngắt cứng che được bằng cờ ngắt",
+            "B": "Ngắt cứng không che được bằng cờ ngắt",
+            "C": "Ngắt mềm",
+            "D": "Ngoại lệ phát sinh từ chính CPU"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Ngắt phát sinh do mã toán không hợp lệ thì được gọi là ngắt gì trong các loại ngắt sau đây?",
+        "options": {
+            "A": "Ngắt cứng che được bằng cờ ngắt",
+            "B": "Ngắt cứng không che được bằng cờ ngắt",
+            "C": "Ngắt mềm",
+            "D": "Ngoại lệ phát sinh từ chính CPU"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Cơ chế DMA là gì?",
+        "options": {
+            "A": "Truy cập ngoại vi trực tiếp",
+            "B": "Truy cập bộ nhớ trực tiếp",
+            "C": "Điều khiển thẻ thông qua thiết bị ngoại vi",
+            "D": "Truy cập CPU trực tiếp"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "DMA là viết tắt của:",
+        "options": {
+            "A": "Direct Management Access",
+            "B": "Direct Memory Application Access",
+            "C": "Direct Memory Access",
+            "D": "Direct Mainboard Administration"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Cơ chế DMA cho phép thực hiện điều gì?",
+        "options": {
+            "A": "Truyền dữ liệu trực tiếp giữa bộ nhớ và các thành phần trong bộ vi xử lý",
+            "B": "Truyền dữ liệu trực tiếp giữa các thiết bị ngoại vi",
+            "C": "Truyền dữ liệu trực tiếp giữa các thành phần trong bộ thông bộ nhớ",
+            "D": "Truyền dữ liệu trực tiếp từ CPU đến bộ nhớ"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Phương pháp nào sau đây là một trong các phương pháp thực hiện DMA?",
+        "options": {
+            "A": "Ngắt không che được",
+            "B": "Lấy cắp chu kỳ",
+            "C": "Ngắt che được",
+            "D": "Thăm dò ngoại vi"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Phương pháp nào sau đây là một trong các phương pháp thực hiện DMA?",
+        "options": {
+            "A": "Ngắt mềm",
+            "B": "Điều khiển để CPU tự treo",
+            "C": "Ngắt không che được",
+            "D": "Thăm dò ngoại vi"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "DMAC gửi tín hiệu yêu cầu CPU tự treo để thực hiện DMA qua chân nào?",
+        "options": {
+            "A": "DREQ",
+            "B": "HOLD",
+            "C": "HOLDA",
+            "D": "DACK"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "CPU thông báo cho DMAC rằng nó đã nhường Bus qua chân nào?",
+        "options": {
+            "A": "DREQ",
+            "B": "HOLD",
+            "C": "HOLDA",
+            "D": "DACK"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Khi chip DMAC đang đọc dữ liệu từ ngoại vi qua địa chỉ cổng thì chân nào trong các chân sau đây phải ở mức tích cực?",
+        "options": {
+            "A": "IOR",
+            "B": "IOW",
+            "C": "MEMR",
+            "D": "MEMW"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Khi chip DMAC đang chuyển dữ liệu tới ngoại vi qua cổng thì chân nào trong các chân sau đây phải ở mức tích cực?",
+        "options": {
+            "A": "IOR",
+            "B": "IOW",
+            "C": "MEMR",
+            "D": "MEMW"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Khi chip DMAC đang đọc dữ liệu từ bộ nhớ thì chân nào trong các chân sau đây phải ở mức tích cực?",
+        "options": {
+            "A": "IOR",
+            "B": "IOW",
+            "C": "MEMR",
+            "D": "MEMW"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Khi chip DMAC đang ghi dữ liệu vào bộ nhớ thì chân nào trong các chân sau đây phải ở mức tích cực?",
+        "options": {
+            "A": "IOR",
+            "B": "IOW",
+            "C": "MEMR",
+            "D": "MEMW"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Khi CPU hoặc Bus master báo cho DMAC biết nó đã rời khóa Bus thì tín hiệu nào được sử dụng?",
+        "options": {
+            "A": "HIDA",
+            "B": "ADSTB",
+            "C": "AEN",
+            "D": "HRQ"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Khi DMAC cần kích hoạt để chốt địa chỉ thì chân nào trong các chân sau đây của DMAC phải ở mức tích cực?",
+        "options": {
+            "A": "HIDA",
+            "B": "ADSTB",
+            "C": "AEN",
+            "D": "HRQ"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Chân nào là chân chọn chip trong các chân sau đây của DMAC?",
+        "options": {
+            "A": "CLK",
+            "B": "/CS",
+            "C": "HRQ",
+            "D": "AEN"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Chân nào là lối vào của xung nhịp trong các chân sau đây của DMAC?",
+        "options": {
+            "A": "CLK",
+            "B": "/CS",
+            "C": "HRQ",
+            "D": "AEN"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Chân nào là chân báo chấp nhận DMA trong các chân sau đây của DMAC?",
+        "options": {
+            "A": "AEN",
+            "B": "DREQ",
+            "C": "HRQ",
+            "D": "DACK"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Chân nào là chân báo đáp hồi DMA từ thiết bị ngoại vi trong các chân sau đây của DMAC?",
+        "options": {
+            "A": "AEN",
+            "B": "DREQ",
+            "C": "HRQ",
+            "D": "DACK"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Bus dữ liệu của DMAC 8237 gồm bao nhiêu bit?",
+        "options": {
+            "A": "4",
+            "B": "8",
+            "C": "16",
+            "D": "32"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Bus địa chỉ của DMAC 8237 gồm bao nhiêu bit?",
+        "options": {
+            "A": "8",
+            "B": "12",
+            "C": "16",
+            "D": "20"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Chân nào trong các chân sau đây báo kết thúc xử lý DMA?",
+        "options": {
+            "A": "AEN",
+            "B": "DREQ",
+            "C": "HRQ",
+            "D": "/EOP"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Tần số của bộ vi xử lý 80386DX-40 là bao nhiêu?",
+        "options": {
+            "A": "500 Hz",
+            "B": "500 KHz",
+            "C": "500 MHz",
+            "D": "500 GHz"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Khi chương trình con được gọi, địa chỉ quay về được cất vào đâu?",
+        "options": {
+            "A": "Ngăn xếp",
+            "B": "Thanh ghi con trỏ ngăn xếp",
+            "C": "Cặp thanh ghi CS.IP",
+            "D": "Bộ đếm chương trình"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Thông thường khi một chương trình con phục vụ ngắt được thực hiện xong thì điều gì xảy ra?",
+        "options": {
+            "A": "Bộ vi xử lý phải được khởi động lại",
+            "B": "Một yêu cầu ng proinflammatory hiện",
+            "C": "Chương trình bị tạm dừng sẽ được tiếp tục thực hiện",
+            "D": "Hệ thống bị dừng (Halt)"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Một tín hiệu vào của bộ vi xử lý làm cho nó tạm dừng chương trình đang thực hiện thì được gọi là gì?",
+        "options": {
+            "A": "Nghỉ (Break)",
+            "B": "Ngắt (Interrupt)",
+            "C": "Dừng (Stop)",
+            "D": "Đợi (Wait)"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Ngắt có đặc điểm nào sau đây?",
+        "options": {
+            "A": "Ưu tiên cao",
+            "B": "Có thể che được",
+            "C": "Nhiều mức",
+            "D": "Không thể bị che được"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Khi chương trình con được gọi thì địa chỉ quay về được lấy ra từ đâu?",
+        "options": {
+            "A": "Đầu tiên",
+            "B": "Cuối cùng",
+            "C": "Từ thanh ghi con trỏ ngăn xếp",
+            "D": "Từ thanh ghi cờ"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Chức năng của câu lệnh Assembly sau là gì? OUT 30H, AL",
+        "options": {
+            "A": "Gửi nội dung thanh ghi AL ra cổng ngoại vi có địa chỉ là 30H",
+            "B": "Gửi giá trị 30H ra cổng ngoại vi có địa chỉ là nội dung thanh ghi AL",
+            "C": "Gửi giá trị 30H ra cổng ngoại vi có địa chỉ là 48H",
+            "D": "Thu một byte từ cổng có địa chỉ là 30H và đặt vào thanh ghi AL"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Chức năng của câu lệnh Assembly sau là gì? IN AL, 31H",
+        "options": {
+            "A": "Gửi nội dung thanh ghi AL ra cổng ngoại vi có địa chỉ là 31H",
+            "B": "Gửi giá trị 31H ra cổng ngoại vi có địa chỉ là nội dung thanh ghi AL",
+            "C": "Thu giá trị 31H từ một cổng ngoại vi và đặt vào thanh ghi AL",
+            "D": "Thu một byte từ cổng có địa chỉ là 31H, đặt vào thanh ghi AL"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Biết rằng chương trình con có tên là PUTC sẽ hiển thị kí tự trong thanh ghi AL. Cho biết kết quả thực hiện đoạn lệnh Assembly sau: MOV AL, 'C'; SUB AL, 02H; CALL PUTC",
+        "options": {
+            "A": "Hiển thị chữ số 2",
+            "B": "Hiển thị kí tự C",
+            "C": "Hiển thị kí tự A",
+            "D": "Hiển thị kí tự trống"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Biết rằng thanh ghi BL đang lưu kí tự 'b' (mã ASCII là 62H). Cho biết kết quả của câu lệnh Assembly sau: AND BL, 11011111B",
+        "options": {
+            "A": "Xóa thanh ghi BL",
+            "B": "Lưu kí tự 'B' vào thanh ghi BL",
+            "C": "Lưu giá trị 00100010 vào thanh ghi BL",
+            "D": "Nội dung thanh ghi BL không thay đổi"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Biết rằng thanh ghi AL đang lưu kí tự 'a'. Cho biết kết quả của câu lệnh Assembly sau: AND AL, 11111111B",
+        "options": {
+            "A": "Xóa thanh ghi AL",
+            "B": "Lưu kí tự 'A' vào thanh ghi AL",
+            "C": "Lưu giá trị 00000000 vào thanh ghi AL",
+            "D": "Nội dung thanh ghi AL không thay đổi"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Trong các câu lệnh Assembly sau, câu lệnh nào không hợp lệ?",
+        "options": {
+            "A": "MOV AX, 30000",
+            "B": "ADD AL",
+            "C": "AND BX, 30H",
+            "D": "ADD AX, 30"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Biết rằng chương trình con có tên là PUTA sẽ hiển thị từ trong thanh ghi AH. Cho biết kết quả thực hiện đoạn lệnh Assembly sau: MOV AH, 'A'; ADD AH, 2; CALL PUTA",
+        "options": {
+            "A": "Hiển thị chữ số 2",
+            "B": "Hiển thị kí tự C",
+            "C": "Hiển thị kí tự A",
+            "D": "Hiển thị kí tự trống"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Biết rằng thanh ghi BL đang lưu kí tự 'B'. Cho biết lệnh nào sau đây sẽ thay đổi nội dung thanh ghi BL để nó chứa kí tự 'b'?",
+        "options": {
+            "A": "OR BL, 00100000B",
+            "B": "AND BL, 00100000B",
+            "C": "ADD BL, 32H",
+            "D": "ADD BL, 32"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Biết rằng thanh ghi BL đang lưu kí tự 'c'. Cho biết lệnh nào sau đây sẽ thay đổi nội dung thanh ghi BL để nó chứa kí tự 'C'?",
+        "options": {
+            "A": "OR BL, 00100000B",
+            "B": "AND BL, 00100000B",
+            "C": "SUB BL, 32",
+            "D": "ADD BL, 32"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Biết rằng thanh ghi AL đang lưu kí tự 'B'. Cho biết kết quả của câu lệnh Assembly sau: OR AL, 01000000B",
+        "options": {
+            "A": "Xóa thanh ghi AL",
+            "B": "Lưu kí tự 'a' vào thanh ghi AL",
+            "C": "Lưu giá trị 01000000 vào thanh ghi AL",
+            "D": "Nội dung thanh ghi AL không thay đổi"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Biết rằng thanh ghi AL đang lưu kí tự 'C'. Cho biết kết quả của câu lệnh Assembly sau: SUB AL, 10H",
+        "options": {
+            "A": "Xóa thanh ghi AL",
+            "B": "Lưu kí tự 'A' vào thanh ghi AL",
+            "C": "Lưu giá trị 'E' vào thanh ghi AL",
+            "D": "Nội dung thanh ghi AL không thay đổi"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Cho đoạn lệnh sau: MOV AH, 10H; MOV AL, 16H; XCHG AL, AH; Hỏi kết quả cuối cùng thanh ghi AH bằng bao nhiêu?",
+        "options": {
+            "A": "26H",
+            "B": "16H",
+            "C": "06H",
+            "D": "10H"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV AH, 0A0H; MOV AL, 16H; ADD AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "26H",
+            "B": "84H",
+            "C": "0B6H",
+            "D": "16H"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV AH, 90H; MOV AL, 36H; ADD AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "6AH",
+            "B": "64H",
+            "C": "0B6H",
+            "D": "0C6H"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV AH, 0A0H; MOV AL, 0A6H; ADD AL, AH; Hỏi kết quả cuối cùng thanh ghi AH bằng bao nhiêu?",
+        "options": {
+            "A": "0A5H",
+            "B": "0A6H",
+            "C": "0A0H",
+            "D": "0A8H"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV AH, 0A0H; MOV AL, 36H; ADD AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "0D5H",
+            "B": "0D6H",
+            "C": "0D7H",
+            "D": "0D8H"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Cách viết nào sau đây là một lệnh Assembly?",
+        "options": {
+            "A": "MOV AL",
+            "B": "MOVE AL, 5",
+            "C": "MOV AL, 05H",
+            "D": "MOV 5, AL"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Cách viết nào sau đây là một lệnh Assembly?",
+        "options": {
+            "A": "ADD AL, 1",
+            "B": "MOVE AL, 5",
+            "C": "MOVE AL, 05H",
+            "D": "ADD AL"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV AH, 0A0H; MOV AL, 0A6H; SUB AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "05H",
+            "B": "06H",
+            "C": "07H",
+            "D": "08H"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV AH, 0A0H; MOV AL, 0A6H; AND AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "0A5H",
+            "B": "0A6H",
+            "C": "0A7H",
+            "D": "0A0H"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV AH, 97H; MOV AL, 0A6H; AND AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "85H",
+            "B": "86H",
+            "C": "0A7H",
+            "D": "0A6H"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV AH, 97H; MOV AL, 5EH; AND AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "96H",
+            "B": "86H",
+            "C": "36H",
+            "D": "16H"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV AH, 97H; MOV AL, 5EH; OR AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "0DFH",
+            "B": "0CHH",
+            "C": "0ACH",
+            "D": "0A6H"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV AH, 37H; MOV AL, 5AH; OR AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "6DH",
+            "B": "0AH",
+            "C": "0AH",
+            "D": "0B0H"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV CL, 04H; MOV AL, 5AH; SHL AL, CL; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "60H",
+            "B": "0A0H",
+            "C": "0B0H",
+            "D": "0B0H"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV CL, 02H; MOV AL, 6AH; SHL AL, CL; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "6CH",
+            "B": "0A0H",
+            "C": "0A8H",
+            "D": "0B8H"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Cho đoạn lệnh: MOV CL, 03H; MOV AL, 5CH; SHR AL, CL; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "10H",
+            "B": "0BH",
+            "C": "0DH",
+            "D": "0EH"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Cho đoạn lệnh Assembly: MOV CL, 02H; MOV AL, 6AH; SHR AL, CL; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
+        "options": {
+            "A": "1CH",
+            "B": "1AH",
+            "C": "2AH",
+            "D": "2BH"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Để ghi giá trị số hexa A vào thanh ghi BH ta viết lệnh Assembly như thế nào?",
+        "options": {
+            "A": "MOV 0BH, BH",
+            "B": "MOV BH, 0AH",
+            "C": "MOV BH, AH",
+            "D": "MOV BH, A"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Nếu thanh ghi AL đang chứa mã ASCII của một kí tự viết hoa (A đến Z), để chuyển kí tự đó thành dạng viết thường (a đến z) ta dùng lệnh Assembly nào sau đây?",
+        "options": {
+            "A": "SUB AL, 32",
+            "B": "SUB AL, 32H",
+            "C": "ADD AL, 32",
+            "D": "ADD AL, 32H"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Nếu thanh ghi AL đang chứa mã ASCII của một kí tự viết thường (a đến z), để chuyển kí tự đó thành dạng viết hoa (A đến Z) ta dùng lệnh Assembly nào sau đây?",
+        "options": {
+            "A": "SUB AL, 32",
+            "B": "SUB AL, 32H",
+            "C": "ADD AL, 32",
+            "D": "ADD AL, 32H"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Lệnh MOV AX, [BX] là một ví dụ của chế độ định địa chỉ nào?",
+        "options": {
+            "A": "Trực tiếp",
+            "B": "Tức thì",
+            "C": "Thanh ghi",
+            "D": "Chỉ số"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Lệnh MOV AX, [BX] là một ví dụ của chế độ định địa chỉ nào?",
+        "options": {
+            "A": "Trực tiếp",
+            "B": "Tức thì",
+            "C": "Gián tiếp thanh ghi",
+            "D": "Chỉ số"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Lệnh MOV AX, 5 là một ví dụ của chế độ định địa chỉ nào?",
+        "options": {
+            "A": "Trực tiếp",
+            "B": "Tức thì",
+            "C": "Thanh ghi",
+            "D": "Chỉ số"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Lệnh MOV AX, [SI] là một ví dụ của chế độ định địa chỉ nào?",
+        "options": {
+            "A": "Trực tiếp",
+            "B": "Thanh ghi",
+            "C": "Gián tiếp thanh ghi",
+            "D": "Chỉ số"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Lệnh MOV AX, BX là một ví dụ của chế độ định địa chỉ nào?",
+        "options": {
+            "A": "Trực tiếp",
+            "B": "Tức thì",
+            "C": "Thanh ghi",
+            "D": "Gián tiếp thanh ghi"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Lệnh MOV AX, [SI] là một ví dụ của chế độ định địa chỉ nào?",
+        "options": {
+            "A": "Chỉ số",
+            "B": "Chỉ số với số",
+            "C": "Thanh ghi",
+            "D": "Gián tiếp thanh ghi"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Lệnh MOV AX, [SI]+5 là một ví dụ của chế độ định địa chỉ nào?",
+        "options": {
+            "A": "Chỉ số",
+            "B": "Chỉ số với số",
+            "C": "Thanh ghi",
+            "D": "Gián tiếp thanh ghi"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Lệnh nào dưới đây là ví dụ của chế độ định địa chỉ gián tiếp thanh ghi?",
+        "options": {
+            "A": "MOV AX, [BX]",
+            "B": "MOV AX, [0B800H]",
+            "C": "MOV AX, BX",
+            "D": "MOV AX, [BX]+5"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Lệnh nào dưới đây là ví dụ của chế độ định địa chỉ tức thì?",
+        "options": {
+            "A": "MOV AX, [BX]",
+            "B": "MOV SI, AX",
+            "C": "MOV AX, 10",
+            "D": "MOV AX, [SI]+5"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Lệnh nào dưới đây là ví dụ của chế độ định địa chỉ chỉ số với số?",
+        "options": {
+            "A": "MOV AX, [BX]",
+            "B": "MOV AX, [0B800H]",
+            "C": "MOV AX, [SI]+5",
+            "D": "MOV AX, [SI]+[BX]+5"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Để ghi giá trị số 11 vào thanh ghi BH ta viết lệnh Assembly như thế nào?",
+        "options": {
+            "A": "MOV 0BH, BH",
+            "B": "MOV BH, 11",
+            "C": "MOV BH, [BH]",
+            "D": "MOV BH, B"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Để dịch trái vòng một bit giá trị trong thanh ghi AL thì sử dụng lệnh Assembly nào?",
+        "options": {
+            "A": "SHR AL, 1",
+            "B": "SHL AL, 1",
+            "C": "ROR AL, 1",
+            "D": "ROL AL, 1"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Để dịch phải vòng một bit giá trị trong thanh ghi AL thì sử dụng lệnh Assembly nào?",
+        "options": {
+            "A": "SHR AL, 1",
+            "B": "SHL AL, 1",
+            "C": "ROR AL, 1",
+            "D": "ROL AL, 1"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Để lấy 4 bit thấp trong thanh ghi BH thì ta sử dụng lệnh Assembly nào?",
+        "options": {
+            "A": "AND BH, 00H",
+            "B": "AND BH, 0FH",
+            "C": "AND BH, 1FH",
+            "D": "AND BH, 0F0H"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Để lấy 4 bit cao trong thanh ghi BH thì ta sử dụng lệnh Assembly nào?",
+        "options": {
+            "A": "AND BH, 00H",
+            "B": "AND BH, 0FH",
+            "C": "AND BH, 1FH",
+            "D": "AND BH, 0F0H"
+        },
+        "correct": "D"
+    }
+        
+    
+            // TODO: Thêm 90 câu hỏi còn lại vào đây
+            // Bạn cần sao chép từ mã Python và chuyển đổi sang định dạng JavaScript
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let selectedQuestions = questions;
+
+    function displayQuestion() {
+      const q = selectedQuestions[currentQuestion];
+      document.getElementById('question').innerHTML = `<h3>Câu ${currentQuestion + 1}: ${q.question}</h3>`;
+
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = '';
+      for (const [key, value] of Object.entries(q.options)) {
+        optionsDiv.innerHTML += `
+          <label>
+            <input type="radio" name="answer" value="${key}"> ${key}. ${value}
+          </label>
+        `;
+      }
+
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('result').className = '';
+      document.getElementById('submit').style.display = 'inline-block';
+    }
+
+    function checkAnswer() {
+      const selected = document.querySelector('input[name="answer"]:checked');
+      const resultDiv = document.getElementById('result');
+
+      if (!selected) {
+        alert("Vui lòng chọn một đáp án!");
+        return;
+      }
+
+      const answer = selected.value;
+      const q = selectedQuestions[currentQuestion];
+
+      // Vô hiệu hóa radio sau khi nộp
+      document.querySelectorAll('input[name="answer"]').forEach(radio => {
+        radio.disabled = true;
+      });
+
+      // Tô màu đáp án
+      document.querySelectorAll('input[name="answer"]').forEach(radio => {
+        const label = radio.parentElement;
+        if (radio.value === q.correct) {
+          label.classList.add('correct');
+        }
+        if (radio.checked && radio.value !== q.correct) {
+          label.classList.add('incorrect');
+        }
+      });
+
+      if (answer === q.correct) {
+        score++;
+        resultDiv.innerHTML = `<span class="correct">Đúng! 🎉🎉🎉</span>`;
+      } else {
+        resultDiv.innerHTML = `
+          <span class="incorrect">Sai tè le 😞😞😞
+        `;
+      }
+
+      document.getElementById('submit').style.display = 'none';
+
+      // Thêm nút "Tiếp"
+      const controls = document.getElementById('controls');
+      if (!document.getElementById('next-btn')) {
+        const nextBtn = document.createElement('button');
+        nextBtn.id = 'next-btn';
+        nextBtn.textContent = currentQuestion < selectedQuestions.length - 1 ? 'Tiếp' : 'Kết thúc';
+        nextBtn.onclick = () => {
+          nextBtn.remove();
+          currentQuestion++;
+          if (currentQuestion < selectedQuestions.length) {
+            displayQuestion();
+          } else {
+            showResult();
+          }
+        };
+        controls.appendChild(nextBtn);
+      }
+    }
+
+    function showResult() {
+      const percentage = (score / selectedQuestions.length) * 100;
+      let message = '';
+      if (percentage === 100) {
+        message = "Xuất sắc! Bạn đạt điểm tuyệt đối! 🌟";
+      } else if (percentage >= 80) {
+        message = "Rất tốt! Bạn nắm vững kiến thức. 👏";
+      } else if (percentage >= 50) {
+        message = "Khá tốt, nhưng bạn có thể cải thiện thêm. 💪";
+      } else {
+        message = "Bạn cần ôn tập thêm nhé! 📚";
+      }
+
+        const finalResultDiv = document.createElement('div');
+        finalResultDiv.id = 'final-result';
+        finalResultDiv.innerHTML = `
+        <h2>Kết quả của bạn</h2>
+        <p>Bạn trả lời đúng <span class="correct">${score}</span>/<span class="total">${questions.length}</span> câu.</p>
+        <p>Tỷ lệ đúng: ${percentage.toFixed(2)}%</p>
+        <p>${message}</p>
+        <button onclick="location.reload()">Làm lại</button>
+        `;
+        document.body.appendChild(finalResultDiv);
+    }
+
+    document.getElementById('submit').addEventListener('click', checkAnswer);
+    displayQuestion();
+  </script>
+
+</body>
+</html>
