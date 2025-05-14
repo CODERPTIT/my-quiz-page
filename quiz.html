@@ -17,7 +17,6 @@
         color: white;
     }
 
-
     /* Header */
     header {
       text-align: center;
@@ -43,7 +42,7 @@
       border-radius: 10px;
       border: 2px solid orange;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      position: relative; /* Để chứa đồng hồ ở góc phải */
+      position: relative;
     }
 
     .options label {
@@ -90,6 +89,81 @@
       background-color: #0056b3;
     }
 
+    #toggle-audio {
+      background-color: #ff9800;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+
+    #toggle-audio:hover {
+      background-color: #e68900;
+    }
+
+    #skip {
+      background-color: #dc3545;
+    }
+
+    #skip:hover {
+      background-color: #b02a37;
+    }
+
+    #back {
+      background-color: #6c757d;
+    }
+
+    #back:hover {
+      background-color: #5a6268;
+    }
+
+    #back:disabled {
+      background-color: #adb5bd;
+      cursor: not-allowed;
+    }
+
+    /* Playlist styles */
+    #playlist {
+      position: absolute;
+      top: 50px;
+      left: 10px;
+      background-color: rgba(255, 255, 255, 0.95);
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      max-width: 200px;
+      display: none;
+      z-index: 10;
+    }
+
+    .playlist-item {
+      padding: 10px;
+      color: #333;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+    }
+
+    .playlist-item:last-child {
+      border-bottom: none;
+    }
+
+    .playlist-item:hover {
+      background-color: #f0f0f0;
+    }
+
+    .playlist-item.playing {
+      background-color: #d4edda;
+      color: green;
+      font-weight: bold;
+    }
+
+    .playlist-item::before {
+      content: '🎵';
+      margin-right: 8px;
+    }
+
     #result {
       margin-top: 15px;
     }
@@ -97,7 +171,7 @@
     #final-result {
       font-size: 1.5em;
       margin-top: 30px;
-      color: black;
+      color: white;
       text-align: center;
     }
 
@@ -145,7 +219,7 @@
       stroke: #00aaff;
       stroke-dasharray: 100;
       stroke-dashoffset: 0;
-      transition: stroke-dashoffset 1s linear;
+      transition: stroke-dashoffset 1s线性;
     }
 
     .time-label {
@@ -179,18 +253,22 @@
       </svg>
       <div class="time-label" id="timeText">30</div>
     </div>
+    <!-- Nút bật/tắt nhạc kiêm mở playlist -->
+    <button id="toggle-audio">Tắt nhạc</button>
+    <!-- Danh sách playlist -->
+    <div id="playlist"></div>
     <div id="question"></div>
     <div class="options" id="options"></div>
     <div id="result"></div>
     <div class="button-group" id="controls">
       <button id="submit">Nộp</button>
+      <button id="skip">Bỏ qua</button>
+      <button id="back" disabled>Quay lại</button>
     </div>
   </div>
 
+  <audio id="background-music" loop></audio>
 
-    <audio id="tick-tock" loop>
-    <source src="clock.mp3" type="audio/mpeg">
-    </audio>
 
 
     <script>
@@ -2101,12 +2179,20 @@
             // Bạn cần sao chép từ mã Python và chuyển đổi sang định dạng JavaScript
     ];
 
+    
     let currentQuestion = 0;
     let score = 0;
     let selectedQuestions = questions;
     let timer;
     let countdownInterval;
-    let audio = document.getElementById('tick-tock');
+    let isAudioPlaying = true;
+    let currentTrack = null;
+    let answers = Array(questions.length).fill(null).map(() => ({ selected: null, completed: false }));
+    const audio = document.getElementById('background-music');
+    const toggleAudioBtn = document.getElementById('toggle-audio');
+    const playlistContainer = document.getElementById('playlist');
+    const skipBtn = document.getElementById('skip');
+    const backBtn = document.getElementById('back');
 
     const circle = document.getElementById('progressCircle');
     const timeText = document.getElementById('timeText');
@@ -2114,6 +2200,89 @@
     const circumference = 2 * Math.PI * radius;
 
     circle.style.strokeDasharray = circumference;
+
+    // Danh sách bài nhạc
+    const playlist = [
+      { value: 'tiktik.mp3', name: 'Clock Tick' },
+      { value: 'MatKetNoi.mp3', name: 'Mất Kết Nối' },
+      { value: 'NhacKhongLoiGuitar.mp3', name: 'Nhạc Không Lời Guitar' },
+      {value: 'GapEmDungLuc.mp3', name: 'Gặp Em Đúng Lúc'},
+      {value: 'TuoiTreTheHeBacHo.mp3', name: 'Tuổi Trẻ Thế Hệ Bác Hồ'},
+      {value: 'NhacThai.mp3', name: 'Nhạc Thái Lan'},
+    ];
+
+    // Hàm xáo trộn đáp án
+    function shuffleOptions(question) {
+      const options = Object.entries(question.options);
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      const newOptions = Object.fromEntries(options);
+      const newCorrect = options.find(([key]) => key === question.correct)[0];
+      return { ...question, options: newOptions, correct: newCorrect };
+    }
+
+    // Xáo trộn tất cả đáp án khi bắt đầu
+    function shuffleAllQuestions() {
+      selectedQuestions = questions.map(q => shuffleOptions({ ...q }));
+      answers = Array(questions.length).fill(null).map(() => ({ selected: null, completed: false }));
+    }
+
+    // Khởi tạo playlist
+    function initPlaylist() {
+      playlistContainer.innerHTML = '';
+      playlist.forEach(track => {
+        const item = document.createElement('div');
+        item.classList.add('playlist-item');
+        item.textContent = track.name;
+        item.dataset.src = track.value;
+        item.addEventListener('click', () => {
+          selectTrack(track);
+          playlistContainer.style.display = 'none';
+        });
+        playlistContainer.appendChild(item);
+      });
+      // Chọn bài đầu tiên mặc định
+      selectTrack(playlist[0]);
+    }
+
+    // Chọn bài nhạc
+    function selectTrack(track) {
+      currentTrack = track;
+      audio.src = track.value;
+      updatePlaylistUI();
+      if (isAudioPlaying) {
+        audio.play().catch(() => console.log('Autoplay prevented'));
+      }
+    }
+
+    // Cập nhật giao diện playlist
+    function updatePlaylistUI() {
+      const items = playlistContainer.querySelectorAll('.playlist-item');
+      items.forEach(item => {
+        if (item.dataset.src === currentTrack.value) {
+          item.classList.add('playing');
+        } else {
+          item.classList.remove('playing');
+        }
+      });
+    }
+
+    // Xử lý nút bật/tắt nhạc và hiển thị playlist
+    toggleAudioBtn.addEventListener('click', () => {
+      if (isAudioPlaying) {
+        audio.pause();
+        toggleAudioBtn.textContent = 'Bật nhạc';
+        isAudioPlaying = false;
+        playlistContainer.style.display = 'none';
+      } else {
+        audio.play().catch(() => console.log('Autoplay prevented'));
+        toggleAudioBtn.textContent = 'Tắt nhạc';
+        isAudioPlaying = true;
+        playlistContainer.style.display = 'block';
+      }
+    });
 
     function setProgress(time) {
       const offset = circumference - (time / 30) * circumference;
@@ -2145,38 +2314,76 @@
       timerContainer.style.display = 'block';
       startCountdown();
 
-      // Phát âm thanh tik tak
-      audio.currentTime = 0;
-      audio.play();
+      // Phát âm thanh nếu đang bật
+      if (isAudioPlaying) {
+        audio.currentTime = 0;
+        audio.play().catch(() => console.log('Autoplay prevented'));
+      }
+
+      // Cập nhật trạng thái nút "Quay lại"
+      backBtn.disabled = currentQuestion === 0;
+
+      // Ẩn nút "Bỏ qua" ở câu cuối
+      skipBtn.style.display = currentQuestion === selectedQuestions.length - 1 ? 'none' : 'inline-block';
 
       const q = selectedQuestions[currentQuestion];
+      const answer = answers[currentQuestion];
       document.getElementById('question').innerHTML = `<h3>Câu ${currentQuestion + 1}: ${q.question}</h3>`;
 
       const optionsDiv = document.getElementById('options');
       optionsDiv.innerHTML = '';
       for (const [key, value] of Object.entries(q.options)) {
+        const checked = answer.selected === key ? 'checked' : '';
+        const disabled = answer.completed ? 'disabled' : '';
         optionsDiv.innerHTML += `
           <label>
-            <input type="radio" name="answer" value="${key}"> ${key}. ${value}
+            <input type="radio" name="answer" value="${key}" ${checked} ${disabled}> ${key}. ${value}
           </label>
         `;
       }
 
       document.getElementById('result').innerHTML = '';
       document.getElementById('result').className = '';
-      document.getElementById('submit').style.display = 'inline-block';
+      document.getElementById('submit').style.display = answer.completed ? 'none' : 'inline-block';
 
-      // Bắt đầu bộ đếm 15 giây
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        autoShowAnswer();
-      }, 30000);
+      // Nếu câu đã hoàn thành, hiển thị màu sắc
+      if (answer.completed) {
+        document.querySelectorAll('input[name="answer"]').forEach(radio => {
+          const label = radio.parentElement;
+          if (radio.value === q.correct) {
+            label.classList.add('correct');
+          }
+          if (radio.checked && radio.value !== q.correct) {
+            label.classList.add('incorrect');
+          }
+        });
+        if (answer.selected === q.correct) {
+          document.getElementById('result').innerHTML = `<span class="correct">Tuyệt Vời! 🎉🎉🎉</span>`;
+        } else {
+          document.getElementById('result').innerHTML = `<span class="incorrect">Sai mất rùi! 😞😞😞</span>`;
+        }
+        clearTimeout(timer);
+        stopCountdown();
+        timerContainer.style.display = 'none';
+      } else {
+        // Bắt đầu bộ đếm 30 giây
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          autoShowAnswer();
+        }, 30000);
+      }
     }
 
     function autoShowAnswer() {
       const selected = document.querySelector('input[name="answer"]:checked');
       const resultDiv = document.getElementById('result');
       const q = selectedQuestions[currentQuestion];
+
+      // Lưu trạng thái
+      answers[currentQuestion] = {
+        selected: selected ? selected.value : null,
+        completed: true
+      };
 
       // Dừng âm thanh, đồng hồ và đếm ngược
       audio.pause();
@@ -2198,6 +2405,7 @@
 
       resultDiv.innerHTML = `<span class="incorrect">Hết giờ! Đáp án đúng là: ${q.correct}</span>`;
       document.getElementById('submit').style.display = 'none';
+      skipBtn.style.display = 'none';
 
       // Thêm nút "Tiếp"
       addNextButton();
@@ -2214,7 +2422,9 @@
 
       if (!selected) {
         alert("Vui lòng chọn một đáp án!");
-        audio.play();
+        if (isAudioPlaying) {
+          audio.play().catch(() => console.log('Autoplay prevented'));
+        }
         document.querySelector('.timer-container').style.display = 'block';
         startCountdown();
         timer = setTimeout(() => {
@@ -2224,6 +2434,10 @@
       }
 
       const answer = selected.value;
+      answers[currentQuestion] = {
+        selected: answer,
+        completed: true
+      };
       const q = selectedQuestions[currentQuestion];
 
       // Vô hiệu hóa radio
@@ -2243,14 +2457,43 @@
       });
 
       if (answer === q.correct) {
-        score++;
         resultDiv.innerHTML = `<span class="correct">Tuyệt Vời! 🎉🎉🎉</span>`;
       } else {
         resultDiv.innerHTML = `<span class="incorrect">Sai mất rùi! 😞😞😞</span>`;
       }
 
       document.getElementById('submit').style.display = 'none';
+      skipBtn.style.display = 'none';
       addNextButton();
+    }
+
+    function skipQuestion() {
+      clearTimeout(timer);
+      audio.pause();
+      document.querySelector('.timer-container').style.display = 'none';
+      stopCountdown();
+
+      // Ghi nhận câu bị bỏ qua
+      answers[currentQuestion] = { selected: 'skipped', completed: true };
+
+      currentQuestion++;
+      if (currentQuestion < selectedQuestions.length) {
+        displayQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestion > 0) {
+        clearTimeout(timer);
+        audio.pause();
+        document.querySelector('.timer-container').style.display = 'none';
+        stopCountdown();
+
+        currentQuestion--;
+        displayQuestion();
+      }
     }
 
     function addNextButton() {
@@ -2274,11 +2517,21 @@
 
     function showResult() {
       audio.pause();
+      playlistContainer.style.display = 'none';
       document.querySelector('.timer-container').style.display = 'none';
       stopCountdown();
+
+      // Tính điểm
+      score = 0;
+      answers.forEach((answer, index) => {
+        if (answer.selected && answer.selected !== 'skipped' && answer.selected === selectedQuestions[index].correct) {
+          score++;
+        }
+      });
+
       const percentage = (score / selectedQuestions.length) * 100;
       let message = '';
-      if (percentage === 100) {
+      if (percentage == 100) {
         message = "Xuất sắc! Bạn đạt điểm tuyệt đối! 🌟";
       } else if (percentage >= 80) {
         message = "Rất tốt! Bạn nắm vững kiến thức. 👏";
@@ -2295,10 +2548,29 @@
         <p>Bạn trả lời đúng <span class="correct">${score}</span>/<span class="total">${questions.length}</span> câu.</p>
         <p>Tỷ lệ đúng: ${percentage.toFixed(2)}%</p>
         <p>${message}</p>
-        <button onclick="location.reload()">Làm lại</button>
+        <button onclick="restartQuiz()">Làm lại</button>
       `;
       document.body.appendChild(finalResultDiv);
     }
+
+    // Hàm làm lại quiz
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      shuffleAllQuestions();
+      document.getElementById('final-result').remove();
+      displayQuestion();
+    }
+
+    // Sự kiện cho nút Skip và Back
+    skipBtn.addEventListener('click', skipQuestion);
+    backBtn.addEventListener('click', goBack);
+
+    // Khởi tạo quiz với đáp án xáo trộn
+    shuffleAllQuestions();
+
+    // Khởi tạo playlist khi tải trang
+    initPlaylist();
 
     document.getElementById('submit').addEventListener('click', checkAnswer);
     displayQuestion();
