@@ -177,7 +177,7 @@
         <circle class="bg" cx="30" cy="30" r="27" />
         <circle class="progress" cx="30" cy="30" r="27" id="progressCircle" />
       </svg>
-      <div class="time-label" id="timeText">15</div>
+      <div class="time-label" id="timeText">30</div>
     </div>
     <div id="question"></div>
     <div class="options" id="options"></div>
@@ -2116,12 +2116,12 @@
     circle.style.strokeDasharray = circumference;
 
     function setProgress(time) {
-      const offset = circumference - (time / 15) * circumference;
+      const offset = circumference - (time / 30) * circumference;
       circle.style.strokeDashoffset = offset;
     }
 
     function startCountdown() {
-      let seconds = 15;
+      let seconds = 30;
       timeText.textContent = seconds;
       setProgress(seconds);
 
@@ -2170,7 +2170,7 @@
       clearTimeout(timer);
       timer = setTimeout(() => {
         autoShowAnswer();
-      }, 15000);
+      }, 30000);
     }
 
     function autoShowAnswer() {
@@ -2219,7 +2219,7 @@
         startCountdown();
         timer = setTimeout(() => {
           autoShowAnswer();
-        }, 15000);
+        }, 30000);
         return;
       }
 
