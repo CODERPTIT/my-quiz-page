@@ -94,6 +94,7 @@
       position: absolute;
       top: 10px;
       left: 10px;
+      z-index: 11; /* Ensure toggle button is above other elements */
     }
 
     #toggle-audio:hover {
@@ -219,7 +220,7 @@
       stroke: #00aaff;
       stroke-dasharray: 100;
       stroke-dashoffset: 0;
-      transition: stroke-dashoffset 1s线性;
+      transition: stroke-dashoffset 1s linear;
     }
 
     .time-label {
@@ -235,6 +236,18 @@
       font-weight: bold;
       color: #333;
     }
+
+    /* Score counter style */
+    .score-counter {
+      position: absolute;
+      top: 10px;
+      left: 10px; /* Adjusted to avoid overlap with toggle audio button */
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -242,6 +255,12 @@
   <header>
     KIẾN TRÚC MÁY TÍNH
   </header>
+  <div class="body" id="body">
+    <!-- Nút bật/tắt nhạc kiêm mở playlist -->
+    <button id="toggle-audio">Tắt nhạc</button>
+    <!-- Danh sách playlist -->
+    <div id="playlist"></div>
+  </div>
 
   <!-- Quiz content -->
   <div class="quiz-container" id="quiz-container">
@@ -253,10 +272,9 @@
       </svg>
       <div class="time-label" id="timeText">30</div>
     </div>
-    <!-- Nút bật/tắt nhạc kiêm mở playlist -->
-    <button id="toggle-audio">Tắt nhạc</button>
-    <!-- Danh sách playlist -->
-    <div id="playlist"></div>
+    <!-- Score counter -->
+    <div id="score-counter" class="score-counter"> Số câu đúng: 0/0</div>
+
     <div id="question"></div>
     <div class="options" id="options"></div>
     <div id="result"></div>
@@ -267,11 +285,9 @@
     </div>
   </div>
 
-  <audio id="background-music" loop></audio>
+  <audio id="background-music"></audio>
 
-
-
-    <script>
+  <script>
         const questions = [
     {
         "question": "Máy tính điện tử là gì?",
@@ -2179,9 +2195,10 @@
             // Bạn cần sao chép từ mã Python và chuyển đổi sang định dạng JavaScript
     ];
 
-    
     let currentQuestion = 0;
     let score = 0;
+    let correctAnswers = 0; // Added for score counter
+    let totalAnswered = 0; // Added for score counter
     let selectedQuestions = questions;
     let timer;
     let countdownInterval;
@@ -2192,6 +2209,7 @@
     const toggleAudioBtn = document.getElementById('toggle-audio');
     const playlistContainer = document.getElementById('playlist');
     const skipBtn = document.getElementById('skip');
+    const scoreCounter = document.getElementById('score-counter'); // Added for score counter
     const backBtn = document.getElementById('back');
 
     const circle = document.getElementById('progressCircle');
@@ -2206,10 +2224,15 @@
       { value: 'tiktik.mp3', name: 'Clock Tick' },
       { value: 'MatKetNoi.mp3', name: 'Mất Kết Nối' },
       { value: 'NhacKhongLoiGuitar.mp3', name: 'Nhạc Không Lời Guitar' },
-      {value: 'GapEmDungLuc.mp3', name: 'Gặp Em Đúng Lúc'},
-      {value: 'TuoiTreTheHeBacHo.mp3', name: 'Tuổi Trẻ Thế Hệ Bác Hồ'},
-      {value: 'NhacThai.mp3', name: 'Nhạc Thái Lan'},
+      { value: 'GapEmDungLuc.mp3', name: 'Gặp Em Đúng Lúc' },
+      { value: 'TuoiTreTheHeBacHo.mp3', name: 'Tuổi Trẻ Thế Hệ Bác Hồ' },
+      { value: 'NhacThai.mp3', name: 'Nhạc Thái Lan' },
     ];
+
+    // Added: Update score counter
+    function updateScoreCounter() {
+      scoreCounter.textContent = `Số câu đúng: ${correctAnswers}/${totalAnswered}`;
+    }
 
     // Hàm xáo trộn đáp án
     function shuffleOptions(question) {
@@ -2251,6 +2274,7 @@
     function selectTrack(track) {
       currentTrack = track;
       audio.src = track.value;
+      audio.loop = true; // Added: Enable loop for continuous playback
       updatePlaylistUI();
       if (isAudioPlaying) {
         audio.play().catch(() => console.log('Autoplay prevented'));
@@ -2314,9 +2338,9 @@
       timerContainer.style.display = 'block';
       startCountdown();
 
-      // Phát âm thanh nếu đang bật
-      if (isAudioPlaying) {
-        audio.currentTime = 0;
+      // Modified: Only play music if not already playing
+      if (isAudioPlaying && !audio.src) {
+        audio.src = currentTrack.value;
         audio.play().catch(() => console.log('Autoplay prevented'));
       }
 
@@ -2346,7 +2370,7 @@
       document.getElementById('result').className = '';
       document.getElementById('submit').style.display = answer.completed ? 'none' : 'inline-block';
 
-      // Nếu câu đã hoàn thành, hiển thị màu sắc
+      // Nếu câu đã hoàn thành, hiểnspecifies hiển thị màu sắc
       if (answer.completed) {
         document.querySelectorAll('input[name="answer"]').forEach(radio => {
           const label = radio.parentElement;
@@ -2384,9 +2408,14 @@
         selected: selected ? selected.value : null,
         completed: true
       };
+      // Added: Update score counter
+      totalAnswered++;
+      if (selected && selected.value === q.correct) {
+        correctAnswers++;
+      }
+      updateScoreCounter();
 
-      // Dừng âm thanh, đồng hồ và đếm ngược
-      audio.pause();
+      // Dừng đồng hồ và đếm ngược
       document.querySelector('.timer-container').style.display = 'none';
       stopCountdown();
 
@@ -2413,7 +2442,6 @@
 
     function checkAnswer() {
       clearTimeout(timer);
-      audio.pause();
       document.querySelector('.timer-container').style.display = 'none';
       stopCountdown();
 
@@ -2438,6 +2466,13 @@
         selected: answer,
         completed: true
       };
+      // Added: Update score counter
+      totalAnswered++;
+      if (answer === selectedQuestions[currentQuestion].correct) {
+        correctAnswers++;
+      }
+      updateScoreCounter();
+
       const q = selectedQuestions[currentQuestion];
 
       // Vô hiệu hóa radio
@@ -2469,12 +2504,14 @@
 
     function skipQuestion() {
       clearTimeout(timer);
-      audio.pause();
       document.querySelector('.timer-container').style.display = 'none';
       stopCountdown();
 
-      // Ghi nhận câu bị bỏ qua
-      answers[currentQuestion] = { selected: 'skipped', completed: true };
+      // // Ghi nhận câu bị bỏ qua
+      // answers[currentQuestion] = { selected: 'skipped', completed: true };
+      // // Added: Update score counter
+      // totalAnswered++;
+      // updateScoreCounter();
 
       currentQuestion++;
       if (currentQuestion < selectedQuestions.length) {
@@ -2487,7 +2524,6 @@
     function goBack() {
       if (currentQuestion > 0) {
         clearTimeout(timer);
-        audio.pause();
         document.querySelector('.timer-container').style.display = 'none';
         stopCountdown();
 
@@ -2557,9 +2593,15 @@
     function restartQuiz() {
       currentQuestion = 0;
       score = 0;
+      correctAnswers = 0; // Added: Reset score counter
+      totalAnswered = 0; // Added: Reset score counter
+      updateScoreCounter(); // Added: Update score counter
       shuffleAllQuestions();
       document.getElementById('final-result').remove();
       displayQuestion();
+      if (isAudioPlaying) {
+        audio.play().catch(() => console.log('Autoplay prevented'));
+      }
     }
 
     // Sự kiện cho nút Skip và Back
