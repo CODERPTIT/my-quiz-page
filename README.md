@@ -1,7 +1,7 @@
 **Sử dụng như web thông thường**
 
 **Tính năng:**
-- Chọn đáp án → Nút **'Nộp'**
+- Chọn đáp án → Có nghĩa **'Nộp'**
 - Bỏ qua câu → Nút **'Bỏ qua'**
 - Xem lại → Nút **'Quay lại'**
 - Truy cập Playlist Music → Nút **'Bật Nhạc'** → Chọn
