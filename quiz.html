@@ -2,2620 +2,2557 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Quiz</title>
+  <title>Quiz Kiến Trúc Máy Tính</title>
   <style>
-    /* Toàn bộ nền trang */
-    body {
-        background-color: #f5f5d5;
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-image: url('https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/481991066_122213714294208789_7853133421708875158_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=cc71e4&_nc_eui2=AeHBndSeSUFZbXagC4S5yXoSYKHxubolCh5gofG5uiUKHtJODAnYnT93PMwWSVTg3rZE2O5oZJdqp2rdDALS3goh&_nc_ohc=v0JOz99ERZ4Q7kNvwEgghAO&_nc_oc=AdmI04h6D9feS_MtWEVma4Lfyojh0sAHJEc-HcYtTQPy4pkrAS-9PfGaf1XkM4X0CTw&_nc_zt=23&_nc_ht=scontent.fhan14-3.fna&_nc_gid=aYjLApiLGi1FgecumI5S8g&oh=00_AfLpe11BiXQg6APhnl52WFvXwc5mrg1bWuKrIcgLnzT_iQ&oe=6828FD57');
-        background-size: cover;
-        background-position: center center;
-        background-attachment: fixed;
-        color: white;
+    :root {
+      --primary-color: #4a69bd;
+      --secondary-color: #6a85b6;
+      --correct-color: #2ecc71;
+      --incorrect-color: #e74c3c;
+      --skipped-color: #f39c12;
+      --light-bg: #f4f4f9;
+      --white-color: #ffffff;
+      --dark-text: #333;
+      --background-image-url: url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1740&auto=format&fit=crop');
     }
 
-    /* Header */
-    header {
-      text-align: center;
-      padding: 20px;
-      font-size: 2.5em;
-      font-weight: bold;
-      color: white;
-      background-color: rgba(0, 0, 0, 0.7);
-      position: absolute;
-      top: 0;
-      width: 100%;
+    body { 
+      font-family: sans-serif; color: var(--dark-text); background-image: var(--background-image-url);
+      background-size: cover; background-position: center center; background-attachment: fixed;
+      margin: 0; padding: 0;
     }
 
-    /* Quiz container */
-    .quiz-container {
-      max-width: 700px;
-      margin: 100px auto;
-      background-image: url('https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/474068BDm/sleeping-pikachu-wallpapers_032428574.jpg');
-      background-size: cover;
-      background-position: center center;
-      color: white;
-      padding: 20px;
-      border-radius: 10px;
-      border: 2px solid orange;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      position: relative;
+    header { 
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: var(--white-color); padding: 30px 20px; text-align: center; 
+      font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
-
-    .options label {
-      display: block;
-      margin: 10px 0;
-      padding: 8px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s;
-      color: black;
+    
+    .main-content {
+        display: flex; flex-direction: column; align-items: center; padding: 20px;
+        min-height: calc(100vh - 97px); 
     }
-
-    .options input[type="radio"] {
-      margin-right: 10px;
-    }
-
-    .correct {
-      background-color: #d4edda;
-      color: green;
-      font-weight: bold;
-    }
-
-    .incorrect {
-      background-color: #f8d7da;
-      color: red;
-      font-weight: bold;
-    }
-
-    .button-group {
-      margin-top: 20px;
-    }
-
-    button {
-      padding: 10px 20px;
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-
-    button:hover {
-      background-color: #0056b3;
+    
+    /*
+     ==================================================================
+     ===> CẢI TIẾN: KHUNG CHỨA CÁC NÚT ĐIỀU KHIỂN GÓC PHẢI      <===
+     ==================================================================
+    */
+    .top-right-controls {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1001; /* Đảm bảo cao hơn các lớp khác */
+      display: flex;
+      align-items: center;
+      gap: 20px; /* Khoảng cách giữa nút nhạc và translate */
     }
 
     #toggle-audio {
-      background-color: #ff9800;
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 11; /* Ensure toggle button is above other elements */
+        /* Bỏ position: fixed vì đã có container cha */
+        position: relative; 
+        width: 50px; height: 50px; background: rgba(255, 255, 255, 0.9); border-radius: 50%;
+        border: none; cursor: pointer; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        display: flex; justify-content: center; align-items: center; transition: all 0.3s ease;
     }
-
-    #toggle-audio:hover {
-      background-color: #e68900;
-    }
-
-    #skip {
-      background-color: #dc3545;
-    }
-
-    #skip:hover {
-      background-color: #b02a37;
-    }
-
-    #back {
-      background-color: #6c757d;
-    }
-
-    #back:hover {
-      background-color: #5a6268;
-    }
-
-    #back:disabled {
-      background-color: #adb5bd;
-      cursor: not-allowed;
-    }
-
-    /* Playlist styles */
+    #toggle-audio:hover { transform: scale(1.1); }
+    #toggle-audio svg { width: 24px; height: 24px; fill: #333; }
+    
     #playlist {
-      position: absolute;
-      top: 50px;
-      left: 10px;
-      background-color: rgba(255, 255, 255, 0.95);
+        position: fixed; top: 80px; right: 20px; background: var(--white-color); border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); padding: 10px; z-index: 999;
+        width: 220px; display: none;
+    }
+    .playlist-item { padding: 12px 15px; cursor: pointer; border-radius: 6px; transition: background-color 0.2s; font-size: 0.9em; color: #333; }
+    .playlist-item:hover { background-color: #f0f0f0; }
+    .playlist-item.playing { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
+
+    /* Làm cho widget của Google Translate trông đẹp hơn */
+    #google_translate_element .goog-te-gadget-simple {
+      background-color: rgba(255, 255, 255, 0.9);
       border: 1px solid #ccc;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      max-width: 200px;
-      display: none;
-      z-index: 10;
+      border-radius: 20px;
+      padding: 8px 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    #google_translate_element .goog-te-gadget-icon {
+          display: inline-block !important; /* Ẩn icon Google */
+    }
+    .goog-te-gadget-simple span {
+      color: #333 !important;
     }
 
-    .playlist-item {
-      padding: 10px;
-      color: #333;
-      cursor: pointer;
-      border-bottom: 1px solid #eee;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-    }
 
-    .playlist-item:last-child {
-      border-bottom: none;
+    .card-container {
+        width: 100%; max-width: 1200px;
+        background: rgba(255, 255, 255, 0.97); padding: 30px; border-radius: 12px; 
+        box-shadow: 0 4px 25px rgba(0,0,0,0.15); margin: 20px;
     }
+    
+    #start-screen { max-width: 800px; }
+    #final-result-container { max-width: 800px; display: none; }
+    
+    #chapter-selection { text-align: center; }
+    #chapter-selection label { margin-right: 10px; font-size: 1.1em;}
+    #chapter-selection select, #chapter-selection button { padding: 10px 15px; font-size: 1em; border-radius: 8px; border: 1px solid #ccc; margin: 5px; }
+    #start-quiz { background-color: var(--primary-color); color: var(--white-color); border-color: var(--primary-color); cursor: pointer; transition: background-color 0.3s; }
+    #start-quiz:hover { background-color: var(--secondary-color); }
+    
+    #quiz-layout { display: flex; gap: 30px; }
+    #main-quiz-area { flex: 3; }
+    #question-nav-panel {
+        flex: 1; background-color: var(--light-bg); border-radius: 8px;
+        padding: 15px; align-self: flex-start; 
+    }
+    #question-nav-panel h3 { margin-top: 0; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; }
+    .nav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); gap: 10px; }
+    .nav-question-btn {
+        width: 100%; height: 45px; border: 1px solid #ccc; background-color: var(--white-color);
+        border-radius: 5px; cursor: pointer; transition: all 0.2s ease; font-weight: bold;
+    }
+    .nav-question-btn:hover { transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .nav-question-btn.current-question { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+    .nav-question-btn.answered-correct { background-color: var(--correct-color); color: white; border-color: var(--correct-color); }
+    .nav-question-btn.answered-incorrect { background-color: var(--incorrect-color); color: white; border-color: var(--incorrect-color); }
+    .nav-question-btn.answered-skipped { background-color: var(--skipped-color); color: white; border-color: var(--skipped-color); }
 
-    .playlist-item:hover {
-      background-color: #f0f0f0;
+    .quiz-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;
     }
-
-    .playlist-item.playing {
-      background-color: #d4edda;
-      color: green;
-      font-weight: bold;
-    }
-
-    .playlist-item::before {
-      content: '🎵';
-      margin-right: 8px;
-    }
-
-    #result {
-      margin-top: 15px;
-    }
-
-    #final-result {
-      font-size: 1.5em;
-      margin-top: 30px;
-      color: white;
-      text-align: center;
-    }
-
-    #final-result button {
-      margin-top: 20px;
-      background-color: #28a745;
-    }
-
-    #question {
-      color: #ff0026;
-      font-size: 1.5em;
-      font-weight: bold;
-    }
-
-    .quiz-container h2 {
-      text-align: center;
-      max-width: 600px;
-      margin: 0 auto;
-      color: black;
-    }
-
-    /* Đồng hồ tròn */
-    .timer-container {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 60px;
-      height: 60px;
-    }
-
-    svg {
-      transform: rotate(-90deg);
-    }
-
-    circle {
-      fill: none;
-      stroke-width: 6;
-    }
-
-    .bg {
-      stroke: #ddd;
-    }
-
-    .progress {
-      stroke: #00aaff;
-      stroke-dasharray: 100;
-      stroke-dashoffset: 0;
-      transition: stroke-dashoffset 1s linear;
-    }
-
-    .time-label {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      font-weight: bold;
-      color: #333;
-    }
-
-    /* Score counter style */
-    .score-counter {
-      position: absolute;
-      top: 10px;
-      left: 10px; /* Adjusted to avoid overlap with toggle audio button */
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-weight: bold;
-    }
+    .quiz-header h2 { margin: 0; font-size: 1.6em; }
+    #score-counter { margin: 0; font-size: 1em; font-weight: bold; background-color: var(--light-bg); padding: 8px 15px; border-radius: 20px; color: var(--primary-color); }
+    #question h3 { margin-top: 0; font-size: 1.4em; }
+    .options label { display: block; background: var(--light-bg); margin: 10px 0; padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; border: 1px solid transparent; }
+    .options label.disabled { cursor: not-allowed; opacity: 0.7; }
+    .options label:not(.disabled):hover { background: #e2e2e2; transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .options input[type="radio"] { display: none; }
+    
+    .button-group { margin-top: 20px; }
+    .button-group button { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 1em; transition: all 0.3s ease; }
+    .button-group button:hover { opacity: 0.9; transform: translateY(-2px); }
+    #submit { display: none; }
+    #next-btn { background-color: var(--primary-color); color: white; }
+    #skip { background-color: var(--incorrect-color); color: white; }
+    #back { background-color: #ff9800; color: white; }
+    
+    #result { margin-top: 20px; font-size: 1.2em; }
+    .correct { color: var(--correct-color); font-weight: bold; }
+    .incorrect { color: var(--incorrect-color); font-weight: bold; }
+    label.correct { background-color: #d4edda !important; border-color: #c3e6cb; }
+    label.incorrect { background-color: #f8d7da !important; border-color: #f5c6cb; }
+    
+    #final-result { text-align: center; }
   </style>
 </head>
 <body>
-  <!-- Header với tiêu đề -->
   <header>
     KIẾN TRÚC MÁY TÍNH
   </header>
-  <div class="body" id="body">
-    <!-- Nút bật/tắt nhạc kiêm mở playlist -->
-    <button id="toggle-audio">Tắt nhạc</button>
-    <!-- Danh sách playlist -->
-    <div id="playlist"></div>
+  
+  <div class="top-right-controls">
+    <div id="google_translate_element"></div>
+    <button id="toggle-audio" title="Bật/Tắt nhạc">
+      <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+      <svg class="icon-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="display:none;"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+    </button>
   </div>
+  <div id="playlist"></div>
 
-  <!-- Quiz content -->
-  <div class="quiz-container" id="quiz-container">
-    <h2>Câu hỏi trắc nghiệm</h2>
-    <div class="timer-container">
-      <svg width="60" height="60">
-        <circle class="bg" cx="30" cy="30" r="27" />
-        <circle class="progress" cx="30" cy="30" r="27" id="progressCircle" />
-      </svg>
-      <div class="time-label" id="timeText">30</div>
+  <div class="main-content">
+    <div id="start-screen" class="card-container">
+      <div id="chapter-selection">
+        <label for="chapter-select">Chọn chương:</label>
+        <select id="chapter-select">
+          <option value="all">Tất cả</option>
+          <option value="1">Chương 1: Tổng quan</option>
+          <option value="2">Chương 2: Biểu diễn dữ liệu</option>
+          <option value="3">Chương 3: CPU</option>
+          <option value="4">Chương 4: Bộ nhớ</option>
+        </select>
+        <button id="start-quiz">Bắt đầu</button>
+      </div>
     </div>
-    <!-- Score counter -->
-    <div id="score-counter" class="score-counter"> Số câu đúng: 0/0</div>
 
-    <div id="question"></div>
-    <div class="options" id="options"></div>
-    <div id="result"></div>
-    <div class="button-group" id="controls">
-      <button id="submit">Nộp</button>
-      <button id="skip">Bỏ qua</button>
-      <button id="back" disabled>Quay lại</button>
+    <div class="card-container" id="quiz-container" style="display: none;">
+        <div id="quiz-layout">
+            <div id="main-quiz-area">
+                <div class="quiz-header"><h2>Câu hỏi trắc nghiệm</h2><div id="score-counter">Đã làm: 0/0</div></div>
+                <div id="question"></div>
+                <div class="options" id="options"></div>
+                <div id="result"></div>
+                <div class="button-group" id="controls">
+                    <button id="submit">Nộp</button>
+                    <button id="skip">Bỏ qua</button>
+                    <button id="back">Quay lại</button>
+                </div>
+            </div>
+            <div id="question-nav-panel">
+                <h3>Danh sách câu hỏi</h3>
+                <div id="nav-grid" class="nav-grid"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card-container" id="final-result-container">
+        <div id="final-result"></div>
     </div>
   </div>
 
   <audio id="background-music"></audio>
+  
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+          pageLanguage: 'vi', 
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+    }
+  </script>
+
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 
   <script>
-        const questions = [
+    const questions = [
+        // CHUONG 1
+//P1
     {
-        "question": "Máy tính điện tử là gì?",
+        "question": "What does the term \"instruction set architecture\" (ISA) refer to in computer architecture? (chương 1)",
         "options": {
-            "A": "Thiết bị lưu trữ thông tin",
-            "B": "Thiết bị số hóa và biến đổi thông tin",
-            "C": "Thiết bị lưu trữ và xử lý thông tin",
-            "D": "Thiết bị tạo và biến đổi thông tin"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Ở thời kỳ đầu, các mạch điện tử trong máy tính được chế tạo bằng:",
-        "options": {
-            "A": "Transistor lưỡng cực",
-            "B": "Transistor trường",
-            "C": "Đèn điện tử",
-            "D": "IC bán dẫn"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Trong các phát biểu sau, phát biểu nào đúng?",
-        "options": {
-            "A": "Phần cứng của máy tính bao gồm các đối tượng vật lý như: bảng mạch chính, bộ nhớ RAM, bộ nhớ ROM, đĩa cứng, màn hình và chương trình được cài đặt trong ROM",
-            "B": "Phần cứng của máy tính chính là bộ xử lý trung tâm",
-            "C": "Phần cứng của máy tính không bao gồm màn hình",
-            "D": "Phần cứng của máy tính chỉ bao gồm bộ nhớ"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Trong các bộ phận sau, bộ phận nào không thuộc bộ xử lý trung tâm?",
-        "options": {
-            "A": "Bộ nhớ trong",
-            "B": "Khối số học và logic",
-            "C": "Tập các thanh ghi đa năng",
-            "D": "Khối điều khiển"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Trong các bộ phận sau, bộ phận nào thuộc bộ xử lý trung tâm?",
-        "options": {
-            "A": "Bộ nhớ trong",
-            "B": "Đơn vị phối ghép vào ra",
-            "C": "Tập các thanh ghi đa năng",
-            "D": "Khối điều khiển Bus hệ thống"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Tại sao bộ nhớ trong của máy tính được gọi là bộ nhớ truy cập ngẫu nhiên?",
-        "options": {
-            "A": "Vì các ô nhớ là ngẫu nhiên",
-            "B": "Thời gian truy cập vào một ô nhớ bất kỳ là như nhau",
-            "C": "Bộ nhớ gồm các module có thứ tự sắp xếp ngẫu nhiên",
-            "D": "Vì dữ liệu được lưu trữ ngẫu nhiên"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Tốc độ đồng hồ hệ thống được đo bằng đơn vị gì?",
-        "options": {
-            "A": "Bit/s",
-            "B": "Baud",
-            "C": "Byte",
-            "D": "Hz"
+        "A": "The design of input devices",
+        "B": "A set of protocols for internet communication",
+        "C": "Programming languages for software development",
+        "D": "The set of machine language commands a CPU can execute"
         },
         "correct": "D"
     },
     {
-        "question": "Người ta đánh giá sự phát triển của máy tính điện tử qua các giai đoạn dựa vào tiêu chí nào trong các tiêu chí sau đây?",
+        "question": "What is the purpose of the MMU (Memory Management Unit) in computer architecture? (chương 1)",
         "options": {
-            "A": "Tốc độ tính toán của máy tính",
-            "B": "Mức độ tích hợp của các vi mạch điện tử trong máy tính",
-            "C": "Chức năng của máy tính",
-            "D": "Cả 3 tiêu chí trên"
+        "A": "Executing arithmetic and logic operations",
+        "B": "Controlling the flow of data within the CPU",
+        "C": "Translating virtual addresses to physical addresses",
+        "D": "Managing input/output devices"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "What is the purpose of a memory hierarchy in computer architecture? (chương 1)",
+        "options": {
+        "A": "Managing input/output operations",
+        "B": "Increasing the size of virtual memory",
+        "C": "Enhancing data access speed by using different types of memory",
+        "D": "Minimizing CPU clock speed"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "What role does the program counter (PC) play in the CPU? (chương 1)",
+        "options": {
+        "A": "Controlling input/output devices",
+        "B": "Storing the current instruction being executed",
+        "C": "Handling network communication",
+        "D": "Managing memory storage"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Which of the following is a common feature of Reduced Instruction Set Computing (RISC) architectures? (chương 1)",
+        "options": {
+        "A": "Complex instruction decoding",
+        "B": "Large instruction set",
+        "C": "Limited clock speed",
+        "D": "Emphasis on simplicity and efficiency"
         },
         "correct": "D"
     },
     {
-        "question": "Chọn một phương án đúng trong các phương án sau:",
+        "question": "Which of the following is an example of a parallel processing architecture? (chương 1)",
         "options": {
-            "A": "Máy Turing gồm một bảng ghi (tape) và một bộ xử lý trung tâm",
-            "B": "Máy Turing gồm một bộ chuyển trạng thái bằng hàm, một bảng ghi, và một đầu đọc ghi",
-            "C": "Máy Turing gồm một bộ xử lý trung tâm và một cơ cấu lưu trữ gồm các IC nhớ",
-            "D": "Máy Turing chỉ gồm một bảng ghi"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Thông tin được lưu trữ và truyền bên trong máy tính dưới dạng:",
-        "options": {
-            "A": "Nhị phân",
-            "B": "Mã ASCII",
-            "C": "Thập phân",
-            "D": "Kết hợp chữ cái và chữ số"
+        "A": "Multi-core processor",
+        "B": "Single-core processor",
+        "C": "Dual-core processor",
+        "D": "Quad-core processor"
         },
         "correct": "A"
     },
     {
-        "question": "Theo nguyên lý Von Neumann, việc cài đặt dữ liệu vào máy tính được thực hiện bằng:",
+        "question": "What is the role of the input/output (I/O) subsystem in computer architecture? (chương 1)",
         "options": {
-            "A": "Đục lỗ trên bảng giấy",
-            "B": "Đục lỗ trên bảng đục bằng tay",
-            "C": "Xung điện",
-            "D": "Xung điện tử"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Hãy chỉ ra khẳng định sai trong các khẳng định sau:",
-        "options": {
-            "A": "Hệ đếm là tập hợp các ký hiệu và quy tắc sử dụng tập ký hiệu đó",
-            "B": "Tổng số ký số của một hệ đếm được gọi là cơ số",
-            "C": "Mọi hệ đếm được xây dựng trên một tập ký số vô hạn",
-            "D": "Hệ đếm La Mã là hệ đếm không có số 0"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Hệ đếm là gì?",
-        "options": {
-            "A": "Hệ thống các ký hiệu để biểu diễn các số",
-            "B": "Tập hợp các ký hiệu và quy tắc sử dụng tập để biểu diễn và xác định giá trị các số",
-            "C": "Tập hợp các ký hiệu để biểu diễn các cấu trúc âm",
-            "D": "Tập hợp các quy tắc sử dụng ký hiệu"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Trong số dấu chấm động biểu diễn dạng 32 bit trong máy tính, thành phần định trị có độ dài bao nhiêu bit?",
-        "options": {
-            "A": "1 bit",
-            "B": "18 bit",
-            "C": "20 bit",
-            "D": "24 bit"
+        "A": "Facilitating communication between the CPU and external devices",
+        "B": "Controlling power supply",
+        "C": "Managing memory access",
+        "D": "Executing arithmetic operations"
         },
         "correct": "A"
     },
     {
-        "question": "Trong số dấu chấm động biểu diễn dạng 32 bit trong máy tính, thành phần số mũ có độ dài bao nhiêu bit?",
+        "question": "In computer architecture, what is the significance of the clock speed of a CPU? (chương 1)",
         "options": {
-            "A": "6 bit",
-            "B": "7 bit",
-            "C": "8 bit",
-            "D": "9 bit"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Chữ số L trong hệ đếm La Mã tương ứng với giá trị nào trong các giá trị sau đây?",
-        "options": {
-            "A": "50",
-            "B": "100",
-            "C": "500",
-            "D": "1000"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Chữ số C trong hệ đếm La Mã tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "20",
-            "B": "100",
-            "C": "200",
-            "D": "500"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Chữ số D trong hệ đếm La Mã tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "100",
-            "B": "200",
-            "C": "500",
-            "D": "1000"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Chữ số M trong hệ đếm La Mã tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "50",
-            "B": "100",
-            "C": "500",
-            "D": "1000"
+        "A": "Managing power consumption",
+        "B": "Determining the amount of cache memory",
+        "C": "Controlling the display resolution",
+        "D": "Measuring the processor's performance in executing instructions per second"
         },
         "correct": "D"
     },
     {
-        "question": "Số La Mã CD tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "question": "What is the purpose of the control unit in the CPU? (chương 1)",
         "options": {
-            "A": "600",
-            "B": "400",
-            "C": "200",
-            "D": "500"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Số La Mã DC tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "600",
-            "B": "400",
-            "C": "500",
-            "D": "200"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Số La Mã CDL tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "350",
-            "B": "450",
-            "C": "550",
-            "D": "650"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Số La Mã MD tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "1400",
-            "B": "1500",
-            "C": "1600",
-            "D": "1700"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Số La Mã CM tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "1600",
-            "B": "1500",
-            "C": "1100",
-            "D": "900"
+        "A": "Handling network communication",
+        "B": "Performing arithmetic calculations",
+        "C": "Managing memory storage",
+        "D": "Controlling the flow of data within the CPU"
         },
         "correct": "D"
     },
     {
-        "question": "Số La Mã MCL tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "question": "Which technology is commonly used to improve processor performance by executing multiple instructions simultaneously? (chương 1)",
         "options": {
-            "A": "1150",
-            "B": "1050",
-            "C": "950",
-            "D": "650"
+        "A": "Parallel processing",
+        "B": "Virtualization",
+        "C": "Pipelining",
+        "D": "Quantum computing"
         },
-        "correct": "A"
+        "correct": "C"
     },
     {
-        "question": "Số La Mã MCC tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "question": "What role does the ALU (Arithmetic Logic Unit) play in the CPU? (chương 1)",
         "options": {
-            "A": "600",
-            "B": "700",
-            "C": "1100",
-            "D": "1200"
+        "A": "Controlling input and output devices",
+        "B": "Executing arithmetic and logic operations",
+        "C": "Managing memory access",
+        "D": "Handling network protocols"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Which addressing mode involves specifying the address of the operand in the instruction itself? (chương 1)",
+        "options": {
+        "A": "Register addressing",
+        "B": "Direct addressing",
+        "C": "Indirect addressing",
+        "D": "Immediate addressing"
         },
         "correct": "D"
     },
     {
-        "question": "Số La Mã MCD tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "question": "Which component is responsible for temporarily storing data that the CPU needs during operations? (chương 1)",
         "options": {
-            "A": "1150",
-            "B": "1050",
-            "C": "1450",
-            "D": "1650"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Số La Mã DC tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "400",
-            "B": "600",
-            "C": "800",
-            "D": "1200"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Số La Mã MCD tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "1400",
-            "B": "1450",
-            "C": "1600",
-            "D": "1650"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Trong hệ La Mã số MCMXXVI nhận giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "1846",
-            "B": "2756",
-            "C": "2866",
-            "D": "2976"
+        "A": "Hard disk",
+        "B": "ROM (Read-Only Memory)",
+        "C": "RAM (Random Access Memory)",
+        "D": "Cache memory"
         },
         "correct": "D"
     },
     {
-        "question": "Trong hệ nhị phân số 11101.11 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "question": "What does the term \"von Neumann architecture\" refer to in computer systems? (chương 1)",
         "options": {
-            "A": "26.75",
-            "B": "29.75",
-            "C": "29.65",
-            "D": "26.65"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Trong hệ nhị phân số 10101.11 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "21.75",
-            "B": "23.75",
-            "C": "21.65",
-            "D": "23.65"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Trong hệ nhị phân số 10101.01 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "23.75",
-            "B": "21.75",
-            "C": "21.25",
-            "D": "23.25"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Trong hệ nhị phân số 11101.01 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "23.75",
-            "B": "29.75",
-            "C": "27.25",
-            "D": "29.25"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Trong hệ nhị phân số 10111.1 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "23.5",
-            "B": "23.25",
-            "C": "25.5",
-            "D": "25.25"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Trong hệ nhị phân số 11001.01 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "27.75",
-            "B": "29.75",
-            "C": "25.75",
-            "D": "29.25"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Trong hệ nhị phân số 11001.11 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "27.75",
-            "B": "29.75",
-            "C": "25.75",
-            "D": "29.25"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Trong hệ đếm bát phân, số 235.64 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "157.8125",
-            "B": "165.8125",
-            "C": "157.825",
-            "D": "165.825"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Trong hệ đếm bát phân, số 237.64 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "157.8125",
-            "B": "159.8125",
-            "C": "157.825",
-            "D": "159.825"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Trong hệ đếm bát phân, số 237.04 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "157.0625",
-            "B": "157.8125",
-            "C": "159.0625",
-            "D": "159.8125"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Trong hệ đếm thập lục phân số 34F5 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "13557",
-            "B": "15775",
-            "C": "15459",
-            "D": "13267"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Trong hệ đếm thập lục phân số 4371 tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "15577",
-            "B": "15875",
-            "C": "18459",
-            "D": "17505"
+        "A": "A network communication protocol",
+        "B": "A type of secondary storage",
+        "C": "An algorithm for sorting data",
+        "D": "A design where program instructions and data share the same memory"
         },
         "correct": "D"
     },
     {
-        "question": "Trong hệ đếm thập lục phân số 34BF tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
+        "question": "What is the primary function of a CPU in computer architecture? (chương 1)",
         "options": {
-            "A": "13557",
-            "B": "13407",
-            "C": "15459",
-            "D": "13267"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Trong hệ đếm thập lục phân số 3CFD tương ứng với giá trị thập phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "13537",
-            "B": "15725",
-            "C": "15605",
-            "D": "13287"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Số 135(10) tương ứng với giá trị nhị phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "10000111",
-            "B": "10100111",
-            "C": "100101011",
-            "D": "11010111"
+        "A": "Arithmetic and logic operations",
+        "B": "Data storage",
+        "C": "Network communication",
+        "D": "Graphics rendering"
         },
         "correct": "A"
     },
     {
-        "question": "Số 231(10) tương ứng với giá trị nhị phân nào trong các giá trị sau đây?",
+        "question": "In computer architecture, what is the purpose of the system bus? (chương 1)",
         "options": {
-            "A": "10000111",
-            "B": "11100111",
-            "C": "11110111",
-            "D": "11010111"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Số 299(10) tương ứng với giá trị nhị phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "100001011",
-            "B": "100011101",
-            "C": "100101011",
-            "D": "10010101"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Số 305(10) tương ứng với giá trị nhị phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "100001001",
-            "B": "100011011",
-            "C": "100101011",
-            "D": "10010101"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Số 837(10) tương ứng với giá trị bát phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "1505",
-            "B": "1603",
-            "C": "1607",
-            "D": "1705"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Số 859(10) tương ứng với giá trị bát phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "1533",
-            "B": "1633",
-            "C": "1637",
-            "D": "1733"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Số 799(10) tương ứng với giá trị bát phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "1545",
-            "B": "1403",
-            "C": "1437",
-            "D": "1565"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Số 785(10) tương ứng với giá trị bát phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "1471",
-            "B": "1461",
-            "C": "1451",
-            "D": "1421"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Số 865(10) tương ứng với giá trị bát phân nào trong các giá trị sau đây?",
-        "options": {
-            "A": "1541",
-            "B": "1551",
-            "C": "1561",
-            "D": "1571"
+        "A": "Facilitating communication between CPU and memory",
+        "B": "Managing power distribution",
+        "C": "Controlling the display resolution",
+        "D": "Connecting the CPU to external devices"
         },
         "correct": "A"
     },
     {
-        "question": "Số 841(10) tương ứng với giá trị bát phân nào trong các giá trị sau đây?",
+        "question": "What does the term \"pipeline hazard\" refer to in computer architecture? (chương 1)",
         "options": {
-            "A": "1505",
-            "B": "1511",
-            "C": "1531",
-            "D": "1551"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Tổng hai số nhị phân 1010101(2) và 1101011(2) tương ứng với số nhị phân nào trong các số sau?",
-        "options": {
-            "A": "11000000",
-            "B": "10100000",
-            "C": "10010000",
-            "D": "10001000"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Tổng hai số nhị phân 1010101(2) và 1100011(2) tương ứng với số nhị phân nào trong các số sau?",
-        "options": {
-            "A": "10000000",
-            "B": "10101000",
-            "C": "10011000",
-            "D": "10001000"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Tổng hai số nhị phân 1010101(2) và 1101001(2) tương ứng với số nhị phân nào trong các số sau?",
-        "options": {
-            "A": "10011000",
-            "B": "10101000",
-            "C": "10111110",
-            "D": "10111010"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Tổng hai số nhị phân 1011101(2) và 1101011(2) tương ứng với số nhị phân nào trong các số sau?",
-        "options": {
-            "A": "10011000",
-            "B": "11100000",
-            "C": "11010000",
-            "D": "11001000"
+        "A": "A malfunction in the CPU cooling system",
+        "B": "A security vulnerability in software",
+        "C": "A network connectivity issue",
+        "D": "A delay in instruction execution due to resource conflicts"
         },
         "correct": "D"
     },
     {
-        "question": "Tổng hai số nhị phân 1010101(2) và 1100111(2) tương ứng với số nhị phân nào trong các số sau?",
+        "question": "Which storage device provides fast access to data but is volatile and loses its content when power is lost? (chương 1)",
         "options": {
-            "A": "10011000",
-            "B": "11000010",
-            "C": "10010000",
-            "D": "10001000"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Tổng hai số nhị phân 1010101(2) và 1100101(2) tương ứng với số nhị phân nào trong các số sau?",
-        "options": {
-            "A": "10010010",
-            "B": "10100000",
-            "C": "1010110",
-            "D": "10001000"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Tổng hai số nhị phân 1010101(2) và 1100110(2) tương ứng với số nhị phân nào trong các số sau?",
-        "options": {
-            "A": "10000110",
-            "B": "10100000",
-            "C": "1010110",
-            "D": "10010000"
+        "A": "RAM (Random Access Memory)",
+        "B": "Hard disk drive (HDD)",
+        "C": "Magnetic tape",
+        "D": "Solid-state drive (SSD)"
         },
         "correct": "A"
     },
     {
-        "question": "Tổng hai số nhị phân 1010101(2) và 1101010(2) tương ứng với số nhị phân nào trong các số sau?",
+        "question": "Which storage technology uses magnetic fields to store data on rotating disks? (chương 1)",
         "options": {
-            "A": "10000110",
-            "B": "10011010",
-            "C": "10101010",
-            "D": "10010000"
+        "A": "Flash memory",
+        "B": "Hard disk drive (HDD)",
+        "C": "Solid-state drive (SSD)",
+        "D": "Optical disc"
         },
         "correct": "B"
     },
     {
-        "question": "Tổng hai số nhị phân 1010101(2) và 1101111(2) tương ứng với số nhị phân nào trong các số sau?",
+        "question": "Which memory type retains its data even when the power is turned off? (chương 1)",
         "options": {
-            "A": "10000111",
-            "B": "10100111",
-            "C": "10001111",
-            "D": "10010111"
+        "A": "Virtual memory",
+        "B": "RAM",
+        "C": "ROM",
+        "D": "Cache memory"
+        },
+        "correct": "C"
+    },
+// p2
+    {
+        "question": "MFC stands for ___________ (chương 1)",
+        "options": {
+        "A": "Memory Find Command",
+        "B": "Memory Function Complete",
+        "C": "Memory Format Caches",
+        "D": "Mass Format Command"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "______ are numbers and encoded characters, generally used as operands. (chương 1)",
+        "options": {
+        "A": "Data",
+        "B": "Stored Values",
+        "C": "Information",
+        "D": "Input"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The ______ format is usually used to store data. (chương 1)",
+        "options": {
+        "A": "Decimal",
+        "B": "Octal",
+        "C": "BCD",
+        "D": "Hexadecimal"
         },
         "correct": "C"
     },
     {
-        "question": "Tổng hai số nhị phân 1010101(2) và 1101100(2) tương ứng với số nhị phân nào trong các số sau?",
+        "question": "The ALU makes use of _______ to store the intermediate results. (chương 1)",
         "options": {
-            "A": "10000100",
-            "B": "10100100",
-            "C": "10101100",
-            "D": "10001100"
+        "A": "Heap",
+        "B": "Registers",
+        "C": "Accumulators",
+        "D": "Stack"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The 8-bit encoding format used to store data in a computer is ______ (chương 1)",
+        "options": {
+        "A": "ANCI",
+        "B": "USCII",
+        "C": "EBCDIC",
+        "D": "ASCII"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The small extremely fast, RAM’s are called as _______ (chương 1)",
+        "options": {
+        "A": "Heaps",
+        "B": "Accumulators",
+        "C": "Stacks",
+        "D": "Cache"
         },
         "correct": "D"
     },
     {
-        "question": "Tổng hai số nhị phân 1010101(2) và 1101010(2) tương ứng với số nhị phân nào trong các số sau?",
+        "question": "The time delay between two successive initiations of memory operation _______ (chương 1)",
         "options": {
-            "A": "10000110",
-            "B": "10000010",
-            "C": "10100110",
-            "D": "10010010"
+        "A": "Memory cycle time",
+        "B": "Memory access time",
+        "C": "Instruction delay",
+        "D": "Memory search time"
         },
         "correct": "A"
     },
     {
-        "question": "Số dấu chấm động A được lưu trữ trong máy tính dưới dạng 32 bit là:",
+        "question": "The control unit controls other units by generating ___________ (chương 1)",
         "options": {
-            "A": "-0.1101000111101 × 2^3",
-            "B": "-0.1101000111101 × 2^3",
-            "C": "-0.1101000111101 × 2^3",
-            "D": "0.1101000111101 × 2^3"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Số dấu chấm động A được lưu trữ trong máy tính dưới dạng 32 bit là:",
-        "options": {
-            "A": "-0.1101000111101 × 2^3",
-            "B": "-0.1101000111101 × 2^3",
-            "C": "-0.1101000111101 × 2^3",
-            "D": "-0.1101000111101 × 2^3"
+        "A": "Command Signals",
+        "B": "Transfer signals",
+        "C": "Control signals",
+        "D": "Timing signals"
         },
         "correct": "D"
     },
     {
-        "question": "Thanh ghi nào được dùng để lưu trữ địa chỉ cổng vào ra khi bộ vi xử lý thao tác với các thiết bị ngoại vi?",
+        "question": "To reduce the memory access time we generally make use of ______ (chương 1)",
         "options": {
-            "A": "AX",
-            "B": "BX",
-            "C": "CX",
-            "D": "DX"
+        "A": "Cache’s",
+        "B": "SDRAM’s",
+        "C": "Heaps",
+        "D": "Higher capacity RAM’s"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The I/O interface required to connect the I/O device to the bus consists of ______ (chương 1)",
+        "options": {
+        "A": "Address decoder and registers",
+        "B": "Control circuits",
+        "C": "Address decoder, registers and Control circuits",
+        "D": "Only Control circuits"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The Input devices can send information to the processor. (chương 1)",
+        "options": {
+        "A": "Either of the cases",
+        "B": "When the SIN status flag is set",
+        "C": "When the data arrives regardless of the SIN flag",
+        "D": "Neither of the cases"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "A source program is usually in _______ (chương 1)",
+        "options": {
+        "A": "Assembly language",
+        "B": "Machine level language",
+        "C": "Natural language",
+        "D": "High-level language"
         },
         "correct": "D"
     },
     {
-        "question": "Thanh ghi nào được dùng để khai báo số lần thực hiện các vòng lặp của ngôn ngữ Assembly?",
+        "question": "______ is generally used to increase the apparent size of physical memory. (chương 1)",
         "options": {
-            "A": "AX",
-            "B": "BX",
-            "C": "CX",
-            "D": "DX"
+        "A": "Hard-disk",
+        "B": "Virtual memory",
+        "C": "Secondary memory",
+        "D": "Disks"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Which memory device is generally made of semiconductors? (chương 1)",
+        "options": {
+        "A": "Cd disk",
+        "B": "Floppy disk",
+        "C": "RAM",
+        "D": "Hard-disk"
         },
         "correct": "C"
     },
     {
-        "question": "Thanh ghi nào được dùng để khai báo số bit được dịch trong các lệnh dịch của ngôn ngữ Assembly?",
+        "question": "______ bus structure is usually used to connect I/O devices. (chương 1)",
         "options": {
-            "A": "AH",
-            "B": "AL",
-            "C": "BH",
-            "D": "CL"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Thanh ghi cờ (F) của 80286 có bao nhiêu bit?",
-        "options": {
-            "A": "8 bit",
-            "B": "12 bit",
-            "C": "16 bit",
-            "D": "24 bit"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Nếu lấy tổng của hai toán hạng 8 bit mà kết quả vượt quá 255 thì sẽ tác động đến nội dung của cờ nào trong các cờ sau đây?",
-        "options": {
-            "A": "CF",
-            "B": "AF",
-            "C": "OF",
-            "D": "ZF"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Nếu kết quả của một thao tác cho ta giá trị bằng 0 thì sẽ tác động đến nội dung của cờ nào trong các cờ sau đây?",
-        "options": {
-            "A": "CF",
-            "B": "ZF",
-            "C": "SF",
-            "D": "PF"
+        "A": "Rambus",
+        "B": "Single bus",
+        "C": "Multiple bus",
+        "D": "Star bus"
         },
         "correct": "B"
     },
-    {
-        "question": "Nếu ta thực hiện phép cộng hai số nhị phân 10001011(B) và 01101101(B) thì sau phép cộng sẽ đặt nội dung của cờ nào trong các cờ sau đây bằng 1?",
-        "options": {
-            "A": "CF",
-            "B": "SF",
-            "C": "AF",
-            "D": "OF"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Nếu ta đem trừ toán hạng có giá trị 10001001(B) cho toán hạng có giá trị 10001001(B) thì cờ nào sẽ được đặt bằng 1?",
-        "options": {
-            "A": "OF",
-            "B": "AF",
-            "C": "ZF",
-            "D": "SF"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Kích thước nhỏ nhất của một mã lệnh của bộ vi xử lý 8086 bằng bao nhiêu?",
-        "options": {
-            "A": "1 byte",
-            "B": "2 byte",
-            "C": "3 byte",
-            "D": "4 byte"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Kích thước lớn nhất của một mã lệnh của bộ vi xử lý 8086 bằng bao nhiêu?",
-        "options": {
-            "A": "5 byte",
-            "B": "10 byte",
-            "C": "15 byte",
-            "D": "20 byte"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Đối với bộ vi xử lý 8086, hãy chỉ ra khẳng định đúng trong các khẳng định sau:",
-        "options": {
-            "A": "Một địa chỉ vật lý có thể tương ứng với nhiều địa chỉ logic",
-            "B": "Một địa chỉ logic có thể tương ứng với nhiều địa chỉ vật lý",
-            "C": "Một địa chỉ logic chỉ tương ứng với một địa chỉ vật lý duy nhất",
-            "D": "Luật ánh xạ nhất định"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Tính địa chỉ vật lý tương ứng với địa chỉ logic 1F36H:0DA5H",
-        "options": {
-            "A": "20B05H",
-            "B": "20105H",
-            "C": "20C15H",
-            "D": "40005H"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Tính địa chỉ vật lý tương ứng với địa chỉ logic 1D3AH:0DA1H",
-        "options": {
-            "A": "1CB01H",
-            "B": "10101H",
-            "C": "1E141H",
-            "D": "20005H"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Tính địa chỉ vật lý tương ứng với địa chỉ logic 1F48H:0CA5H",
-        "options": {
-            "A": "20B05H",
-            "B": "20105H",
-            "C": "20C15H",
-            "D": "20125H"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Tính địa chỉ vật lý tương ứng với địa chỉ logic 1A43H:0A56H",
-        "options": {
-            "A": "1A5C9H",
-            "B": "1B1C9H",
-            "C": "20C19H",
-            "D": "20105H"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Địa chỉ vật lý 30815H tương ứng với địa chỉ logic nào dưới đây?",
-        "options": {
-            "A": "30805H",
-            "B": "30815H",
-            "C": "30C15H",
-            "D": "40005H"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Địa chỉ vật lý 2FDB2H tương ứng với địa chỉ logic nào dưới đây?",
-        "options": {
-            "A": "2FB02H",
-            "B": "2F102H",
-            "C": "2FDB2H",
-            "D": "30002H"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Địa chỉ vật lý 33035H tương ứng với địa chỉ logic nào dưới đây?",
-        "options": {
-            "A": "30805H",
-            "B": "331A5H",
-            "C": "30C15H",
-            "D": "33035H"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Địa chỉ vật lý 33634H tương ứng với địa chỉ logic nào dưới đây?",
-        "options": {
-            "A": "2A30H:8D34H",
-            "B": "2A20H:8C34H",
-            "C": "3A32H:8E32H",
-            "D": "2A31H:9D34H"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Địa chỉ vật lý 93724H tương ứng với địa chỉ logic nào dưới đây?",
-        "options": {
-            "A": "AA39H:8D24H",
-            "B": "BA20H:8C34H",
-            "C": "3A32H:8E32H",
-            "D": "2A31H:9D34H"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Địa chỉ vật lý 3AE32H tương ứng với địa chỉ logic nào dưới đây?",
-        "options": {
-            "A": "2A30H:8D34H",
-            "B": "3A20H:0E32H",
-            "C": "3A02H:2E32H",
-            "D": "2A31H:9D34H"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Địa chỉ vật lý 93034H tương ứng với địa chỉ logic nào dưới đây?",
-        "options": {
-            "A": "8A30H:8D34H",
-            "B": "8A20H:8C34H",
-            "C": "7A32H:8E32H",
-            "D": "7A31H:8D34H"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Đặc điểm của chế độ MIN đối với bộ vi xử lý 8086 là:",
-        "options": {
-            "A": "CPU tự phát ra các tín hiệu điều khiển cho các Bus",
-            "B": "CPU chỉ phát ra các tín hiệu trạng thái tới chip điều khiển Bus",
-            "C": "CPU đồng thời phát ra tín hiệu điều khiển tới cả Bus và chip điều khiển Bus",
-            "D": "CPU phát ra tín hiệu trạng thái tới chip điều khiển Bus trước, sau đó phát tín hiệu điều khiển các Bus sau"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Trong chế độ MAX của bộ vi xử lý 8086, giá trị chân MN/MX là:",
-        "options": {
-            "A": "(0,0)",
-            "B": "(0,1)",
-            "C": "(1,0)",
-            "D": "(1,1)"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Trong chế độ MIN của bộ vi xử lý 8086, giá trị chân MN/MX là:",
-        "options": {
-            "A": "(0,0)",
-            "B": "(0,1)",
-            "C": "(1,0)",
-            "D": "(1,1)"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Chức năng của chân READY trong bộ vi xử lý 8086 là:",
-        "options": {
-            "A": "Chân đầu ra thông báo cho ngoại vi là bộ vi xử lý đã sẵn sàng",
-            "B": "Chân đầu vào thông báo cho bộ vi xử lý là ngoại vi đã sẵn sàng làm việc",
-            "C": "Chân đầu ra để kích hoạt bộ nhớ",
-            "D": "Chân đầu vào để ngắt bộ vi xử lý"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Hãy chỉ ra phương án đúng trong các phương án sau:",
-        "options": {
-            "A": "Ngắt từ chân INTR có thể che được từ cờ ngắt, còn ngắt từ chân NMI không thể che được từ cờ ngắt",
-            "B": "Ngắt từ chân INTR không thể che được từ cờ ngắt, còn ngắt từ chân NMI có thể che được từ cờ ngắt",
-            "C": "Cả hai ngắt từ chân INTR và NMI đều có thể che được từ cờ ngắt",
-            "D": "Cả hai ngắt từ chân INTR và NMI đều không thể che được từ cờ ngắt"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Bộ vi xử lý 8086 có thể quản lý không gian địa chỉ cổng ngoại vi 8 bit có kích thước hàng bao nhiêu?",
-        "options": {
-            "A": "64K (65536)",
-            "B": "32K (32768)",
-            "C": "16K (16384)",
-            "D": "8K (8192)"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Đối với bộ vi xử lý 8086, nếu chân ALE có mức 1 thì:",
-        "options": {
-            "A": "Địa chỉ của bộ nhớ hoặc ngoại vi được chốt trong CPU",
-            "B": "Cho phép bộ chốt chốt địa chỉ từ CPU gửi trên Bus",
-            "C": "Không cho CPU chốt địa chỉ của bộ nhớ hoặc ngoại vi",
-            "D": "Không cho bộ chốt chốt địa chỉ từ CPU gửi trên Bus"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Tín hiệu nào sau đây của 8288 nếu ở mức tích cực sẽ cho phép đọc dữ liệu từ bộ nhớ vào CPU?",
-        "options": {
-            "A": "IORC",
-            "B": "DEN",
-            "C": "MRDC",
-            "D": "MWDC"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Tín hiệu nào sau đây của 8288 nếu ở mức tích cực sẽ cho phép ghi dữ liệu từ CPU vào bộ nhớ?",
-        "options": {
-            "A": "IORC",
-            "B": "DEN",
-            "C": "MRDC",
-            "D": "MWDC"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Tín hiệu nào sau đây của 8288 nếu ở mức tích cực sẽ cho phép ghi dữ liệu từ CPU vào cổng vào ra?",
-        "options": {
-            "A": "IORC",
-            "B": "IOWC",
-            "C": "MRDC",
-            "D": "MWDC"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Tín hiệu nào sau đây của 8288 nếu ở mức tích cực sẽ cho phép đọc dữ liệu từ cổng vào ra vào CPU?",
-        "options": {
-            "A": "IORC",
-            "B": "DEN",
-            "C": "MRDC",
-            "D": "MWDC"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Tín hiệu nào sau đây của 8288 nếu ở mức tích cực sẽ thông báo cho 8288 biết là CPU nhận yêu cầu ngắt?",
-        "options": {
-            "A": "IORC",
-            "B": "DEN",
-            "C": "INTA",
-            "D": "MCE"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Sau khi Reset bộ vi xử lý 8086, thanh ghi cờ (FLAGS) nhận giá trị nào trong các giá trị sau đây?",
-        "options": {
-            "A": "02H",
-            "B": "03H",
-            "C": "07H",
-            "D": "08H"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Sau khi Reset bộ vi xử lý 8086, thanh ghi IP nhận giá trị nào trong các giá trị sau đây?",
-        "options": {
-            "A": "F000H",
-            "B": "FF00H",
-            "C": "FFF0H",
-            "D": "FFFFH"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Sau khi Reset bộ vi xử lý 8086, thanh ghi CS nhận giá trị nào trong các giá trị sau đây?",
-        "options": {
-            "A": "F000H",
-            "B": "FF00H",
-            "C": "FFF0H",
-            "D": "FFFFH"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Sau khi Reset bộ vi xử lý 8086, thanh ghi DS nhận giá trị nào trong các giá trị sau đây?",
-        "options": {
-            "A": "F000H",
-            "B": "FF00H",
-            "C": "FFF0H",
-            "D": "0000H"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Sau khi Reset bộ vi xử lý 8086, thanh ghi ES nhận giá trị nào trong các giá trị sau đây?",
-        "options": {
-            "A": "F000H",
-            "B": "0000H",
-            "C": "FFF0H",
-            "D": "FFFFH"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Sau khi Reset bộ vi xử lý 8086, cặp thanh ghi CS:IP nhận giá trị nào trong các giá trị sau đây?",
-        "options": {
-            "A": "F000H:FFF0H",
-            "B": "0F00H:F0F0H",
-            "C": "FFF0H:FF0H",
-            "D": "FFFFH:0FD0H"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Trong quá trình xử lý ngắt, thanh ghi nào trong các thanh ghi sau đây chắc chắn sẽ phải thay đổi nội dung?",
-        "options": {
-            "A": "SI",
-            "B": "DI",
-            "C": "ES",
-            "D": "IP"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Sau khi Reset bộ vi xử lý 8086, lệnh đầu tiên được thực hiện là lệnh nào?",
-        "options": {
-            "A": "Lệnh tải địa chỉ F000H:FFF0H",
-            "B": "Lệnh kiểm tra phiên bản hệ điều hành",
-            "C": "Lệnh tải địa chỉ FF00H:FFF0H",
-            "D": "Lệnh tải địa chỉ FF00H:F0F0H"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Khi gặp một ngắt, bộ vi xử lý thực hiện như thế nào?",
-        "options": {
-            "A": "Chạy hết chương trình đang thực hiện rồi phục vụ ngắt",
-            "B": "Thực hiện xong lệnh đang thực hiện rồi quay ra phục vụ ngắt nếu ngắt là hợp lệ",
-            "C": "Bỏ qua ngắt nếu bộ vi xử lý đang thực hiện một chương trình khác",
-            "D": "Dừng chương trình ngay lập tức để phục vụ ngắt"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Sau khi thực hiện xong chương trình con phục vụ ngắt, bộ vi xử lý thực hiện như thế nào?",
-        "options": {
-            "A": "Trở về thực hiện tiếp chương trình đã bị gián đoạn do ngắt",
-            "B": "Khởi động lại hệ thống",
-            "C": "Thực hiện lại lệnh trước khi có ngắt",
-            "D": "Chuyển sang chương trình khác"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Vùng nhớ được dùng để lưu trữ địa chỉ quay về khi chương trình con được gọi là:",
-        "options": {
-            "A": "Nâng vector ngắt",
-            "B": "Vùng nhớ dành riêng cho chương trình",
-            "C": "Vùng nhớ ngăn xếp",
-            "D": "Cặp thanh ghi CS:IP"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Ngắt phát sinh do lỗi phần mềm trong chương trình thì được gọi là ngắt gì trong các loại ngắt sau đây?",
-        "options": {
-            "A": "Ngắt cứng che được bằng cờ ngắt",
-            "B": "Ngắt cứng không che được bằng cờ ngắt",
-            "C": "Ngắt mềm",
-            "D": "Ngoại lệ phát sinh từ chính CPU"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Ngắt phát sinh do yêu cầu từ thiết bị ngoại vi thì được gọi là ngắt gì trong các loại ngắt sau đây?",
-        "options": {
-            "A": "Ngắt cứng che được bằng cờ ngắt",
-            "B": "Ngắt cứng không che được bằng cờ ngắt",
-            "C": "Ngắt mềm",
-            "D": "Ngoại lệ phát sinh từ chính CPU"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Ngắt phát sinh do hỏng hóc phần cứng nghiêm trọng thì được gọi là ngắt gì trong các loại ngắt sau đây?",
-        "options": {
-            "A": "Ngắt cứng che được bằng cờ ngắt",
-            "B": "Ngắt cứng không che được bằng cờ ngắt",
-            "C": "Ngắt mềm",
-            "D": "Ngoại lệ phát sinh từ chính CPU"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Ngắt phát sinh do bội chia cho 0 trong chương trình thì được gọi là ngắt gì trong các loại ngắt sau đây?",
-        "options": {
-            "A": "Ngắt cứng che được bằng cờ ngắt",
-            "B": "Ngắt cứng không che được bằng cờ ngắt",
-            "C": "Ngắt mềm",
-            "D": "Ngoại lệ phát sinh từ chính CPU"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Ngắt phát sinh do tràn bộ nhớ của bộ điều khiển thì được gọi là ngắt gì trong các loại ngắt sau đây?",
-        "options": {
-            "A": "Ngắt cứng che được bằng cờ ngắt",
-            "B": "Ngắt cứng không che được bằng cờ ngắt",
-            "C": "Ngắt mềm",
-            "D": "Ngoại lệ phát sinh từ chính CPU"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Ngắt phát sinh do mã toán không hợp lệ thì được gọi là ngắt gì trong các loại ngắt sau đây?",
-        "options": {
-            "A": "Ngắt cứng che được bằng cờ ngắt",
-            "B": "Ngắt cứng không che được bằng cờ ngắt",
-            "C": "Ngắt mềm",
-            "D": "Ngoại lệ phát sinh từ chính CPU"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Cơ chế DMA là gì?",
-        "options": {
-            "A": "Truy cập ngoại vi trực tiếp",
-            "B": "Truy cập bộ nhớ trực tiếp",
-            "C": "Điều khiển thẻ thông qua thiết bị ngoại vi",
-            "D": "Truy cập CPU trực tiếp"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "DMA là viết tắt của:",
-        "options": {
-            "A": "Direct Management Access",
-            "B": "Direct Memory Application Access",
-            "C": "Direct Memory Access",
-            "D": "Direct Mainboard Administration"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Cơ chế DMA cho phép thực hiện điều gì?",
-        "options": {
-            "A": "Truyền dữ liệu trực tiếp giữa bộ nhớ và các thành phần trong bộ vi xử lý",
-            "B": "Truyền dữ liệu trực tiếp giữa các thiết bị ngoại vi",
-            "C": "Truyền dữ liệu trực tiếp giữa các thành phần trong bộ thông bộ nhớ",
-            "D": "Truyền dữ liệu trực tiếp từ CPU đến bộ nhớ"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Phương pháp nào sau đây là một trong các phương pháp thực hiện DMA?",
-        "options": {
-            "A": "Ngắt không che được",
-            "B": "Lấy cắp chu kỳ",
-            "C": "Ngắt che được",
-            "D": "Thăm dò ngoại vi"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Phương pháp nào sau đây là một trong các phương pháp thực hiện DMA?",
-        "options": {
-            "A": "Ngắt mềm",
-            "B": "Điều khiển để CPU tự treo",
-            "C": "Ngắt không che được",
-            "D": "Thăm dò ngoại vi"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "DMAC gửi tín hiệu yêu cầu CPU tự treo để thực hiện DMA qua chân nào?",
-        "options": {
-            "A": "DREQ",
-            "B": "HOLD",
-            "C": "HOLDA",
-            "D": "DACK"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "CPU thông báo cho DMAC rằng nó đã nhường Bus qua chân nào?",
-        "options": {
-            "A": "DREQ",
-            "B": "HOLD",
-            "C": "HOLDA",
-            "D": "DACK"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Khi chip DMAC đang đọc dữ liệu từ ngoại vi qua địa chỉ cổng thì chân nào trong các chân sau đây phải ở mức tích cực?",
-        "options": {
-            "A": "IOR",
-            "B": "IOW",
-            "C": "MEMR",
-            "D": "MEMW"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Khi chip DMAC đang chuyển dữ liệu tới ngoại vi qua cổng thì chân nào trong các chân sau đây phải ở mức tích cực?",
-        "options": {
-            "A": "IOR",
-            "B": "IOW",
-            "C": "MEMR",
-            "D": "MEMW"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Khi chip DMAC đang đọc dữ liệu từ bộ nhớ thì chân nào trong các chân sau đây phải ở mức tích cực?",
-        "options": {
-            "A": "IOR",
-            "B": "IOW",
-            "C": "MEMR",
-            "D": "MEMW"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Khi chip DMAC đang ghi dữ liệu vào bộ nhớ thì chân nào trong các chân sau đây phải ở mức tích cực?",
-        "options": {
-            "A": "IOR",
-            "B": "IOW",
-            "C": "MEMR",
-            "D": "MEMW"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Khi CPU hoặc Bus master báo cho DMAC biết nó đã rời khóa Bus thì tín hiệu nào được sử dụng?",
-        "options": {
-            "A": "HIDA",
-            "B": "ADSTB",
-            "C": "AEN",
-            "D": "HRQ"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Khi DMAC cần kích hoạt để chốt địa chỉ thì chân nào trong các chân sau đây của DMAC phải ở mức tích cực?",
-        "options": {
-            "A": "HIDA",
-            "B": "ADSTB",
-            "C": "AEN",
-            "D": "HRQ"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Chân nào là chân chọn chip trong các chân sau đây của DMAC?",
-        "options": {
-            "A": "CLK",
-            "B": "/CS",
-            "C": "HRQ",
-            "D": "AEN"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Chân nào là lối vào của xung nhịp trong các chân sau đây của DMAC?",
-        "options": {
-            "A": "CLK",
-            "B": "/CS",
-            "C": "HRQ",
-            "D": "AEN"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Chân nào là chân báo chấp nhận DMA trong các chân sau đây của DMAC?",
-        "options": {
-            "A": "AEN",
-            "B": "DREQ",
-            "C": "HRQ",
-            "D": "DACK"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Chân nào là chân báo đáp hồi DMA từ thiết bị ngoại vi trong các chân sau đây của DMAC?",
-        "options": {
-            "A": "AEN",
-            "B": "DREQ",
-            "C": "HRQ",
-            "D": "DACK"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Bus dữ liệu của DMAC 8237 gồm bao nhiêu bit?",
-        "options": {
-            "A": "4",
-            "B": "8",
-            "C": "16",
-            "D": "32"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Bus địa chỉ của DMAC 8237 gồm bao nhiêu bit?",
-        "options": {
-            "A": "8",
-            "B": "12",
-            "C": "16",
-            "D": "20"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Chân nào trong các chân sau đây báo kết thúc xử lý DMA?",
-        "options": {
-            "A": "AEN",
-            "B": "DREQ",
-            "C": "HRQ",
-            "D": "/EOP"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Tần số của bộ vi xử lý 80386DX-40 là bao nhiêu?",
-        "options": {
-            "A": "500 Hz",
-            "B": "500 KHz",
-            "C": "500 MHz",
-            "D": "500 GHz"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Khi chương trình con được gọi, địa chỉ quay về được cất vào đâu?",
-        "options": {
-            "A": "Ngăn xếp",
-            "B": "Thanh ghi con trỏ ngăn xếp",
-            "C": "Cặp thanh ghi CS.IP",
-            "D": "Bộ đếm chương trình"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Thông thường khi một chương trình con phục vụ ngắt được thực hiện xong thì điều gì xảy ra?",
-        "options": {
-            "A": "Bộ vi xử lý phải được khởi động lại",
-            "B": "Một yêu cầu ng proinflammatory hiện",
-            "C": "Chương trình bị tạm dừng sẽ được tiếp tục thực hiện",
-            "D": "Hệ thống bị dừng (Halt)"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Một tín hiệu vào của bộ vi xử lý làm cho nó tạm dừng chương trình đang thực hiện thì được gọi là gì?",
-        "options": {
-            "A": "Nghỉ (Break)",
-            "B": "Ngắt (Interrupt)",
-            "C": "Dừng (Stop)",
-            "D": "Đợi (Wait)"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Ngắt có đặc điểm nào sau đây?",
-        "options": {
-            "A": "Ưu tiên cao",
-            "B": "Có thể che được",
-            "C": "Nhiều mức",
-            "D": "Không thể bị che được"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Khi chương trình con được gọi thì địa chỉ quay về được lấy ra từ đâu?",
-        "options": {
-            "A": "Đầu tiên",
-            "B": "Cuối cùng",
-            "C": "Từ thanh ghi con trỏ ngăn xếp",
-            "D": "Từ thanh ghi cờ"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Chức năng của câu lệnh Assembly sau là gì? OUT 30H, AL",
-        "options": {
-            "A": "Gửi nội dung thanh ghi AL ra cổng ngoại vi có địa chỉ là 30H",
-            "B": "Gửi giá trị 30H ra cổng ngoại vi có địa chỉ là nội dung thanh ghi AL",
-            "C": "Gửi giá trị 30H ra cổng ngoại vi có địa chỉ là 48H",
-            "D": "Thu một byte từ cổng có địa chỉ là 30H và đặt vào thanh ghi AL"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Chức năng của câu lệnh Assembly sau là gì? IN AL, 31H",
-        "options": {
-            "A": "Gửi nội dung thanh ghi AL ra cổng ngoại vi có địa chỉ là 31H",
-            "B": "Gửi giá trị 31H ra cổng ngoại vi có địa chỉ là nội dung thanh ghi AL",
-            "C": "Thu giá trị 31H từ một cổng ngoại vi và đặt vào thanh ghi AL",
-            "D": "Thu một byte từ cổng có địa chỉ là 31H, đặt vào thanh ghi AL"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Biết rằng chương trình con có tên là PUTC sẽ hiển thị kí tự trong thanh ghi AL. Cho biết kết quả thực hiện đoạn lệnh Assembly sau: MOV AL, 'C'; SUB AL, 02H; CALL PUTC",
-        "options": {
-            "A": "Hiển thị chữ số 2",
-            "B": "Hiển thị kí tự C",
-            "C": "Hiển thị kí tự A",
-            "D": "Hiển thị kí tự trống"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Biết rằng thanh ghi BL đang lưu kí tự 'b' (mã ASCII là 62H). Cho biết kết quả của câu lệnh Assembly sau: AND BL, 11011111B",
-        "options": {
-            "A": "Xóa thanh ghi BL",
-            "B": "Lưu kí tự 'B' vào thanh ghi BL",
-            "C": "Lưu giá trị 00100010 vào thanh ghi BL",
-            "D": "Nội dung thanh ghi BL không thay đổi"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Biết rằng thanh ghi AL đang lưu kí tự 'a'. Cho biết kết quả của câu lệnh Assembly sau: AND AL, 11111111B",
-        "options": {
-            "A": "Xóa thanh ghi AL",
-            "B": "Lưu kí tự 'A' vào thanh ghi AL",
-            "C": "Lưu giá trị 00000000 vào thanh ghi AL",
-            "D": "Nội dung thanh ghi AL không thay đổi"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Trong các câu lệnh Assembly sau, câu lệnh nào không hợp lệ?",
-        "options": {
-            "A": "MOV AX, 30000",
-            "B": "ADD AL",
-            "C": "AND BX, 30H",
-            "D": "ADD AX, 30"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Biết rằng chương trình con có tên là PUTA sẽ hiển thị từ trong thanh ghi AH. Cho biết kết quả thực hiện đoạn lệnh Assembly sau: MOV AH, 'A'; ADD AH, 2; CALL PUTA",
-        "options": {
-            "A": "Hiển thị chữ số 2",
-            "B": "Hiển thị kí tự C",
-            "C": "Hiển thị kí tự A",
-            "D": "Hiển thị kí tự trống"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Biết rằng thanh ghi BL đang lưu kí tự 'B'. Cho biết lệnh nào sau đây sẽ thay đổi nội dung thanh ghi BL để nó chứa kí tự 'b'?",
-        "options": {
-            "A": "OR BL, 00100000B",
-            "B": "AND BL, 00100000B",
-            "C": "ADD BL, 32H",
-            "D": "ADD BL, 32"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Biết rằng thanh ghi BL đang lưu kí tự 'c'. Cho biết lệnh nào sau đây sẽ thay đổi nội dung thanh ghi BL để nó chứa kí tự 'C'?",
-        "options": {
-            "A": "OR BL, 00100000B",
-            "B": "AND BL, 00100000B",
-            "C": "SUB BL, 32",
-            "D": "ADD BL, 32"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Biết rằng thanh ghi AL đang lưu kí tự 'B'. Cho biết kết quả của câu lệnh Assembly sau: OR AL, 01000000B",
-        "options": {
-            "A": "Xóa thanh ghi AL",
-            "B": "Lưu kí tự 'a' vào thanh ghi AL",
-            "C": "Lưu giá trị 01000000 vào thanh ghi AL",
-            "D": "Nội dung thanh ghi AL không thay đổi"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Biết rằng thanh ghi AL đang lưu kí tự 'C'. Cho biết kết quả của câu lệnh Assembly sau: SUB AL, 10H",
-        "options": {
-            "A": "Xóa thanh ghi AL",
-            "B": "Lưu kí tự 'A' vào thanh ghi AL",
-            "C": "Lưu giá trị 'E' vào thanh ghi AL",
-            "D": "Nội dung thanh ghi AL không thay đổi"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Cho đoạn lệnh sau: MOV AH, 10H; MOV AL, 16H; XCHG AL, AH; Hỏi kết quả cuối cùng thanh ghi AH bằng bao nhiêu?",
-        "options": {
-            "A": "26H",
-            "B": "16H",
-            "C": "06H",
-            "D": "10H"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV AH, 0A0H; MOV AL, 16H; ADD AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "26H",
-            "B": "84H",
-            "C": "0B6H",
-            "D": "16H"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV AH, 90H; MOV AL, 36H; ADD AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "6AH",
-            "B": "64H",
-            "C": "0B6H",
-            "D": "0C6H"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV AH, 0A0H; MOV AL, 0A6H; ADD AL, AH; Hỏi kết quả cuối cùng thanh ghi AH bằng bao nhiêu?",
-        "options": {
-            "A": "0A5H",
-            "B": "0A6H",
-            "C": "0A0H",
-            "D": "0A8H"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV AH, 0A0H; MOV AL, 36H; ADD AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "0D5H",
-            "B": "0D6H",
-            "C": "0D7H",
-            "D": "0D8H"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Cách viết nào sau đây là một lệnh Assembly?",
-        "options": {
-            "A": "MOV AL",
-            "B": "MOVE AL, 5",
-            "C": "MOV AL, 05H",
-            "D": "MOV 5, AL"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Cách viết nào sau đây là một lệnh Assembly?",
-        "options": {
-            "A": "ADD AL, 1",
-            "B": "MOVE AL, 5",
-            "C": "MOVE AL, 05H",
-            "D": "ADD AL"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV AH, 0A0H; MOV AL, 0A6H; SUB AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "05H",
-            "B": "06H",
-            "C": "07H",
-            "D": "08H"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV AH, 0A0H; MOV AL, 0A6H; AND AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "0A5H",
-            "B": "0A6H",
-            "C": "0A7H",
-            "D": "0A0H"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV AH, 97H; MOV AL, 0A6H; AND AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "85H",
-            "B": "86H",
-            "C": "0A7H",
-            "D": "0A6H"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV AH, 97H; MOV AL, 5EH; AND AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "96H",
-            "B": "86H",
-            "C": "36H",
-            "D": "16H"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV AH, 97H; MOV AL, 5EH; OR AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "0DFH",
-            "B": "0CHH",
-            "C": "0ACH",
-            "D": "0A6H"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV AH, 37H; MOV AL, 5AH; OR AL, AH; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "6DH",
-            "B": "0AH",
-            "C": "0AH",
-            "D": "0B0H"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV CL, 04H; MOV AL, 5AH; SHL AL, CL; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "60H",
-            "B": "0A0H",
-            "C": "0B0H",
-            "D": "0B0H"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV CL, 02H; MOV AL, 6AH; SHL AL, CL; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "6CH",
-            "B": "0A0H",
-            "C": "0A8H",
-            "D": "0B8H"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Cho đoạn lệnh: MOV CL, 03H; MOV AL, 5CH; SHR AL, CL; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "10H",
-            "B": "0BH",
-            "C": "0DH",
-            "D": "0EH"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Cho đoạn lệnh Assembly: MOV CL, 02H; MOV AL, 6AH; SHR AL, CL; Hỏi kết quả cuối cùng thanh ghi AL bằng bao nhiêu?",
-        "options": {
-            "A": "1CH",
-            "B": "1AH",
-            "C": "2AH",
-            "D": "2BH"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Để ghi giá trị số hexa A vào thanh ghi BH ta viết lệnh Assembly như thế nào?",
-        "options": {
-            "A": "MOV 0BH, BH",
-            "B": "MOV BH, 0AH",
-            "C": "MOV BH, AH",
-            "D": "MOV BH, A"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Nếu thanh ghi AL đang chứa mã ASCII của một kí tự viết hoa (A đến Z), để chuyển kí tự đó thành dạng viết thường (a đến z) ta dùng lệnh Assembly nào sau đây?",
-        "options": {
-            "A": "SUB AL, 32",
-            "B": "SUB AL, 32H",
-            "C": "ADD AL, 32",
-            "D": "ADD AL, 32H"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Nếu thanh ghi AL đang chứa mã ASCII của một kí tự viết thường (a đến z), để chuyển kí tự đó thành dạng viết hoa (A đến Z) ta dùng lệnh Assembly nào sau đây?",
-        "options": {
-            "A": "SUB AL, 32",
-            "B": "SUB AL, 32H",
-            "C": "ADD AL, 32",
-            "D": "ADD AL, 32H"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Lệnh MOV AX, [BX] là một ví dụ của chế độ định địa chỉ nào?",
-        "options": {
-            "A": "Trực tiếp",
-            "B": "Tức thì",
-            "C": "Thanh ghi",
-            "D": "Chỉ số"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Lệnh MOV AX, [BX] là một ví dụ của chế độ định địa chỉ nào?",
-        "options": {
-            "A": "Trực tiếp",
-            "B": "Tức thì",
-            "C": "Gián tiếp thanh ghi",
-            "D": "Chỉ số"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Lệnh MOV AX, 5 là một ví dụ của chế độ định địa chỉ nào?",
-        "options": {
-            "A": "Trực tiếp",
-            "B": "Tức thì",
-            "C": "Thanh ghi",
-            "D": "Chỉ số"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Lệnh MOV AX, [SI] là một ví dụ của chế độ định địa chỉ nào?",
-        "options": {
-            "A": "Trực tiếp",
-            "B": "Thanh ghi",
-            "C": "Gián tiếp thanh ghi",
-            "D": "Chỉ số"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Lệnh MOV AX, BX là một ví dụ của chế độ định địa chỉ nào?",
-        "options": {
-            "A": "Trực tiếp",
-            "B": "Tức thì",
-            "C": "Thanh ghi",
-            "D": "Gián tiếp thanh ghi"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Lệnh MOV AX, [SI] là một ví dụ của chế độ định địa chỉ nào?",
-        "options": {
-            "A": "Chỉ số",
-            "B": "Chỉ số với số",
-            "C": "Thanh ghi",
-            "D": "Gián tiếp thanh ghi"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Lệnh MOV AX, [SI]+5 là một ví dụ của chế độ định địa chỉ nào?",
-        "options": {
-            "A": "Chỉ số",
-            "B": "Chỉ số với số",
-            "C": "Thanh ghi",
-            "D": "Gián tiếp thanh ghi"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Lệnh nào dưới đây là ví dụ của chế độ định địa chỉ gián tiếp thanh ghi?",
-        "options": {
-            "A": "MOV AX, [BX]",
-            "B": "MOV AX, [0B800H]",
-            "C": "MOV AX, BX",
-            "D": "MOV AX, [BX]+5"
-        },
-        "correct": "A"
-    },
-    {
-        "question": "Lệnh nào dưới đây là ví dụ của chế độ định địa chỉ tức thì?",
-        "options": {
-            "A": "MOV AX, [BX]",
-            "B": "MOV SI, AX",
-            "C": "MOV AX, 10",
-            "D": "MOV AX, [SI]+5"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Lệnh nào dưới đây là ví dụ của chế độ định địa chỉ chỉ số với số?",
-        "options": {
-            "A": "MOV AX, [BX]",
-            "B": "MOV AX, [0B800H]",
-            "C": "MOV AX, [SI]+5",
-            "D": "MOV AX, [SI]+[BX]+5"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Để ghi giá trị số 11 vào thanh ghi BH ta viết lệnh Assembly như thế nào?",
-        "options": {
-            "A": "MOV 0BH, BH",
-            "B": "MOV BH, 11",
-            "C": "MOV BH, [BH]",
-            "D": "MOV BH, B"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Để dịch trái vòng một bit giá trị trong thanh ghi AL thì sử dụng lệnh Assembly nào?",
-        "options": {
-            "A": "SHR AL, 1",
-            "B": "SHL AL, 1",
-            "C": "ROR AL, 1",
-            "D": "ROL AL, 1"
-        },
-        "correct": "D"
-    },
-    {
-        "question": "Để dịch phải vòng một bit giá trị trong thanh ghi AL thì sử dụng lệnh Assembly nào?",
-        "options": {
-            "A": "SHR AL, 1",
-            "B": "SHL AL, 1",
-            "C": "ROR AL, 1",
-            "D": "ROL AL, 1"
-        },
-        "correct": "C"
-    },
-    {
-        "question": "Để lấy 4 bit thấp trong thanh ghi BH thì ta sử dụng lệnh Assembly nào?",
-        "options": {
-            "A": "AND BH, 00H",
-            "B": "AND BH, 0FH",
-            "C": "AND BH, 1FH",
-            "D": "AND BH, 0F0H"
-        },
-        "correct": "B"
-    },
-    {
-        "question": "Để lấy 4 bit cao trong thanh ghi BH thì ta sử dụng lệnh Assembly nào?",
-        "options": {
-            "A": "AND BH, 00H",
-            "B": "AND BH, 0FH",
-            "C": "AND BH, 1FH",
-            "D": "AND BH, 0F0H"
-        },
-        "correct": "D"
-    }
-        
     
-            // TODO: Thêm 90 câu hỏi còn lại vào đây
-            // Bạn cần sao chép từ mã Python và chuyển đổi sang định dạng JavaScript
+    {
+        "question": "The decoded instruction is stored in ______ (chương 1)",
+        "options": {
+        "A": "MDR",
+        "B": "IR",
+        "C": "PC",
+        "D": "Registers"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Which of the register/s of the processor is/are connected to Memory Bus? (chương 1)",
+        "options": {
+        "A": "MAR",
+        "B": "Both PC and MAR",
+        "C": "PC",
+        "D": "IR"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The instruction -> Add LOCA, R0 does _______ (chương 1)",
+        "options": {
+        "A": "Adds the value of R0 to the address of LOCA",
+        "B": "Adds the value of LOCA to R0 and stores in the temp register",
+        "C": "Adds the values of both LOCA and R0 and stores it in R0",
+        "D": "Adds the value of LOCA with a value in accumulator and stores it in R0"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "During the execution of a program which gets initialized first? (chương 1)",
+        "options": {
+        "A": "IR",
+        "B": "PC",
+        "C": "MAR",
+        "D": "MDR"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Which registers can interact with the secondary storage? (chương 1)",
+        "options": {
+        "A": "PC",
+        "B": "MAR",
+        "C": "R0",
+        "D": "IR"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "_______ is used to store data in registers. (chương 1)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "D flip flop",
+        "C": "JK flip flop",
+        "D": "RS flip flop"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The registers, ALU and the interconnection between them are collectively called as _____ (chương 1)",
+        "options": {
+        "A": "information path",
+        "B": "information trail",
+        "C": "process route",
+        "D": "data path"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "ISP stands for _________ (chương 1)",
+        "options": {
+        "A": "Interchange Standard Protocol",
+        "B": "Instruction Set Processor",
+        "C": "Information Standard Processing",
+        "D": "Interrupt Service Procedure"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The internal components of the processor are connected by _______ (chương 1)",
+        "options": {
+        "A": "Memory bus",
+        "B": "Rambus",
+        "C": "Processor intra-connectivity circuitry",
+        "D": "Processor bus"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "______ is used to choose between incrementing the PC or performing ALU operations. (chương 1)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "Conditional codes",
+        "C": "Multiplexer",
+        "D": "Control unit"
+        },
+        "correct": "C"
+    },
+//p3
+    {
+        "question": "The decoded instruction is stored in ______ (chương 1)",
+        "options": {
+        "A": "MDR",
+        "B": "IR",
+        "C": "PC",
+        "D": "Registers"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Which of the register/s of the processor is/are connected to Memory Bus? (chương 1)",
+        "options": {
+        "A": "MAR",
+        "B": "Both PC and MAR",
+        "C": "PC",
+        "D": "IR"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The instruction -> Add LOCA, R0 does _______ (chương 1)",
+        "options": {
+        "A": "Adds the value of R0 to the address of LOCA",
+        "B": "Adds the value of LOCA to R0 and stores in the temp register",
+        "C": "Adds the values of both LOCA and R0 and stores it in R0",
+        "D": "Adds the value of LOCA with a value in accumulator and stores it in R0"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "During the execution of a program which gets initialized first? (chương 1)",
+        "options": {
+        "A": "IR",
+        "B": "PC",
+        "C": "MAR",
+        "D": "MDR"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Which registers can interact with the secondary storage? (chương 1)",
+        "options": {
+        "A": "PC",
+        "B": "MAR",
+        "C": "R0",
+        "D": "IR"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "_______ is used to store data in registers. (chương 1)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "D flip flop",
+        "C": "JK flip flop",
+        "D": "RS flip flop"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The registers, ALU and the interconnection between them are collectively called as _____ (chương 1)",
+        "options": {
+        "A": "information path",
+        "B": "information trail",
+        "C": "process route",
+        "D": "data path"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "ISP stands for _________ (chương 1)",
+        "options": {
+        "A": "Interchange Standard Protocol",
+        "B": "Instruction Set Processor",
+        "C": "Information Standard Processing",
+        "D": "Interrupt Service Procedure"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The internal components of the processor are connected by _______ (chương 1)",
+        "options": {
+        "A": "Memory bus",
+        "B": "Rambus",
+        "C": "Processor intra-connectivity circuitry",
+        "D": "Processor bus"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "______ is used to choose between incrementing the PC or performing ALU operations. (chương 1)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "Conditional codes",
+        "C": "Multiplexer",
+        "D": "Control unit"
+        },
+        "correct": "C"
+    },
+// p4
+    {
+        "question": "IBM developed a bus standard for their line of computers ‘PC AT’ called _____ (chương 1)",
+        "options": {
+        "A": "IB bus",
+        "B": "None of the mentioned",
+        "C": "M-bus",
+        "D": "ISA"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "In multiple Bus organisation, the registers are collectively placed and referred as ______ (chương 1)",
+        "options": {
+        "A": "Map registers",
+        "B": "Set registers",
+        "C": "Register Block",
+        "D": "Register file"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "_____ register Connected to the Processor bus is a single-way transfer capable. (chương 1)",
+        "options": {
+        "A": "PC",
+        "B": "Z",
+        "C": "IR",
+        "D": "Temp"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "______ are used to overcome the difference in data transfer speeds of various devices. (chương 1)",
+        "options": {
+        "A": "Bridge circuits",
+        "B": "Speed enhancing circuitory",
+        "C": "Buffer registers",
+        "D": "Multiple Buses"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "To extend the connectivity of the processor bus we use ________ (chương 1)",
+        "options": {
+        "A": "Multiple bus",
+        "B": "PCI bus",
+        "C": "Controllers",
+        "D": "SCSI bus"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The bus used to connect the monitor to the CPU is ______ (chương 1)",
+        "options": {
+        "A": "Rambus",
+        "B": "SCSI bus",
+        "C": "PCI bus",
+        "D": "Memory bus"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "ANSI stands for __________ (chương 1)",
+        "options": {
+        "A": "American National Standards Institute",
+        "B": "American Network Standard Interfacing",
+        "C": "American National Standard Interface",
+        "D": "American Network Security Interrupt"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The main advantage of multiple bus organisation over a single bus is _____ (chương 1)",
+        "options": {
+        "A": "Increase in size of the registers",
+        "B": "Better Connectivity",
+        "C": "None of the mentioned",
+        "D": "Reduction in the number of cycles for execution"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "The main virtue for using single Bus structure is ____________ (chương 1)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "Fast data transfers",
+        "C": "Cost effective connectivity and ease of attaching peripheral devices",
+        "D": "Cost effective connectivity and speed"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The ISA standard Buses are used to connect ___________ (chương 1)",
+        "options": {
+        "A": "CD/DVD drives and Processor",
+        "B": "RAM and processor",
+        "C": "GPU and processor",
+        "D": "Harddisk and Processor"
+        },
+        "correct": "D"
+    },
+// P5
+    {
+        "question": "A processor performing fetch or decoding of different instruction during the execution of another instruction is called ______ (chương 1)",
+        "options": {
+        "A": "Parallel Computation",
+        "B": "Pipe-lining",
+        "C": "None of the mentioned",
+        "D": "Super-scaling"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The average number of steps taken to execute the set of instructions can be made to be less than one by following _______ (chương 1)",
+        "options": {
+        "A": "Pipe-lining",
+        "B": "ISA",
+        "C": "Super-scaling",
+        "D": "Sequential"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "CISC stands for _______ (chương 1)",
+        "options": {
+        "A": "Computer Integrated Sequential Compiler",
+        "B": "Complex Instruction Set Computer",
+        "C": "Complex Instruction Sequential Compilation",
+        "D": "Complete Instruction Sequential Compilation"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "If a processor clock is rated as 1250 million cycles per second, then its clock period is ________ (chương 1)",
+        "options": {
+        "A": "1.6 * 10-9 sec",
+        "B": "1.25 * 10-10 sec",
+        "C": "8 * 10-10 sec",
+        "D": "1.9 * 10-10 sec"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "When Performing a looping operation, the instruction gets stored in the ______ (chương 1)",
+        "options": {
+        "A": "Registers",
+        "B": "System Heap",
+        "C": "Cache",
+        "D": "System stack"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The clock rate of the processor can be improved by _________ (chương 1)",
+        "options": {
+        "A": "Improving the IC technology of the logic circuits",
+        "B": "All of the mentioned",
+        "C": "Reducing the amount of processing done in one step",
+        "D": "By using the overclocking method"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "For a given FINITE number of instructions to be executed, which architecture of the processor provides for a faster execution? (chương 1)",
+        "options": {
+        "A": "Super-scalar",
+        "B": "ANSA",
+        "C": "ISA",
+        "D": "All of the mentioned"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The ultimate goal of a compiler is to ________ (chương 1)",
+        "options": {
+        "A": "Be able to detect even the smallest of errors",
+        "B": "Be versatile",
+        "C": "Reduce the clock cycles for a programming task",
+        "D": "Reduce the size of the object code"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "An optimizing Compiler does _________ (chương 1)",
+        "options": {
+        "A": "Takes advantage of the type of processor and reduces its process time",
+        "B": "Better compilation of the given piece of code",
+        "C": "Does better memory management",
+        "D": "None of the mentioned"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "As of 2000, the reference system to find the SPEC rating are built with _____ Processor. (chương 1)",
+        "options": {
+        "A": "Intel Atom SParc 300Mhz",
+        "B": "Ultra SPARC -IIi 300MHZ",
+        "C": "ASUS A series 450 Mhz",
+        "D": "Amd Neutrino series"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "SPEC stands for _______ (chương 1)",
+        "options": {
+        "A": "Standard Processing Enhancement Corporation",
+        "B": "System Processing Enhancing Code",
+        "C": "System Performance Evaluation Corporation",
+        "D": "Standard Performance Evaluation Code"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Two processors A and B have clock frequencies of 700 Mhz and 900 Mhz respectively. Suppose A can execute an instruction with an average of 3 steps and B can execute with an average of 5 steps. For the execution of the same instruction which processor is faster? (chương 1)",
+        "options": {
+        "A": "B",
+        "B": "Insufficient information",
+        "C": "Both take the same time",
+        "D": "A"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "As of 2000, the reference system to find the performance of a system is _____ (chương 1)",
+        "options": {
+        "A": "SUN II",
+        "B": "Ultra SPARC 10",
+        "C": "None of the mentioned",
+        "D": "SUN SPARC"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "If the instruction, Add R1, R2, R3 is executed in a system that is pipe-lined, then the value of S is (Where S is a term of the Basic performance equation)? (chương 1)",
+        "options": {
+        "A": "6",
+        "B": "3",
+        "C": "~2",
+        "D": "~1"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "During the execution of the instructions, a copy of the instructions is placed in the ______ (chương 1)",
+        "options": {
+        "A": "Cache",
+        "B": "Register",
+        "C": "RAM",
+        "D": "System heap"
+        },
+        "correct": "A"
+    },
+// CHUONG 2
+//p1p1
+    {
+        "question": "What is the primary function of the control unit in a CPU? (chương 2)",
+        "options": {
+        "A": "Handling network communication",
+        "B": "Executing arithmetic operations",
+        "C": "Coordinating and controlling CPU activities",
+        "D": "Managing memory storage"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "In the context of the CPU, what is a register? (chương 2)",
+        "options": {
+        "A": "Output devices",
+        "B": "Temporary storage locations within the CPU",
+        "C": "External storage devices",
+        "D": "Secondary storage units"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Which unit within the CPU is responsible for executing arithmetic and logical operations? (chương 2)",
+        "options": {
+        "A": "Register file",
+        "B": "Cache memory",
+        "C": "ALU (Arithmetic Logic Unit)",
+        "D": "Control Unit"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "What is the purpose of the Arithmetic Logic Unit (ALU) in the CPU? (chương 2)",
+        "options": {
+        "A": "Handling network communication",
+        "B": "Managing memory storage",
+        "C": "Executing arithmetic and logic operations",
+        "D": "Controlling input/output devices"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "What does CPU stand for in computer architecture? (chương 2)",
+        "options": {
+        "A": "Central Processing Unit",
+        "B": "Computer Peripheral Unit",
+        "C": "Control and Processing Unit",
+        "D": "Central Peripheral Unit"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Which component is responsible for coordinating and controlling the activities of the CPU? (chương 2)",
+        "options": {
+        "A": "Register file",
+        "B": "ALU (Arithmetic Logic Unit)",
+        "C": "Cache memory",
+        "D": "Control Unit"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "How does the CPU use the instruction register during the fetch-decode-execute cycle? (chương 2)",
+        "options": {
+        "A": "Controlling input/output devices",
+        "B": "Managing memory storage",
+        "C": "Storing the current instruction being executed",
+        "D": "Handling network communication"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Which component of the CPU is responsible for fetching instructions from memory? (chương 2)",
+        "options": {
+        "A": "Cache memory",
+        "B": "Control Unit",
+        "C": "Register file",
+        "D": "ALU (Arithmetic Logic Unit)"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "What is the purpose of the cache memory in a CPU? (chương 2)",
+        "options": {
+        "A": "Temporarily storing frequently used data for quick access",
+        "B": "Storing the operating system",
+        "C": "Providing long-term storage",
+        "D": "Managing input/output operations"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Which type of memory is non-volatile and retains its content even when the power is turned off? (chương 2)",
+        "options": {
+        "A": "Virtual memory",
+        "B": "Cache memory",
+        "C": "RAM (Random Access Memory)",
+        "D": "ROM (Read-Only Memory)"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "What is the significance of the fetch-decode-execute cycle in the CPU? (chương 2)",
+        "options": {
+        "A": "Fetching, decoding, and executing instructions in a loop",
+        "B": "Executing instructions in a sequential manner",
+        "C": "Managing input/output operations",
+        "D": "Controlling the flow of data within the CPU"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "What is the purpose of the clock signal in a CPU? (chương 2)",
+        "options": {
+        "A": "Synchronizing and regulating the execution of instructions",
+        "B": "Controlling the flow of data within the CPU",
+        "C": "Executing arithmetic and logic operations",
+        "D": "Managing memory access"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Which part of the CPU is responsible for temporarily storing data during processing? (chương 2)",
+        "options": {
+        "A": "Cache memory",
+        "B": "Register file",
+        "C": "Control Unit",
+        "D": "ALU (Arithmetic Logic Unit)"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "What role does the accumulator play in the CPU? (chương 2)",
+        "options": {
+        "A": "Storing the result of arithmetic operations",
+        "B": "Managing memory storage",
+        "C": "Controlling input/output devices",
+        "D": "Handling network communication"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Which type of memory is directly connected to the CPU and stores frequently used data? (chương 2)",
+        "options": {
+        "A": "Hard disk",
+        "B": "ROM (Read-Only Memory)",
+        "C": "Cache memory",
+        "D": "RAM (Random Access Memory)"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Which type of memory contains the BIOS (Basic Input/Output System) in a computer system? (chương 2)",
+        "options": {
+        "A": "Cache memory",
+        "B": "RAM (Random Access Memory)",
+        "C": "ROM (Read-Only Memory)",
+        "D": "Virtual memory"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "What does the term \"clock speed\" refer to in the context of the CPU? (chương 2)",
+        "options": {
+        "A": "The speed at which data is transferred between the CPU and memory",
+        "B": "The size of the cache memory",
+        "C": "The number of cores in a processor",
+        "D": "The frequency at which the CPU executes instructions"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "What is the function of the instruction register in the CPU? (chương 2)",
+        "options": {
+        "A": "Handling network communication",
+        "B": "Controlling input/output devices",
+        "C": "Managing memory storage",
+        "D": "Storing the current instruction being executed"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "What is the purpose of the data bus in the CPU? (chương 2)",
+        "options": {
+        "A": "Managing power distribution",
+        "B": "Connecting the CPU to external devices",
+        "C": "Facilitating communication between CPU and memory",
+        "D": "Controlling the display resolution"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "In a CPU, what is the role of the program counter (PC)? (chương 2)",
+        "options": {
+        "A": "Managing memory storage",
+        "B": "Handling network communication",
+        "C": "Storing the current instruction being executed",
+        "D": "Controlling input/output devices"
+        },
+        "correct": "C"
+    },
+
+//p2
+    {
+        "question": "In a normal n-bit adder, to find out if an overflow as occurred we make use of ________ (chương 2)",
+        "options": {
+        "A": "Nor gate",
+        "B": "Nand gate",
+        "C": "And gate",
+        "D": "Xor gate"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "For the addition of large integers, most of the systems make use of ______ (chương 2)",
+        "options": {
+        "A": "Full adders",
+        "B": "Fast adders",
+        "C": "None of the mentioned",
+        "D": "Carry look-ahead adders"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "When we perform subtraction on -7 and 1 the answer in 2's complement form is _________ (chương 2)",
+        "options": {
+        "A": "0110",
+        "B": "1110",
+        "C": "1010",
+        "D": "1000"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Which method/s of representation of numbers occupies a large amount of memory than others? (chương 2)",
+        "options": {
+        "A": "1's & 2's compliment",
+        "B": "1's complement",
+        "C": "2's complement",
+        "D": "Sign-magnitude"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "When we perform subtraction on -7 and -5 the answer in 2's complement form is ________ (chương 2)",
+        "options": {
+        "A": "1110",
+        "B": "1010",
+        "C": "0010",
+        "D": "11110"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Which representation is most efficient to perform arithmetic operations on the numbers? (chương 2)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "2'S complement",
+        "C": "Sign-magnitude",
+        "D": "1's complement"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "When we subtract -3 from 2 , the answer in 2's complement form is _________ (chương 2)",
+        "options": {
+        "A": "1101",
+        "B": "0001",
+        "C": "0101",
+        "D": "1001"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The most efficient method followed by computers to multiply two unsigned numbers is _______ (chương 2)",
+        "options": {
+        "A": "Booth algorithm",
+        "B": "Bit pair recording of multipliers",
+        "C": "Non restoring algorithm",
+        "D": "Restoring algorithm"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "In the implementation of a Multiplier circuit in the system we make use of _______ (chương 2)",
+        "options": {
+        "A": "Counter",
+        "B": "Flip flop",
+        "C": "Push down stack",
+        "D": "Shift register"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "The Flag 'V' is set to 1 indicates that _____________ (chương 2)",
+        "options": {
+        "A": "The operation is validated",
+        "B": "None of the mentioned",
+        "C": "The operation has resulted in an overflow",
+        "D": "The operation is valid"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The processor keeps track of the results of its operations using flags called ________ (chương 2)",
+        "options": {
+        "A": "Conditional code flags",
+        "B": "Test output flags",
+        "C": "None of the mentioned",
+        "D": "Type flags"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "In some pipelined systems, a different instruction is used to add to numbers which can affect the flags upon execution. That instruction is _______ (chương 2)",
+        "options": {
+        "A": "AddCC",
+        "B": "SumSetCC",
+        "C": "AddSetCC",
+        "D": "Add++"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "When 1101 is used to divide 100010010 the remainder is ______ (chương 2)",
+        "options": {
+        "A": "1",
+        "B": "11",
+        "C": "0",
+        "D": "101"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The register used to store the flags is called as _________ (chương 2)",
+        "options": {
+        "A": "Log register",
+        "B": "Test register",
+        "C": "Flag register",
+        "D": "Status register"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Which method of representation has two representations for '0'? (chương 2)",
+        "options": {
+        "A": "Sign-magnitude",
+        "B": "None of the mentioned",
+        "C": "1's complement",
+        "D": "2's complement"
+        },
+        "correct": "A"
+    },
+//p3
+    {
+        "question": "In pipeline processing, what is meant by the term \"pipeline bubble\"? (chương 2)",
+        "options": {
+        "A": "A wasted clock cycle due to a stalled pipeline",
+        "B": "A clock speed bottleneck",
+        "C": "A structural hazard",
+        "D": "A delay in instruction fetching"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "In a CPU pipeline, what is the purpose of the instruction fetch stage? (chương 2)",
+        "options": {
+        "A": "Store results in registers",
+        "B": "Fetch instructions from memory",
+        "C": "Execute arithmetic operations",
+        "D": "Decode instructions"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "What is the primary advantage of pipelining in terms of instruction throughput? (chương 2)",
+        "options": {
+        "A": "Overlapping the execution of multiple instructions",
+        "B": "Eliminating the need for cache memory",
+        "C": "Reducing the number of pipeline stages",
+        "D": "Increasing the clock speed"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "What is the primary challenge associated with branch instructions in a pipeline? (chương 2)",
+        "options": {
+        "A": "Increasing the number of registers",
+        "B": "Control hazards and pipeline stalls",
+        "C": "Reducing clock speed",
+        "D": "Eliminating data hazards"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "What is the primary goal of pipeline technique in CPU architecture? (chương 2)",
+        "options": {
+        "A": "Increasing instruction execution throughput",
+        "B": "Reducing clock speed",
+        "C": "Minimizing the number of registers",
+        "D": "Eliminating cache memory"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "What term describes a hazard in a pipeline, where the next instruction depends on the result of the previous instruction? (chương 2)",
+        "options": {
+        "A": "Data hazard",
+        "B": "Pipeline stall",
+        "C": "Control hazard",
+        "D": "Instruction fetch"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "What is the role of the hazard detection unit in a pipeline architecture? (chương 2)",
+        "options": {
+        "A": "Identifying and handling hazards",
+        "B": "Eliminating cache memory",
+        "C": "Controlling the clock speed",
+        "D": "Preventing structural hazards"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "What is the purpose of the instruction issue stage in a CPU pipeline? (chương 2)",
+        "options": {
+        "A": "Storing results in registers",
+        "B": "Decoding instructions",
+        "C": "Fetching instructions from memory",
+        "D": "Initiating the execution of instructions"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "What type of hazard occurs when an instruction is not ready to proceed to the next stage of the pipeline? (chương 2)",
+        "options": {
+        "A": "Pipeline stall",
+        "B": "Data hazard",
+        "C": "Structural hazard",
+        "D": "Control hazard"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "In a CPU pipeline, what is the term for the time it takes to complete a single instruction from start to finish? (chương 2)",
+        "options": {
+        "A": "Clock cycle",
+        "B": "Latency",
+        "C": "Throughput",
+        "D": "Pipeline bubble"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "What is a drawback of pipeline processing in terms of potential hazards? (chương 2)",
+        "options": {
+        "A": "Pipeline stalls and hazards",
+        "B": "Elimination of cache memory",
+        "C": "Increased clock speed",
+        "D": "Reduced instruction set"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "In a pipeline, what is a structural hazard? (chương 2)",
+        "options": {
+        "A": "A delay in instruction fetching",
+        "B": "A resource conflict preventing simultaneous execution",
+        "C": "A delay due to data dependencies",
+        "D": "A pipeline stall due to a control hazard"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "How does pipelining contribute to overall CPU efficiency? (chương 2)",
+        "options": {
+        "A": "By reducing the number of registers",
+        "B": "By increasing clock speed",
+        "C": "By overlapping the execution of multiple instructions",
+        "D": "By eliminating cache memory"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Which stage of the pipeline is responsible for decoding the instruction and determining the operation to be performed? (chương 2)",
+        "options": {
+        "A": "Write-back",
+        "B": "Decode",
+        "C": "Execute",
+        "D": "Fetch"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "How does the use of forwarding (data hazards resolution) contribute to pipeline efficiency? (chương 2)",
+        "options": {
+        "A": "Eliminating the need for cache memory",
+        "B": "Reducing clock speed",
+        "C": "Minimizing stalls by forwarding data directly between pipeline stages",
+        "D": "Increasing the number of pipeline stages"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "In a CPU pipeline, what is the term for an instruction that is being processed in a stage of the pipeline? (chương 2)",
+        "options": {
+        "A": "In-flight instruction",
+        "B": "Fetch instruction",
+        "C": "Stalled instruction",
+        "D": "Pipeline hazard"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "How does pipelining impact the overall throughput of a CPU? (chương 2)",
+        "options": {
+        "A": "Increases the clock speed",
+        "B": "Allows multiple instructions to be processed simultaneously",
+        "C": "Reduces instruction execution throughput",
+        "D": "Eliminates the need for cache memory"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "How does pipeline parallelism improve CPU performance? (chương 2)",
+        "options": {
+        "A": "By reducing the number of pipeline stages",
+        "B": "By allowing multiple instructions to be processed simultaneously",
+        "C": "By increasing the clock speed",
+        "D": "By eliminating cache memory"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "What is the purpose of the write-back stage in a CPU pipeline? (chương 2)",
+        "options": {
+        "A": "Executing arithmetic operations",
+        "B": "Storing results in registers",
+        "C": "Decoding instructions",
+        "D": "Fetching instructions from memory"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "What is the purpose of the pipeline stage known as \"execute\"? (chương 2)",
+        "options": {
+        "A": "Decoding instructions",
+        "B": "Fetching instructions from memory",
+        "C": "Storing results in registers",
+        "D": "Performing arithmetic and logic operations"
+        },
+        "correct": "D"
+    },
+//P4
+    {
+        "question": "The Instruction fetch phase ends with _________ (chương 2)",
+        "options": {
+        "A": "Decoding the data in MDR and placing it in IR",
+        "B": "Placing the address of the data into MAR",
+        "C": "Placing the data from the address in MAR into MDR",
+        "D": "Completing the execution of the data and placing its storage address into MAR"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The two phases of executing an instruction are __________ (chương 2)",
+        "options": {
+        "A": "Instruction execution and storage",
+        "B": "Instruction fetch and Instruction processing",
+        "C": "Instruction decoding and storage",
+        "D": "Instruction fetch and instruction execution"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "When using Branching, the usual sequencing of the PC is altered. A new instruction is loaded which is called as ______ (chương 2)",
+        "options": {
+        "A": "Loop target",
+        "B": "Forward target",
+        "C": "Branch target",
+        "D": "Jump instruction"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The condition flag Z is set to 1 to indicate _______ (chương 2)",
+        "options": {
+        "A": "The result is zero",
+        "B": "The operation requires an interrupt call",
+        "C": "There is no empty register available",
+        "D": "The operation has resulted in an error"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "In a system, which has 32 registers the register id is __________ long. (chương 2)",
+        "options": {
+        "A": "16 bit",
+        "B": "8 bits",
+        "C": "5 bits",
+        "D": "6 bits"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The instruction, Add R1,R2,R3 in RTN is _______ (chương 2)",
+        "options": {
+        "A": "R3=[R1]+[R2]",
+        "B": "R3<-[R1]+[R2]+[R3]",
+        "C": "R3=R1+R2+R3",
+        "D": "R3<-[R1]+[R2]"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "The instruction, Add Loc,R1 in RTN is _______ (chương 2)",
+        "options": {
+        "A": "AddSetCC Loc+R1",
+        "B": "Not possible to write in RTN",
+        "C": "R1=Loc+R1",
+        "D": "R1<-[Loc]+[R1]"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "While using the iterative construct (Branching) in execution _____________ instruction is used to check the condition. (chương 2)",
+        "options": {
+        "A": "TestCondn",
+        "B": "None of the mentioned",
+        "C": "TestAndSet",
+        "D": "Branch"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "RTN stands for ___________ (chương 2)",
+        "options": {
+        "A": "Regular Transmission Notation",
+        "B": "Regular Transfer Notation",
+        "C": "Register Transfer Notation",
+        "D": "Register Transmission Notation"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Can you perform an addition on three operands simultaneously in ALN using Add instruction? (chương 2)",
+        "options": {
+        "A": "Not permitted",
+        "B": "Yes",
+        "C": "None of the mentioned",
+        "D": "Not possible using Add, we’ve to use AddSetCC"
+        },
+        "correct": "A"
+    },
+// CHUONG 3
+//p1
+    {
+        "question": "What is a cache hit in the context of cache memory? (chương 3)",
+        "options": {
+        "A": "The cache is disabled",
+        "B": "The requested data is in the cache",
+        "C": "The cache is empty",
+        "D": "The requested data is not in the cache"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "How does the write-through policy in cache memory differ from the write-back policy? (chương 3)",
+        "options": {
+        "A": "Write-back updates main memory only when cache is full",
+        "B": "Write-through writes data to main memory immediately",
+        "C": "Write-back writes data to main memory immediately",
+        "D": "Write-through updates main memory only when cache is full"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Which cache replacement policy replaces the cache line that has been unused for the longest time? (chương 3)",
+        "options": {
+        "A": "Least Recently Used (LRU)",
+        "B": "First-In-First-Out (FIFO)",
+        "C": "Most Recently Used (MRU)",
+        "D": "Random Replacement"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "What is the relationship between cache size and access speed? (chương 3)",
+        "options": {
+        "A": "Cache size determines clock speed",
+        "B": "Cache size does not affect access speed",
+        "C": "Larger cache size results in faster access",
+        "D": "Smaller cache size results in faster access"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "How does cache coherence ensure data consistency in a multi-core system? (chương 3)",
+        "options": {
+        "A": "By controlling clock speed",
+        "B": "By preventing cache hits",
+        "C": "By synchronizing the content of different caches",
+        "D": "By increasing cache size"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "In a computer system, what is the purpose of the cache controller? (chương 3)",
+        "options": {
+        "A": "Coordinating cache access",
+        "B": "Controlling input/output devices",
+        "C": "Managing long-term storage",
+        "D": "Executing arithmetic operations"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "What is the primary role of the tag in a cache memory address? (chương 3)",
+        "options": {
+        "A": "Determining cache hit or miss",
+        "B": "Temporarily storing data",
+        "C": "Managing input/output operations",
+        "D": "Controlling clock speed"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "What is the benefit of having a multi-level cache hierarchy (e.g., L1, L2, L3)? (chương 3)",
+        "options": {
+        "A": "Decreased overall cache size",
+        "B": "Elimination of cache hits",
+        "C": "Increased overall cache size",
+        "D": "Slower access times"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "In cache memory, what is the purpose of the Least Recently Used (LRU) algorithm? (chương 3)",
+        "options": {
+        "A": "Managing long-term storage",
+        "B": "Controlling clock speed",
+        "C": "Temporarily storing frequently used data",
+        "D": "Determining cache hit or miss"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "What is the primary disadvantage of a direct-mapped cache? (chương 3)",
+        "options": {
+        "A": "Larger cache size",
+        "B": "Limited associativity",
+        "C": "Slower access times",
+        "D": "Higher complexity"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "In cache memory, what is the purpose of the set-associative mapping? (chương 3)",
+        "options": {
+        "A": "Determining cache hit or miss",
+        "B": "Controlling the clock speed",
+        "C": "Coordinating cache access",
+        "D": "Organizing cache lines into sets for associativity"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "What is the term for a situation where the requested data is not found in the cache? (chương 3)",
+        "options": {
+        "A": "Cache controller",
+        "B": "Cache line",
+        "C": "Cache hit",
+        "D": "Cache miss"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Which type of cache is located on the CPU chip itself? (chương 3)",
+        "options": {
+        "A": "Level 3 (L3) cache",
+        "B": "Level 2 (L2) cache",
+        "C": "Level 1 (L1) cache",
+        "D": "Virtual cache"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "What is the purpose of prefetching in cache memory? (chương 3)",
+        "options": {
+        "A": "Controlling the clock speed",
+        "B": "Eliminating cache misses",
+        "C": "Anticipating and loading data into the cache before it is requested",
+        "D": "Temporarily storing frequently used data"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "What is the primary purpose of cache memory in a computer system? (chương 3)",
+        "options": {
+        "A": "Storing long-term data",
+        "B": "Providing high-speed access to frequently used data",
+        "C": "Controlling the clock speed",
+        "D": "Managing input/output operations"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "What is the purpose of a cache line in cache memory? (chương 3)",
+        "options": {
+        "A": "Coordinating cache access",
+        "B": "Temporarily storing frequently used data",
+        "C": "Storing data permanently",
+        "D": "Managing input/output operations"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "What is the purpose of the write-back policy in cache memory? (chương 3)",
+        "options": {
+        "A": "Writing data to main memory immediately",
+        "B": "Updating main memory only when cache is full",
+        "C": "Storing data permanently",
+        "D": "Temporarily storing frequently used data"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "How does associativity in cache memory affect its performance? (chương 3)",
+        "options": {
+        "A": "Higher associativity leads to faster access times",
+        "B": "Lower associativity leads to faster access times",
+        "C": "Associativity does not impact access times",
+        "D": "Associativity determines clock speed"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "How does cache memory contribute to overall system performance? (chương 3)",
+        "options": {
+        "A": "By providing fast access to frequently used data",
+        "B": "By reducing the clock speed",
+        "C": "By increasing the size of main memory",
+        "D": "By eliminating the need for registers"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "What is the impact of cache memory on power consumption in a computer system? (chương 3)",
+        "options": {
+        "A": "Decreased power consumption",
+        "B": "Cache has no effect on power consumption",
+        "C": "Power consumption is determined by clock speed",
+        "D": "Increased power consumption"
+        },
+        "correct": "D"
+    },
+//P2
+    {
+        "question": "What is the purpose of the write-back policy in cache memory? (chương 3)",
+        "options": {
+        "A": "Updating main memory only when cache is full",
+        "B": "Writing data to main memory immediately",
+        "C": "Storing data permanently",
+        "D": "Temporarily storing frequently used data"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "How does associativity in cache memory affect its performance? (chương 3)",
+        "options": {
+        "A": "Higher associativity leads to faster access times",
+        "B": "Lower associativity leads to faster access times",
+        "C": "Associativity does not impact access times",
+        "D": "Associativity determines clock speed"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "How does cache memory contribute to overall system performance? (chương 3)",
+        "options": {
+        "A": "By increasing the size of main memory",
+        "B": "By eliminating the need for registers",
+        "C": "By reducing the clock speed",
+        "D": "By providing fast access to frequently used data"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "What is the purpose of a cache line in cache memory? (chương 3)",
+        "options": {
+        "A": "Temporarily storing frequently used data",
+        "B": "Storing data permanently",
+        "C": "Managing input/output operations",
+        "D": "Coordinating cache access"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "What is the primary role of the tag in a cache memory address? (chương 3)",
+        "options": {
+        "A": "Controlling clock speed",
+        "B": "Temporarily storing data",
+        "C": "Determining cache hit or miss",
+        "D": "Managing input/output operations"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "What is the relationship between cache size and access speed? (chương 3)",
+        "options": {
+        "A": "Cache size determines clock speed",
+        "B": "Smaller cache size results in faster access",
+        "C": "Cache size does not affect access speed",
+        "D": "Larger cache size results in faster access"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "What is the purpose of prefetching in cache memory? (chương 3)",
+        "options": {
+        "A": "Eliminating cache misses",
+        "B": "Anticipating and loading data into the cache before it is requested",
+        "C": "Controlling the clock speed",
+        "D": "Temporarily storing frequently used data"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "How does cache coherence ensure data consistency in a multi-core system? (chương 3)",
+        "options": {
+        "A": "By preventing cache hits",
+        "B": "By synchronizing the content of different caches",
+        "C": "By controlling clock speed",
+        "D": "By increasing cache size"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "How does the write-through policy in cache memory differ from the write-back policy? (chương 3)",
+        "options": {
+        "A": "Write-back writes data to main memory immediately",
+        "B": "Write-through updates main memory only when cache is full",
+        "C": "Write-through writes data to main memory immediately",
+        "D": "Write-back updates main memory only when cache is full"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "What is a cache hit in the context of cache memory? (chương 3)",
+        "options": {
+        "A": "The cache is disabled",
+        "B": "The requested data is not in the cache",
+        "C": "The cache is empty",
+        "D": "The requested data is in the cache"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "In cache memory, what is the purpose of the Least Recently Used (LRU) algorithm? (chương 3)",
+        "options": {
+        "A": "Managing long-term storage",
+        "B": "Temporarily storing frequently used data",
+        "C": "Determining cache hit or miss",
+        "D": "Controlling clock speed"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Which cache replacement policy replaces the cache line that has been unused for the longest time? (chương 3)",
+        "options": {
+        "A": "First-In-First-Out (FIFO)",
+        "B": "Random Replacement",
+        "C": "Least Recently Used (LRU)",
+        "D": "Most Recently Used (MRU)"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "What is the impact of cache memory on power consumption in a computer system? (chương 3)",
+        "options": {
+        "A": "Power consumption is determined by clock speed",
+        "B": "Cache has no effect on power consumption",
+        "C": "Decreased power consumption",
+        "D": "Increased power consumption"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "What is the term for a situation where the requested data is not found in the cache? (chương 3)",
+        "options": {
+        "A": "Cache miss",
+        "B": "Cache hit",
+        "C": "Cache line",
+        "D": "Cache controller"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "What is the primary disadvantage of a direct-mapped cache? (chương 3)",
+        "options": {
+        "A": "Larger cache size",
+        "B": "Slower access times",
+        "C": "Limited associativity",
+        "D": "Higher complexity"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "In cache memory, what is the purpose of the set-associative mapping? (chương 3)",
+        "options": {
+        "A": "Determining cache hit or miss",
+        "B": "Organizing cache lines into sets for associativity",
+        "C": "Coordinating cache access",
+        "D": "Controlling the clock speed"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Which type of cache is located on the CPU chip itself? (chương 3)",
+        "options": {
+        "A": "Level 3 (L3) cache",
+        "B": "Level 1 (L1) cache",
+        "C": "Level 2 (L2) cache",
+        "D": "Virtual cache"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "What is the primary purpose of cache memory in a computer system? (chương 3)",
+        "options": {
+        "A": "Managing input/output operations",
+        "B": "Controlling the clock speed",
+        "C": "Providing high-speed access to frequently used data",
+        "D": "Storing long-term data"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "In a computer system, what is the purpose of the cache controller? (chương 3)",
+        "options": {
+        "A": "Managing long-term storage",
+        "B": "Controlling input/output devices",
+        "C": "Executing arithmetic operations",
+        "D": "Coordinating cache access"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "What is the benefit of having a multi-level cache hierarchy (e.g., L1, L2, L3)? (chương 3)",
+        "options": {
+        "A": "Elimination of cache hits",
+        "B": "Decreased overall cache size",
+        "C": "Slower access times",
+        "D": "Increased overall cache size"
+        },
+        "correct": "D"
+    },
+//CHUONG 4
+    {
+        "question": "The type of memory assignment used in Intel processors is _____ (chương 4)",
+        "options": {
+        "A": "Medium Endian",
+        "B": "Big Endian",
+        "C": "None of the mentioned",
+        "D": "Little Endian"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "To get the physical address from the logical address generated by CPU we use ____________ (chương 4)",
+        "options": {
+        "A": "MAR",
+        "B": "MMU",
+        "C": "Overlays",
+        "D": "TLB"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The collection of the above mentioned entities where data is stored is called ______ (chương 4)",
+        "options": {
+        "A": "Block",
+        "B": "Word",
+        "C": "Set",
+        "D": "Byte"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Physical memory is divided into sets of finite size called as ______ (chương 4)",
+        "options": {
+        "A": "Vectors",
+        "B": "Frames",
+        "C": "Pages",
+        "D": "Blocks"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "During the transfer of data between the processor and memory we use ______ (chương 4)",
+        "options": {
+        "A": "TLB",
+        "B": "Cache",
+        "C": "Registers",
+        "D": "Buffers"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The smallest entity of memory is called _______ (chương 4)",
+        "options": {
+        "A": "Cell",
+        "B": "Instance",
+        "C": "Unit",
+        "D": "Block"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "If a system is 64 bit machine, then the length of each word will be _______ (chương 4)",
+        "options": {
+        "A": "12 bytes",
+        "B": "8 bytes",
+        "C": "16 bytes",
+        "D": "4 bytes"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "_____ method is used to map logical addresses of variable length onto physical memory. (chương 4)",
+        "options": {
+        "A": "Segmentation",
+        "B": "Overlays",
+        "C": "Paging with segmentation",
+        "D": "Paging"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "An 24 bit address generates an address space of ______ locations. (chương 4)",
+        "options": {
+        "A": "4096",
+        "B": "248",
+        "C": "1024",
+        "D": "16,777,216"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "When using the Big Endian assignment to store a number, the sign bit of the number is stored in _____ (chương 4)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "The higher order byte of the word",
+        "C": "Can’t say",
+        "D": "The lower order byte of the word"
+        },
+        "correct": "B"
+    },
+//p2
+    {
+        "question": "Does the Load instruction do the following operation/s? (chương 4)",
+        "options": {
+        "A": "Loads the contents of a location onto the accumulators",
+        "B": "Loads the contents of a disc onto a memory location",
+        "C": "Load the contents of the PCB onto the register",
+        "D": "None of the mentioned"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The instruction, Add #45,R1 does _______ (chương 4)",
+        "options": {
+        "A": "Finds the memory location 45 and adds that content to that of R1",
+        "B": "None of the mentioned",
+        "C": "Adds the value of 45 to the address of R1 and stores 45 in that address",
+        "D": "Adds 45 to the value of R1 and stores it in R1"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "The BOOT sector files of the system are stored in ___________ (chương 4)",
+        "options": {
+        "A": "Fast solid state chips in the motherboard",
+        "B": "Harddisk",
+        "C": "ROM",
+        "D": "RAM"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Complete the following analogy:- Registers are to RAM’s as Cache’s are to ___________ (chương 4)",
+        "options": {
+        "A": "Overlays",
+        "B": "System stacks",
+        "C": "Page Table",
+        "D": "TLB"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "_____ addressing mode is most suitable to change the normal sequence of execution of instructions. (chương 4)",
+        "options": {
+        "A": "Indirect",
+        "B": "Immediate",
+        "C": "Relative",
+        "D": "Index with Offset"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Add #45, when this instruction is executed the following happen/s _______ (chương 4)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "The processor raises an error and requests for one more operand",
+        "C": "The value 45 gets added to the value on the stack and is pushed onto the stack",
+        "D": "The value stored in memory location 45 is retrieved and one more operand is requested"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "The transfer of large chunks of data with the involvement of the processor is done by _______ (chương 4)",
+        "options": {
+        "A": "User system programs",
+        "B": "DMA controller",
+        "C": "Arbitrator",
+        "D": "None of the mentioned"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The technique used to store programs larger than the memory is ____________ (chương 4)",
+        "options": {
+        "A": "Both Extension registers and Buffers",
+        "B": "Overlays",
+        "C": "Extension registers",
+        "D": "Buffers"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The addressing mode, where you directly specify the operand value is _______ (chương 4)",
+        "options": {
+        "A": "Direct",
+        "B": "Relative",
+        "C": "Immediate",
+        "D": "Definite"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The addressing mode/s, which uses the PC instead of a general purpose register is ______ (chương 4)",
+        "options": {
+        "A": "Relative",
+        "B": "Direct",
+        "C": "Indexed with offset",
+        "D": "Both Indexed with offset and direct"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "When generating physical addresses from a logical address the offset is stored in __________ (chương 4)",
+        "options": {
+        "A": "Shift register",
+        "B": "Page table",
+        "C": "Translation look-aside buffer",
+        "D": "Relocation register"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "If we want to perform memory or arithmetic operations on data in Hexa-decimal mode then we use _________ symbol before the operand. (chương 4)",
+        "options": {
+        "A": "~",
+        "B": "*",
+        "C": "!",
+        "D": "$"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "The effective address of the following instruction is MUL 5(R1,R2). (chương 4)",
+        "options": {
+        "A": "5+R1+R2",
+        "B": "5*([R1]+[R2])",
+        "C": "5+[R1]+[R2]",
+        "D": "5+(R1*R2)"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "Which of the following techniques used to effectively utilize main memory? (chương 4)",
+        "options": {
+        "A": "Dynamic loading",
+        "B": "Dynamic linking",
+        "C": "Both Dynamic linking and loading",
+        "D": "Address binding"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The unit which acts as an intermediate agent between memory and backing store to reduce process time is ___________ (chương 4)",
+        "options": {
+        "A": "TLB’s",
+        "B": "Cache",
+        "C": "Page tables",
+        "D": "Registers"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "When we use auto increment or auto decrements, which of the following is/are true? 1) In both, the address is used to retrieve the operand and then the address gets altered; 2) In auto increment, the operand is retrieved first and then the address altered; 3) Both of them can be used on general purpose registers as well as memory locations (chương 4)",
+        "options": {
+        "A": "2, 3",
+        "B": "1, 3",
+        "C": "2",
+        "D": "1, 2, 3"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The addressing mode which makes use of in-direction pointers is ______ (chương 4)",
+        "options": {
+        "A": "Relative addressing mode",
+        "B": "Index addressing mode",
+        "C": "Offset addressing mode",
+        "D": "Indirect addressing mode"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "Add #%01011101,R1 , when this instruction is executed then _________ (chương 4)",
+        "options": {
+        "A": "The binary addition between the operands takes place",
+        "B": "The addition doesn’t take place, whereas this is similar to a MOV instruction",
+        "C": "None of the mentioned",
+        "D": "The Numerical value represented by the binary value is added to the value of R1"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "a) EA = 5+R1 (chương 4)",
+        "options": {
+        "A": "EA = 5+[R1]",
+        "B": "EA = [R1]",
+        "C": "EA = R1"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "In the case of, Zero-address instruction method the operands are stored in _____ (chương 4)",
+        "options": {
+        "A": "Accumulators",
+        "B": "Cache",
+        "C": "Registers",
+        "D": "Push down stack"
+        },
+        "correct": "D"
+    }
     ];
-
-    let currentQuestion = 0;
-    let score = 0;
-    let correctAnswers = 0; // Added for score counter
-    let totalAnswered = 0; // Added for score counter
-    let selectedQuestions = questions;
-    let timer;
-    let countdownInterval;
-    let isAudioPlaying = true;
-    let currentTrack = null;
-    let answers = Array(questions.length).fill(null).map(() => ({ selected: null, completed: false }));
-    const audio = document.getElementById('background-music');
-    const toggleAudioBtn = document.getElementById('toggle-audio');
-    const playlistContainer = document.getElementById('playlist');
-    const skipBtn = document.getElementById('skip');
-    const scoreCounter = document.getElementById('score-counter'); // Added for score counter
-    const backBtn = document.getElementById('back');
-
-    const circle = document.getElementById('progressCircle');
-    const timeText = document.getElementById('timeText');
-    const radius = 27;
-    const circumference = 2 * Math.PI * radius;
-
-    circle.style.strokeDasharray = circumference;
-
-    // Danh sách bài nhạc
-    const playlist = [
-      { value: 'tiktik.mp3', name: 'Clock Tick' },
-      { value: 'MatKetNoi.mp3', name: 'Mất Kết Nối' },
-      { value: 'NhacKhongLoiGuitar.mp3', name: 'Nhạc Không Lời Guitar' },
-      { value: 'GapEmDungLuc.mp3', name: 'Gặp Em Đúng Lúc' },
-      { value: 'TuoiTreTheHeBacHo.mp3', name: 'Tuổi Trẻ Thế Hệ Bác Hồ' },
-      { value: 'NhacThai.mp3', name: 'Nhạc Thái Lan' },
-    ];
-
-    // Added: Update score counter
-    function updateScoreCounter() {
-      scoreCounter.textContent = `Số câu đúng: ${correctAnswers}/${totalAnswered}`;
-    }
-
-    // Hàm xáo trộn đáp án
-    function shuffleOptions(question) {
-      const options = Object.entries(question.options);
-      for (let i = options.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [options[i], options[j]] = [options[j], options[i]];
-      }
-      const newOptions = Object.fromEntries(options);
-      const newCorrect = options.find(([key]) => key === question.correct)[0];
-      return { ...question, options: newOptions, correct: newCorrect };
-    }
-
-    // Xáo trộn tất cả đáp án khi bắt đầu
-    function shuffleAllQuestions() {
-      selectedQuestions = questions.map(q => shuffleOptions({ ...q }));
-      answers = Array(questions.length).fill(null).map(() => ({ selected: null, completed: false }));
-    }
-
-    // Khởi tạo playlist
-    function initPlaylist() {
-      playlistContainer.innerHTML = '';
-      playlist.forEach(track => {
-        const item = document.createElement('div');
-        item.classList.add('playlist-item');
-        item.textContent = track.name;
-        item.dataset.src = track.value;
-        item.addEventListener('click', () => {
-          selectTrack(track);
-          playlistContainer.style.display = 'none';
+    const chapters = {
+      1: questions.filter(q => q.question.includes("(chương 1)")), 2: questions.filter(q => q.question.includes("(chương 2)")),
+      3: questions.filter(q => q.question.includes("(chương 3)")), 4: questions.filter(q => q.question.includes("(chương 4)"))
+    };
+    let currentQuestion = 0, correctAnswers = 0, totalAnswered = 0, selectedQuestions = [], isAudioPlaying = false, currentTrack = null, answers = [];
+    const audio = document.getElementById('background-music'), toggleAudioBtn = document.getElementById('toggle-audio'),
+    playlistContainer = document.getElementById('playlist'), skipBtn = document.getElementById('skip'), scoreCounter = document.getElementById('score-counter'),
+    backBtn = document.getElementById('back'), chapterSelect = document.getElementById('chapter-select'), startQuizBtn = document.getElementById('start-quiz'),
+    startScreen = document.getElementById('start-screen'), quizContainer = document.getElementById('quiz-container'), 
+    finalResultContainer = document.getElementById('final-result-container'), finalResultEl = document.getElementById('final-result'),
+    iconOn = document.querySelector('.icon-on'), iconOff = document.querySelector('.icon-off'), navGrid = document.getElementById('nav-grid');
+    const playlist = [ { value: 'tiktik.mp3', name: 'Clock Tick' }, { value: 'MatKetNoi.mp3', name: 'Mất Kết Nối' }, { value: 'NhacKhongLoiGuitar.mp3', name: 'Nhạc Không Lời Guitar' }, { value: 'GapEmDungLuc.mp3', name: 'Gặp Em Đúng Lúc' }, { value: 'TuoiTreTheHeBacHo.mp3', name: 'Tuổi Trẻ Thế Hệ Bác Hồ' }, { value: 'NhacThai.mp3', name: 'Nhạc Thái Lan' } ];
+    
+    function updateAudioButtonUI() { iconOn.style.display = isAudioPlaying ? 'block' : 'none'; iconOff.style.display = isAudioPlaying ? 'none' : 'block'; }
+    toggleAudioBtn.addEventListener('click', () => { isAudioPlaying = !isAudioPlaying; if (isAudioPlaying) { if (audio.src) audio.play().catch(e => console.log('Autoplay prevented')); playlistContainer.style.display = 'block'; } else { audio.pause(); playlistContainer.style.display = 'none'; } updateAudioButtonUI(); });
+    function initPlaylist() { playlistContainer.innerHTML = ''; playlist.forEach(track => { const item = document.createElement('div'); item.classList.add('playlist-item'); item.textContent = track.name; item.dataset.src = track.value; item.addEventListener('click', () => { selectTrack(track); playlistContainer.style.display = 'none'; }); playlistContainer.appendChild(item); }); selectTrack(playlist[2], false); }
+    function selectTrack(track, shouldPlay = true) { currentTrack = track; audio.src = track.value; audio.loop = true; updatePlaylistUI(); if (isAudioPlaying && shouldPlay) { audio.play().catch(e => console.log('Autoplay prevented')); } }
+    function updatePlaylistUI() { document.querySelectorAll('.playlist-item').forEach(item => { item.classList.toggle('playing', item.dataset.src === currentTrack.value); }); }
+    function updateScoreCounter() { scoreCounter.textContent = `Đã làm: ${totalAnswered}/${selectedQuestions.length}`; }
+    function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } return array; }
+    function shuffleOptions(question) { const optionsArray = shuffleArray(Object.entries(question.options)); return Object.fromEntries(optionsArray); }
+    function shuffleQuestions(questionsArray) { return shuffleArray([...questionsArray]).map(q => ({...q, options: shuffleOptions(q)})); }
+    
+    function renderQuestionNavPanel() {
+        navGrid.innerHTML = '';
+        selectedQuestions.forEach((_, index) => {
+            const navBtn = document.createElement('button');
+            navBtn.classList.add('nav-question-btn');
+            navBtn.textContent = index + 1;
+            navBtn.dataset.index = index;
+            navBtn.addEventListener('click', () => jumpToQuestion(index));
+            navGrid.appendChild(navBtn);
         });
-        playlistContainer.appendChild(item);
-      });
-      // Chọn bài đầu tiên mặc định
-      selectTrack(playlist[0]);
+        updateNavPanelUI();
     }
-
-    // Chọn bài nhạc
-    function selectTrack(track) {
-      currentTrack = track;
-      audio.src = track.value;
-      audio.loop = true; // Added: Enable loop for continuous playback
-      updatePlaylistUI();
-      if (isAudioPlaying) {
-        audio.play().catch(() => console.log('Autoplay prevented'));
-      }
+    function updateNavPanelUI() {
+        const navButtons = document.querySelectorAll('.nav-question-btn');
+        navButtons.forEach((btn, index) => {
+            btn.className = 'nav-question-btn'; // Reset class
+            const answer = answers[index];
+            if (answer.completed) {
+                if (answer.selected === selectedQuestions[index].correct) { btn.classList.add('answered-correct'); } 
+                else if (answer.selected === 'skipped') { btn.classList.add('answered-skipped'); } 
+                else { btn.classList.add('answered-incorrect'); }
+            }
+            if (index === currentQuestion) { btn.classList.add('current-question'); }
+        });
     }
-
-    // Cập nhật giao diện playlist
-    function updatePlaylistUI() {
-      const items = playlistContainer.querySelectorAll('.playlist-item');
-      items.forEach(item => {
-        if (item.dataset.src === currentTrack.value) {
-          item.classList.add('playing');
-        } else {
-          item.classList.remove('playing');
-        }
-      });
-    }
-
-    // Xử lý nút bật/tắt nhạc và hiển thị playlist
-    toggleAudioBtn.addEventListener('click', () => {
-      if (isAudioPlaying) {
-        audio.pause();
-        toggleAudioBtn.textContent = 'Bật nhạc';
-        isAudioPlaying = false;
-        playlistContainer.style.display = 'none';
-      } else {
-        audio.play().catch(() => console.log('Autoplay prevented'));
-        toggleAudioBtn.textContent = 'Tắt nhạc';
-        isAudioPlaying = true;
-        playlistContainer.style.display = 'block';
-      }
-    });
-
-    function setProgress(time) {
-      const offset = circumference - (time / 30) * circumference;
-      circle.style.strokeDashoffset = offset;
-    }
-
-    function startCountdown() {
-      let seconds = 30;
-      timeText.textContent = seconds;
-      setProgress(seconds);
-
-      countdownInterval = setInterval(() => {
-        seconds--;
-        timeText.textContent = seconds;
-        setProgress(seconds);
-        if (seconds <= 0) {
-          clearInterval(countdownInterval);
-        }
-      }, 1000);
-    }
-
-    function stopCountdown() {
-      clearInterval(countdownInterval);
-    }
+    function jumpToQuestion(index) { currentQuestion = index; displayQuestion(); }
 
     function displayQuestion() {
-      // Reset đồng hồ
-      const timerContainer = document.querySelector('.timer-container');
-      timerContainer.style.display = 'block';
-      startCountdown();
-
-      // Modified: Only play music if not already playing
-      if (isAudioPlaying && !audio.src) {
-        audio.src = currentTrack.value;
-        audio.play().catch(() => console.log('Autoplay prevented'));
-      }
-
-      // Cập nhật trạng thái nút "Quay lại"
-      backBtn.disabled = currentQuestion === 0;
-
-      // Ẩn nút "Bỏ qua" ở câu cuối
-      skipBtn.style.display = currentQuestion === selectedQuestions.length - 1 ? 'none' : 'inline-block';
-
-      const q = selectedQuestions[currentQuestion];
-      const answer = answers[currentQuestion];
-      document.getElementById('question').innerHTML = `<h3>Câu ${currentQuestion + 1}: ${q.question}</h3>`;
-
-      const optionsDiv = document.getElementById('options');
-      optionsDiv.innerHTML = '';
-      for (const [key, value] of Object.entries(q.options)) {
-        const checked = answer.selected === key ? 'checked' : '';
-        const disabled = answer.completed ? 'disabled' : '';
-        optionsDiv.innerHTML += `
-          <label>
-            <input type="radio" name="answer" value="${key}" ${checked} ${disabled}> ${key}. ${value}
-          </label>
-        `;
-      }
-
-      document.getElementById('result').innerHTML = '';
-      document.getElementById('result').className = '';
-      document.getElementById('submit').style.display = answer.completed ? 'none' : 'inline-block';
-
-      // Nếu câu đã hoàn thành, hiểnspecifies hiển thị màu sắc
-      if (answer.completed) {
-        document.querySelectorAll('input[name="answer"]').forEach(radio => {
-          const label = radio.parentElement;
-          if (radio.value === q.correct) {
-            label.classList.add('correct');
-          }
-          if (radio.checked && radio.value !== q.correct) {
-            label.classList.add('incorrect');
-          }
-        });
-        if (answer.selected === q.correct) {
-          document.getElementById('result').innerHTML = `<span class="correct">Tuyệt Vời! 🎉🎉🎉</span>`;
+        startScreen.style.display = 'none';
+        quizContainer.style.display = 'block';
+        finalResultContainer.style.display = 'none';
+        if (currentQuestion >= selectedQuestions.length) { showResult(); return; }
+        
+        const q = selectedQuestions[currentQuestion];
+        const answer = answers[currentQuestion];
+        
+        backBtn.disabled = currentQuestion === 0;
+        skipBtn.style.display = (answer.completed) ? 'none' : 'inline-block';
+        document.getElementById('question').innerHTML = `<h3>Câu ${currentQuestion + 1}: ${q.question}</h3>`;
+        
+        const optionsDiv = document.getElementById('options');
+        optionsDiv.innerHTML = '';
+        for (const [key, value] of Object.entries(q.options)) {
+            const disabled = answer.completed ? 'disabled' : '';
+            const disabledClass = answer.completed ? 'disabled' : '';
+            /*
+             ==================================================================
+             ===> CẢI TIẾN 2: Bỏ hiển thị A, B, C, D trước đáp án       <===
+             ==================================================================
+            */
+            optionsDiv.innerHTML += `<label class="${disabledClass}"><input type="radio" name="answer" value="${key}" ${disabled}>${value}</label>`;
+        }
+        document.getElementById('result').innerHTML = '';
+        
+        const existingNextBtn = document.getElementById('next-btn');
+        if (existingNextBtn) existingNextBtn.remove();
+        if (answer.completed) {
+            showAnswerFeedback(q, answer);
+            addNextButton();
         } else {
-          document.getElementById('result').innerHTML = `<span class="incorrect">Sai mất rùi! 😞😞😞</span>`;
+            document.querySelectorAll('.options label').forEach(label => {
+                label.addEventListener('click', () => {
+                    if (answers[currentQuestion].completed) return;
+                    const selectedValue = label.querySelector('input').value;
+                    processAnswer(selectedValue);
+                });
+            });
         }
-        clearTimeout(timer);
-        stopCountdown();
-        timerContainer.style.display = 'none';
-      } else {
-        // Bắt đầu bộ đếm 30 giây
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          autoShowAnswer();
-        }, 30000);
-      }
+        updateNavPanelUI();
+    }
+    
+    function showAnswerFeedback(question, answer) {
+        document.querySelectorAll('.options label').forEach(label => {
+            const radio = label.querySelector('input');
+            label.classList.add('disabled');
+            if (radio.value === question.correct) label.classList.add('correct');
+            if (radio.value === answer.selected && radio.value !== question.correct) label.classList.add('incorrect');
+        });
+        // const resultDiv = document.getElementById('result');
+        // if (answer.selected === question.correct) { resultDiv.innerHTML = `<span class="correct">Tuyệt Vời! 🎉🎉🎉</span>`; } 
+        // else if (answer.selected === 'skipped'){ resultDiv.innerHTML = `<span class="incorrect">Bạn đã bỏ qua. Đáp án là: ${question.correct}</span>`; } 
+        // else { resultDiv.innerHTML = `<span class="incorrect">Sai mất rùi! 😞😞😞</span>`; }
     }
 
-    function autoShowAnswer() {
-      const selected = document.querySelector('input[name="answer"]:checked');
-      const resultDiv = document.getElementById('result');
-      const q = selectedQuestions[currentQuestion];
-
-      // Lưu trạng thái
-      answers[currentQuestion] = {
-        selected: selected ? selected.value : null,
-        completed: true
-      };
-      // Added: Update score counter
-      totalAnswered++;
-      if (selected && selected.value === q.correct) {
-        correctAnswers++;
-      }
-      updateScoreCounter();
-
-      // Dừng đồng hồ và đếm ngược
-      document.querySelector('.timer-container').style.display = 'none';
-      stopCountdown();
-
-      // Vô hiệu hóa radio
-      document.querySelectorAll('input[name="answer"]').forEach(radio => {
-        radio.disabled = true;
-      });
-
-      // Tô màu đáp án đúng
-      document.querySelectorAll('input[name="answer"]').forEach(radio => {
-        const label = radio.parentElement;
-        if (radio.value === q.correct) {
-          label.classList.add('correct');
+    function processAnswer(selectedValue) {
+        const q = selectedQuestions[currentQuestion];
+        if (!answers[currentQuestion].completed) {
+            answers[currentQuestion] = { selected: selectedValue, completed: true };
+            if (!answers[currentQuestion].isCounted) {
+                totalAnswered++;
+                if (selectedValue === q.correct) correctAnswers++;
+                answers[currentQuestion].isCounted = true;
+            }
         }
-      });
-
-      resultDiv.innerHTML = `<span class="incorrect">Hết giờ! Đáp án đúng là: ${q.correct}</span>`;
-      document.getElementById('submit').style.display = 'none';
-      skipBtn.style.display = 'none';
-
-      // Thêm nút "Tiếp"
-      addNextButton();
+        updateScoreCounter();
+        showAnswerFeedback(q, answers[currentQuestion]);
+        skipBtn.style.display = 'none';
+        addNextButton();
+        updateNavPanelUI();
     }
-
-    function checkAnswer() {
-      clearTimeout(timer);
-      document.querySelector('.timer-container').style.display = 'none';
-      stopCountdown();
-
-      const selected = document.querySelector('input[name="answer"]:checked');
-      const resultDiv = document.getElementById('result');
-
-      if (!selected) {
-        alert("Vui lòng chọn một đáp án!");
-        if (isAudioPlaying) {
-          audio.play().catch(() => console.log('Autoplay prevented'));
-        }
-        document.querySelector('.timer-container').style.display = 'block';
-        startCountdown();
-        timer = setTimeout(() => {
-          autoShowAnswer();
-        }, 30000);
-        return;
-      }
-
-      const answer = selected.value;
-      answers[currentQuestion] = {
-        selected: answer,
-        completed: true
-      };
-      // Added: Update score counter
-      totalAnswered++;
-      if (answer === selectedQuestions[currentQuestion].correct) {
-        correctAnswers++;
-      }
-      updateScoreCounter();
-
-      const q = selectedQuestions[currentQuestion];
-
-      // Vô hiệu hóa radio
-      document.querySelectorAll('input[name="answer"]').forEach(radio => {
-        radio.disabled = true;
-      });
-
-      // Tô màu đáp án
-      document.querySelectorAll('input[name="answer"]').forEach(radio => {
-        const label = radio.parentElement;
-        if (radio.value === q.correct) {
-          label.classList.add('correct');
-        }
-        if (radio.checked && radio.value !== q.correct) {
-          label.classList.add('incorrect');
-        }
-      });
-
-      if (answer === q.correct) {
-        resultDiv.innerHTML = `<span class="correct">Tuyệt Vời! 🎉🎉🎉</span>`;
-      } else {
-        resultDiv.innerHTML = `<span class="incorrect">Sai mất rùi! 😞😞😞</span>`;
-      }
-
-      document.getElementById('submit').style.display = 'none';
-      skipBtn.style.display = 'none';
-      addNextButton();
-    }
-
-    function skipQuestion() {
-      clearTimeout(timer);
-      document.querySelector('.timer-container').style.display = 'none';
-      stopCountdown();
-
-      // // Ghi nhận câu bị bỏ qua
-      // answers[currentQuestion] = { selected: 'skipped', completed: true };
-      // // Added: Update score counter
-      // totalAnswered++;
-      // updateScoreCounter();
-
-      currentQuestion++;
-      if (currentQuestion < selectedQuestions.length) {
-        displayQuestion();
-      } else {
-        showResult();
-      }
-    }
-
-    function goBack() {
-      if (currentQuestion > 0) {
-        clearTimeout(timer);
-        document.querySelector('.timer-container').style.display = 'none';
-        stopCountdown();
-
-        currentQuestion--;
-        displayQuestion();
-      }
-    }
-
+    function skipQuestion() { processAnswer('skipped'); }
+    function goNext() { if (currentQuestion < selectedQuestions.length - 1) { jumpToQuestion(currentQuestion + 1); } else { showResult(); } }
+    function goBack() { if (currentQuestion > 0) { jumpToQuestion(currentQuestion - 1); } }
+    
     function addNextButton() {
-      const controls = document.getElementById('controls');
-      if (!document.getElementById('next-btn')) {
-        const nextBtn = document.createElement('button');
-        nextBtn.id = 'next-btn';
-        nextBtn.textContent = currentQuestion < selectedQuestions.length - 1 ? 'Tiếp' : 'Kết thúc';
-        nextBtn.onclick = () => {
-          nextBtn.remove();
-          currentQuestion++;
-          if (currentQuestion < selectedQuestions.length) {
-            displayQuestion();
-          } else {
-            showResult();
-          }
-        };
-        controls.appendChild(nextBtn);
-      }
+        const controls = document.getElementById('controls');
+        let nextBtn = document.getElementById('next-btn');
+        if (!nextBtn) { nextBtn = document.createElement('button'); nextBtn.id = 'next-btn'; controls.appendChild(nextBtn); }
+        nextBtn.textContent = (currentQuestion < selectedQuestions.length - 1) ? 'Tiếp' : 'Xem Kết Quả';
+        nextBtn.onclick = goNext;
     }
 
     function showResult() {
-      audio.pause();
-      playlistContainer.style.display = 'none';
-      document.querySelector('.timer-container').style.display = 'none';
-      stopCountdown();
-
-      // Tính điểm
-      score = 0;
-      answers.forEach((answer, index) => {
-        if (answer.selected && answer.selected !== 'skipped' && answer.selected === selectedQuestions[index].correct) {
-          score++;
-        }
-      });
-
-      const percentage = (score / selectedQuestions.length) * 100;
-      let message = '';
-      if (percentage == 100) {
-        message = "Xuất sắc! Bạn đạt điểm tuyệt đối! 🌟";
-      } else if (percentage >= 80) {
-        message = "Rất tốt! Bạn nắm vững kiến thức. 👏";
-      } else if (percentage >= 50) {
-        message = "Khá tốt, nhưng bạn có thể cải thiện thêm. 💪";
-      } else {
-        message = "Bạn cần ôn tập thêm nhé! 📚";
-      }
-
-      const finalResultDiv = document.createElement('div');
-      finalResultDiv.id = 'final-result';
-      finalResultDiv.innerHTML = `
-        <h2>Kết quả của bạn</h2>
-        <p>Bạn trả lời đúng <span class="correct">${score}</span>/<span class="total">${questions.length}</span> câu.</p>
-        <p>Tỷ lệ đúng: ${percentage.toFixed(2)}%</p>
-        <p>${message}</p>
-        <button onclick="restartQuiz()">Làm lại</button>
-      `;
-      document.body.appendChild(finalResultDiv);
+        audio.pause();
+        quizContainer.style.display = 'none';
+        finalResultContainer.style.display = 'block';
+        const percentage = (totalAnswered > 0) ? (correctAnswers / totalAnswered) * 100 : 0;
+        let message = '';
+        if (percentage == 100) message = "Xuất sắc! Bạn đạt điểm tuyệt đối! 🌟";
+        else if (percentage >= 80) message = "Rất tốt! Bạn nắm vững kiến thức. 👏";
+        else if (percentage >= 50) message = "Khá tốt, nhưng bạn có thể cải thiện thêm. 💪";
+        else message = "Bạn cần ôn tập thêm nhé! 📚";
+        finalResultEl.innerHTML = `<h2>Kết quả của bạn</h2> <p>Số câu đã trả lời: ${totalAnswered}/${selectedQuestions.length}</p> <p>Số câu đúng: <span class="correct">${correctAnswers}</span></p> <p>Tỷ lệ đúng: ${percentage.toFixed(2)}%</p> <p>${message}</p> <button onclick="restartQuiz()">Làm lại chương này</button> <button onclick="backToChapterSelection()">Chọn chương khác</button>`;
     }
+    
+    function resetState() { currentQuestion = 0; correctAnswers = 0; totalAnswered = 0; finalResultContainer.style.display = 'none'; updateScoreCounter(); }
+    function restartQuiz() { resetState(); selectedQuestions = shuffleQuestions(selectedQuestions); answers = Array(selectedQuestions.length).fill(null).map(() => ({ selected: null, completed: false, isCounted: false })); updateScoreCounter(); renderQuestionNavPanel(); displayQuestion(); if (isAudioPlaying) audio.play().catch(e => console.log(e)); }
+    function backToChapterSelection() { resetState(); quizContainer.style.display = 'none'; startScreen.style.display = 'block'; }
+    
+    startQuizBtn.addEventListener('click', () => {
+        const selectedChapter = chapterSelect.value;
+        if (selectedChapter === 'all') { selectedQuestions = shuffleQuestions(questions); } 
+        else { selectedQuestions = shuffleQuestions(chapters[selectedChapter]); }
+        if (selectedQuestions.length === 0){ alert("Chương này không có câu hỏi nào."); return; }
+        resetState();
+        answers = Array(selectedQuestions.length).fill(null).map(() => ({ selected: null, completed: false, isCounted: false }));
+        updateScoreCounter();
+        renderQuestionNavPanel();
+        displayQuestion();
+    });
 
-    // Hàm làm lại quiz
-    function restartQuiz() {
-      currentQuestion = 0;
-      score = 0;
-      correctAnswers = 0; // Added: Reset score counter
-      totalAnswered = 0; // Added: Reset score counter
-      updateScoreCounter(); // Added: Update score counter
-      shuffleAllQuestions();
-      document.getElementById('final-result').remove();
-      displayQuestion();
-      if (isAudioPlaying) {
-        audio.play().catch(() => console.log('Autoplay prevented'));
-      }
-    }
-
-    // Sự kiện cho nút Skip và Back
     skipBtn.addEventListener('click', skipQuestion);
     backBtn.addEventListener('click', goBack);
 
-    // Khởi tạo quiz với đáp án xáo trộn
-    shuffleAllQuestions();
-
-    // Khởi tạo playlist khi tải trang
     initPlaylist();
-
-    document.getElementById('submit').addEventListener('click', checkAnswer);
-    displayQuestion();
+    updateAudioButtonUI();
+    backToChapterSelection();
   </script>
 </body>
 </html>
