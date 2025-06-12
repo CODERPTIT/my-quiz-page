@@ -21,39 +21,39 @@
             --shadow-deep: 0 8px 30px rgba(0,0,0,0.2);
         }
 
-        body { 
+        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font hiện đại hơn */
-            color: var(--dark-text); 
+            color: var(--dark-text);
             background-image: var(--background-image-url);
-            background-size: cover; 
-            background-position: center center; 
+            background-size: cover;
+            background-position: center center;
             background-attachment: fixed;
-            margin: 0; 
+            margin: 0;
             padding: 0;
             display: flex; /* Dùng flexbox cho toàn bộ body */
             flex-direction: column;
             min-height: 100vh;
         }
 
-        header { 
+        header {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: var(--white-color); 
-            padding: 30px 20px; 
-            text-align: center; 
-            font-size: 2.5em; 
+            color: var(--white-color);
+            padding: 30px 20px;
+            text-align: center;
+            font-size: 2.5em;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
             box-shadow: var(--shadow-medium);
         }
-        
+
         .main-content {
             flex-grow: 1; /* Cho phép nó mở rộng để chiếm không gian */
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px;
             justify-content: center; /* Căn giữa nội dung chính */
         }
-        
+
         .top-right-controls {
             position: fixed;
             top: 20px;
@@ -64,15 +64,44 @@
             gap: 20px;
         }
 
+        /* Nút Home ở góc trên bên trái */
+        #home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        #home-button:hover {
+            transform: scale(1.1);
+        }
+
+        #home-button svg {
+            width: 24px;
+            height: 24px;
+            fill: #333; /* Màu biểu tượng */
+        }
+
         #toggle-audio {
-            position: relative; 
+            position: relative;
             width: 50px; height: 50px; background: rgba(255, 255, 255, 0.9); border-radius: 50%;
             border: none; cursor: pointer; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             display: flex; justify-content: center; align-items: center; transition: all 0.3s ease;
         }
         #toggle-audio:hover { transform: scale(1.1); }
         #toggle-audio svg { width: 24px; height: 24px; fill: #333; }
-        
+
         #playlist {
             position: fixed; top: 80px; right: 20px; background: var(--white-color); border-radius: 8px;
             box-shadow: var(--shadow-light); padding: 10px; z-index: 999;
@@ -97,28 +126,28 @@
         }
 
         .card-container {
-            width: 100%; 
+            width: 100%;
             max-width: 900px; /* Tăng max-width để màn hình bắt đầu rộng hơn */
-            background: rgba(255, 255, 255, 0.97); 
-            padding: 30px; 
-            border-radius: var(--border-radius-main); 
-            box-shadow: var(--shadow-medium); 
+            background: rgba(255, 255, 255, 0.97);
+            padding: 30px;
+            border-radius: var(--border-radius-main);
+            box-shadow: var(--shadow-medium);
             margin: 20px;
             box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng thể */
         }
-        
-        #start-screen { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
+
+        #start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
         }
-        #final-result-container { 
+        #final-result-container {
             max-width: 1000px; /* Giữ nguyên hoặc tăng tùy theo kích thước bảng kết quả */
-            display: none; 
+            display: none;
         }
-        
-        #chapter-selection { 
+
+        #chapter-selection {
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -126,11 +155,11 @@
             gap: 20px; /* Khoảng cách giữa các phần tử chính */
         }
         #chapter-selection label { font-size: 1.1em;}
-        #chapter-selection select { 
-            padding: 12px 20px; 
-            font-size: 1.1em; 
-            border-radius: 8px; 
-            border: 1px solid #ced4da; 
+        #chapter-selection select {
+            padding: 12px 20px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
             width: 80%; /* Chiếm phần lớn chiều rộng */
             max-width: 400px;
             background-color: var(--light-bg);
@@ -143,24 +172,24 @@
             background-size: 1em auto;
         }
 
-        .quiz-button { 
-            background-color: var(--primary-color); 
-            color: var(--white-color); 
-            border-color: var(--primary-color); 
-            cursor: pointer; 
-            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s; 
-            padding: 12px 25px; 
-            font-size: 1.1em; 
+        .quiz-button {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border-color: var(--primary-color);
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            padding: 12px 25px;
+            font-size: 1.1em;
             border-radius: 8px;
             border: none;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .quiz-button:hover { 
-            background-color: var(--secondary-color); 
-            transform: translateY(-2px); 
+        .quiz-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
             box-shadow: var(--shadow-medium);
         }
-        
+
         /* Cập nhật #quiz-container và #quiz-layout */
         #quiz-container {
             max-width: 1200px; /* Mở rộng tối đa */
@@ -168,45 +197,45 @@
             margin: 20px auto; /* Căn giữa */
             box-sizing: border-box;
         }
-        #quiz-layout { 
-            display: flex; 
-            gap: 30px; 
+        #quiz-layout {
+            display: flex;
+            gap: 30px;
             align-items: flex-start;
             width: 100%; /* Quan trọng: làm cho quiz-layout chiếm 100% của quiz-container */
         }
-        #main-quiz-area { 
-            flex: 3; 
+        #main-quiz-area {
+            flex: 3;
             overflow-y: auto;
             max-height: calc(100vh - 200px);
             padding-right: 15px;
-            position: relative; 
+            position: relative;
             /* QUAN TRỌNG: Thêm scroll-padding-top */
             scroll-padding-top: 100px; /* Điều chỉnh giá trị này lớn hơn chiều cao của quiz-header */
         }
 
         .quiz-header {
-            display: flex; 
-            justify-content: space-between; 
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px; 
-            border-bottom: 1px solid #eee; 
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
             padding-bottom: 15px;
-            background-color: var(--white-color); 
-            padding-top: 10px; 
-            position: sticky; 
-            top: 0; 
-            z-index: 10; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-            border-radius: 8px 8px 0 0; 
+            background-color: var(--white-color);
+            padding-top: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px 8px 0 0;
         }
         .quiz-header h2 { margin: 0; font-size: 1.6em; }
         #score-counter { margin: 0; font-size: 1em; font-weight: bold; background-color: var(--light-bg); padding: 8px 15px; border-radius: 20px; color: var(--primary-color); }
-        
+
         .single-question-display {
             margin-bottom: 40px;
             padding-bottom: 20px;
             border-bottom: 1px solid #eee;
-            position: relative; 
+            position: relative; /* Để nút gợi ý có thể định vị tương đối với nó */
         }
         .single-question-display:last-child {
             border-bottom: none;
@@ -215,15 +244,14 @@
         }
 
         #question-nav-panel {
-            flex: 1; 
-            background-color: var(--light-bg); 
+            flex: 1;
+            background-color: var(--light-bg);
             border-radius: 8px;
-            padding: 15px; 
+            padding: 15px;
             position: sticky;
             top: 20px;
             box-shadow: var(--shadow-light);
-            /* Thêm overflow để cuộn */
-            max-height: calc(100vh - 200px); /* Đảm bảo khớp với main-quiz-area */
+            max-height: calc(100vh - 200px);
             overflow-y: auto; /* Cho phép cuộn dọc khi cần */
         }
         #question-nav-panel h3 { margin-top: 0; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; }
@@ -231,24 +259,28 @@
         .nav-question-btn {
             width: 100%; height: 45px; border: 1px solid #ccc; background-color: var(--white-color);
             border-radius: 5px; cursor: pointer; transition: all 0.2s ease; font-weight: bold;
-            color: var(--dark-text); 
+            color: var(--dark-text);
         }
         .nav-question-btn:hover { transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .nav-question-btn.current-question { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
-        /* Các màu này chỉ hiện sau khi bài test đã nộp hoặc trong chế độ luyện tập */
-        .nav-question-btn.answered-correct { background-color: var(--correct-color); color: var(--dark-text); border-color: var(--correct-color); } 
-        .nav-question-btn.answered-incorrect { background-color: var(--incorrect-color); color: var(--dark-text); border-color: var(--incorrect-color); } 
-        .nav-question-btn.answered-skipped { background-color: var(--skipped-color); color: var(--dark-text); border-color: var(--skipped-color); } 
-        /* Màu cho nút điều hướng bên phải khi đã làm (chế độ thi thử, trước khi nộp) */
+        .nav-question-btn.answered-correct { background-color: var(--correct-color); color: var(--dark-text); border-color: var(--correct-color); }
+        .nav-question-btn.answered-incorrect { background-color: var(--incorrect-color); color: var(--dark-text); border-color: var(--incorrect-color); }
+        .nav-question-btn.answered-skipped { background-color: var(--skipped-color); color: var(--dark-text); border-color: var(--skipped-color); }
         .nav-question-btn.answered-in-test {
-            background-color: var(--light-bg); /* Màu nền nhạt để báo hiệu đã làm */
+            background-color: var(--light-bg);
             color: var(--dark-text);
             border-color: #ddd;
         }
 
+        .question-text {
+            margin-top: 0;
+            font-size: 1.4em;
+            /* Thêm padding-right để tạo không gian cho nút gợi ý */
+            padding-right: 50px; /* Ví dụ: 50px đủ cho nút 30px + khoảng trống */
+            box-sizing: border-box; /* Đảm bảo padding không làm tràn */
+            /* Không cần position: relative ở đây nếu hint-button là con của single-question-display */
+        }
 
-        .question-text { margin-top: 0; font-size: 1.4em; }
-        
         .options {
             list-style: none;
             padding: 0;
@@ -265,7 +297,7 @@
             border-radius: 8px;
             transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
             position: relative;
-            pointer-events: auto; /* Mặc định cho phép tương tác */
+            pointer-events: auto;
         }
 
         .option-item:hover {
@@ -318,54 +350,52 @@
         }
 
         /* TRẠNG THÁI: Phủ màu toàn bộ ô đáp án khi chọn đúng/sai */
-        /* Chỉ áp dụng trong chế độ luyện tập hoặc sau khi nộp bài ở chế độ test */
-        .option-item.chosen-correct { /* Khi người dùng chọn đúng */
+        .option-item.chosen-correct {
             background-color: var(--correct-color) !important;
             border-color: var(--correct-color) !important;
-            box-shadow: 0 0 0 0.25rem rgba(130,224,170,.25) !important; 
+            box-shadow: 0 0 0 0.25rem rgba(130,224,170,.25) !important;
         }
         .option-item.chosen-correct .custom-radio {
-            background-color: var(--white-color) !important; 
+            background-color: var(--white-color) !important;
             border-color: var(--white-color) !important;
         }
         .option-item.chosen-correct .custom-radio .icon {
             content: '✓';
             opacity: 1;
             transform: scale(1);
-            color: var(--correct-color); 
+            color: var(--correct-color);
         }
         .option-item.chosen-correct label {
-            color: var(--dark-text); 
+            color: var(--dark-text);
         }
 
-        .option-item.chosen-incorrect { /* Khi người dùng chọn sai */
+        .option-item.chosen-incorrect {
             background-color: var(--incorrect-color) !important;
             border-color: var(--incorrect-color) !important;
-            box-shadow: 0 0 0 0.25rem rgba(241,148,138,.25) !important; 
+            box-shadow: 0 0 0 0.25rem rgba(241,148,138,.25) !important;
         }
         .option-item.chosen-incorrect .custom-radio {
-            background-color: var(--white-color) !important; 
+            background-color: var(--white-color) !important;
             border-color: var(--white-color) !important;
         }
         .option-item.chosen-incorrect .custom-radio .icon {
             content: '✗';
             opacity: 1;
             transform: scale(1);
-            color: var(--incorrect-color); 
+            color: var(--incorrect-color);
         }
         .option-item.chosen-incorrect label {
-            color: var(--dark-text); 
+            color: var(--dark-text);
         }
-        
+
         /* Highlight đáp án đúng khi người dùng chọn sai */
-        /* Chỉ áp dụng trong chế độ luyện tập hoặc sau khi nộp bài ở chế độ test */
         .single-question-display.answered .option-item.correct-answer-highlight {
-            background-color: var(--correct-color) !important; 
+            background-color: var(--correct-color) !important;
             border-color: var(--correct-color) !important;
             box-shadow: 0 0 0 0.25rem rgba(130,224,170,.25) !important;
         }
         .single-question-display.answered .option-item.correct-answer-highlight .custom-radio {
-            background-color: var(--white-color) !important; 
+            background-color: var(--white-color) !important;
             border-color: var(--white-color) !important;
         }
         .single-question-display.answered .option-item.correct-answer-highlight .custom-radio .icon {
@@ -380,7 +410,6 @@
 
         /* Vô hiệu hóa tương tác cho các option của câu hỏi đã làm */
         /* Và làm mờ các option không được chọn */
-        /* LƯU Ý: Quy tắc này được áp dụng sau khi nộp bài hoặc trong chế độ luyện tập */
         .single-question-display.answered .option-item {
             cursor: default;
             pointer-events: none; /* Vô hiệu hóa click cho tất cả các option của câu đã làm */
@@ -404,17 +433,18 @@
         /* Nút gợi ý bóng đèn */
         .hint-button {
             position: absolute;
-            top: 15px; 
-            right: 15px; 
+            top: 0; /* Đặt ở đầu của .single-question-display */
+            right: 15px; /* Căn lề phải */
+            transform: translateY(0%); /* Đảm bảo căn chỉnh đúng, không cần dịch nhiều */
             background-color: transparent;
             border: none;
             cursor: pointer;
             padding: 5px;
             border-radius: 50%;
             transition: transform 0.2s ease, opacity 0.2s ease;
-            display: inline-block; 
+            display: inline-block;
             opacity: 0.7;
-            z-index: 5; 
+            z-index: 5;
         }
         .hint-button:hover:not(:disabled) {
             transform: scale(1.1);
@@ -424,35 +454,35 @@
             opacity: 0.3;
             cursor: not-allowed;
         }
-        .hint-button img { 
-            width: 30px; 
-            height: 30px; 
-            border-radius: 50%; 
+        .hint-button img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
         }
 
         /* Vùng hiển thị feedback (cho nút Show Answer) */
-        .answer-feedback-area { 
-            display: none; 
+        .answer-feedback-area {
+            display: none;
         }
-        
+
         /* Class để làm nổi bật đáp án đúng khi nhấn "Hiện Đáp Án" */
         .option-item.correct-revealed {
-            background-color: var(--skipped-color) !important; 
+            background-color: var(--skipped-color) !important;
             border-color: var(--skipped-color) !important;
-            box-shadow: 0 0 0 0.25rem rgba(247,220,111,.25) !important; 
+            box-shadow: 0 0 0 0.25rem rgba(247,220,111,.25) !important;
         }
         .option-item.correct-revealed .custom-radio {
-            background-color: var(--white-color) !important; 
+            background-color: var(--white-color) !important;
             border-color: var(--white-color) !important;
         }
         .option-item.correct-revealed .custom-radio .icon {
             content: '✓' !important;
             opacity: 1 !important;
             transform: scale(1) !important;
-            color: var(--skipped-color) !important; 
+            color: var(--skipped-color) !important;
         }
         .option-item.correct-revealed label {
-            color: var(--dark-text) !important; 
+            color: var(--dark-text) !important;
             font-weight: bold;
         }
 
@@ -485,23 +515,23 @@
         }
 
         .final-results-table-wrapper {
-            max-height: 400px; 
+            max-height: 400px;
             overflow-y: auto;
             width: 100%;
             margin-bottom: 20px;
-            padding-right: 10px; 
+            padding-right: 10px;
         }
 
         .final-results-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 0 auto; 
+            margin: 0 auto;
             box-shadow: var(--shadow-medium);
             border-radius: var(--border-radius-main);
-            overflow: hidden; 
+            overflow: hidden;
         }
 
-        .final-results-table th, 
+        .final-results-table th,
         .final-results-table td {
             border: 1px solid #ddd;
             padding: 12px 15px;
@@ -517,11 +547,11 @@
             letter-spacing: 0.05em;
             position: sticky;
             top: 0;
-            z-index: 1; 
+            z-index: 1;
         }
 
         .final-results-table tbody tr:nth-child(even) {
-            background-color: var(--light-bg); 
+            background-color: var(--light-bg);
         }
 
         .final-results-table tbody tr:hover {
@@ -676,48 +706,45 @@
         /* Các quy tắc cho chế độ Test TRƯỚC KHI NỘP BÀI */
         /* body.test-mode-active được thêm/xóa bằng JS khi vào/thoát chế độ test */
         body.test-mode-active .option-item {
-            background-color: var(--white-color) !important; /* Luôn màu trắng */
-            border-color: #ced4da !important; /* Viền xám */
+            background-color: var(--white-color) !important;
+            border-color: #ced4da !important;
             box-shadow: none !important;
-            opacity: 1 !important; /* Không mờ */
-            pointer-events: auto !important; /* CHO PHÉP TƯƠNG TÁC LẠI */
+            opacity: 1 !important;
+            pointer-events: auto !important;
         }
         body.test-mode-active .option-item input[type="radio"] {
-            pointer-events: auto !important; /* CHO PHÉP CHỌN RADIO BUTTON */
+            pointer-events: auto !important;
         }
         body.test-mode-active .option-item:hover {
-             background-color: #e2e6ea !important; /* Vẫn có hover nhẹ */
+             background-color: #e2e6ea !important;
         }
         body.test-mode-active .option-item .custom-radio {
-            background-color: #f8f9fa !important; /* Nền radio trung tính */
-            border-color: #6c757d !important; /* Viền radio trung tính */
+            background-color: #f8f9fa !important;
+            border-color: #6c757d !important;
         }
         body.test-mode-active .option-item input[type="radio"]:checked + .custom-radio {
-             background-color: var(--primary-color) !important; /* Ô radio màu xanh khi chọn */
+             background-color: var(--primary-color) !important;
              border-color: var(--primary-color) !important;
         }
         body.test-mode-active .option-item .custom-radio .icon {
-            opacity: 0 !important; /* Ẩn dấu tích/X */
+            opacity: 0 !important;
         }
         body.test-mode-active .option-item label {
-            color: #495057 !important; /* Màu chữ mặc định */
+            color: #495057 !important;
         }
-        /* Đảm bảo các tùy chọn đã làm trong test mode vẫn vô hiệu hóa nhưng không đổi màu cho đến khi nộp */
         body.test-mode-active .single-question-display.answered .option-item {
-            /* Các kiểu vô hiệu hóa sẽ được áp dụng lại sau khi nộp bài qua showResult() */
-            /* Trước khi nộp bài, cho phép chọn lại */
-            pointer-events: auto !important; /* Cần đảm bảo auto */
+            pointer-events: auto !important;
         }
         body.test-mode-active .single-question-display.answered .option-item input[type="radio"] {
-            pointer-events: auto !important; /* Cần đảm bảo auto */
+            pointer-events: auto !important;
         }
 
 
         /* Hiển thị nút nộp bài chỉ trong chế độ Test */
         #submit-test-button {
-            display: none; /* Mặc định ẩn, JS sẽ hiện */
+            display: none;
             margin-top: 30px;
-            background-color: #28a745; /* Màu xanh lá nổi bật */
+            background-color: #28a745;
             border-color: #28a745;
         }
 
@@ -735,7 +762,14 @@
     <header>
         KIẾN TRÚC MÁY TÍNH
     </header>
-    
+
+    <button id="home-button" title="Quay về màn hình chính">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#333">
+            <path d="M0 0h24v24H0V0z" fill="none"/>
+            <path d="M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>
+        </svg>
+    </button>
+
     <div class="top-right-controls">
         <div id="google_translate_element"></div>
         <button id="toggle-audio" title="Bật/Tắt nhạc">
@@ -789,7 +823,7 @@
                         <div id="timer" style="font-size: 1.2em; font-weight: bold; color: var(--primary-color);">Thời gian: 00:00</div>
                         <div id="score-counter">Số câu đúng: 0/0</div>
                     </div>
-                    <div id="all-questions-display-area"></div> 
+                    <div id="all-questions-display-area"></div>
                 </div>
                 <div id="question-nav-panel">
                     <h3>Danh sách câu hỏi</h3>
@@ -797,7 +831,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="card-container" id="final-result-container" style="display: none;">
             <div id="final-result" class="final-results-summary"></div>
             <div class="final-results-table-wrapper">
@@ -815,17 +849,17 @@
                         </tbody>
                 </table>
             </div>
-            <button onclick="restartQuiz()" class="quiz-button">Làm lại chương này</button> 
+            <button onclick="restartQuiz()" class="quiz-button">Làm lại chương này</button>
             <button onclick="backToChapterSelection()" class="quiz-button">Chọn chương khác</button>
         </div>
     </div>
 
     <audio id="background-music"></audio>
-    
+
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({
-                pageLanguage: 'vi', 
+                pageLanguage: 'vi',
                 layout: google.translate.TranslateElement.InlineLayout.SIMPLE
             }, 'google_translate_element');
         }
@@ -834,7 +868,7 @@
 
     <script>
         const questions = [
- // CHUONG 1
+            // CHUONG 1
 //P1
     {
         "question": "What does the term \"instruction set architecture\" (ISA) refer to in computer architecture? (chương 1)",
@@ -3786,11 +3820,13 @@
         const quizContainer = document.getElementById('quiz-container');
         const finalResultContainer = document.getElementById('final-result-container');
         const finalResultSummary = document.getElementById('final-result');
-        const resultsDetailTableBody = document.querySelector('#results-detail-table tbody'); 
+        const resultsDetailTableBody = document.querySelector('#results-detail-table tbody');
         const iconOn = document.querySelector('.icon-on');
         const iconOff = document.querySelector('.icon-off');
         const navGrid = document.getElementById('nav-grid');
         const allQuestionsDisplayArea = document.getElementById('all-questions-display-area');
+
+        const homeButton = document.getElementById('home-button'); // Thêm nút home
 
         const practiceModeBtn = document.getElementById('practice-mode-btn');
         const testModeBtn = document.getElementById('test-mode-btn');
@@ -3805,7 +3841,7 @@
         submitTestButton.id = 'submit-test-button';
         submitTestButton.classList.add('quiz-button');
         submitTestButton.textContent = 'Nộp bài thi';
-        
+
 
         // Audio state variables
         let isAudioPlaying = false;
@@ -3850,7 +3886,7 @@
                 });
                 playlistContainer.appendChild(item);
             });
-            selectTrack(playlist[2], false); 
+            selectTrack(playlist[2], false);
         }
 
         function selectTrack(track, shouldPlay = true) {
@@ -3918,7 +3954,7 @@
                         if (answer.selected === currentChapterQuestions[index].correct) {
                             btn.classList.add('answered-correct');
                         } else if (answer.selected === 'revealed') {
-                            btn.classList.add('answered-skipped'); 
+                            btn.classList.add('answered-skipped');
                         } else {
                             btn.classList.add('answered-incorrect');
                         }
@@ -3927,7 +3963,7 @@
                     if (answer && answer.completed) {
                         // Trong chế độ thi thử, trước khi nộp bài, chỉ cần biết đã làm (không phân biệt đúng sai)
                         // Nên thêm class 'answered-in-test' để đổi màu nhạt
-                        btn.classList.add('answered-in-test'); 
+                        btn.classList.add('answered-in-test');
                     }
                     // Các màu đúng/sai/bỏ qua sẽ được áp dụng trong showResult()
                 }
@@ -3945,12 +3981,12 @@
 
         // --- Render All Questions in Chapter ---
         function renderAllQuestionsInChapter() {
-            allQuestionsDisplayArea.innerHTML = ''; 
-            
+            allQuestionsDisplayArea.innerHTML = '';
+
             currentChapterQuestions.forEach((q, qIndex) => {
                 const questionDiv = document.createElement('div');
                 questionDiv.classList.add('single-question-display');
-                if (currentMode === 'test') { 
+                if (currentMode === 'test') {
                     questionDiv.classList.add('test-mode');
                 }
                 questionDiv.id = `question-${qIndex}`;
@@ -3965,7 +4001,7 @@
                     <button class="hint-button" title="Gợi ý đáp án">
                         <img src="https://img.icons8.com/fluency/48/light-on.png" alt="Gợi ý" style="width:24px; height:24px;">
                     </button>
-                    <div class="answer-feedback-area" id="feedback-area-${qIndex}"></div> 
+                    <div class="answer-feedback-area" id="feedback-area-${qIndex}"></div>
                 `;
 
                 allQuestionsDisplayArea.appendChild(questionDiv);
@@ -3976,7 +4012,7 @@
                     const optionId = `q${qIndex}_option_${optionCounter++}`;
                     const optionItem = document.createElement('li');
                     optionItem.classList.add('option-item');
-                    
+
                     optionItem.innerHTML = `
                         <input type="radio" name="q${qIndex}_answer" value="${key}" id="${optionId}">
                         <span class="custom-radio"><span class="icon"></span></span>
@@ -3994,7 +4030,7 @@
 
                         const radio = this.querySelector('input[type="radio"]');
                         radio.checked = true;
-                        
+
                         // Cập nhật trạng thái câu trả lời
                         answersState[qIndex] = { selected: radio.value, completed: true };
 
@@ -4005,9 +4041,9 @@
 
                 const hintButton = questionDiv.querySelector('.hint-button');
                 if (currentMode === 'test') {
-                    hintButton.style.display = 'none'; 
+                    hintButton.style.display = 'none';
                 } else {
-                    hintButton.style.display = 'inline-block'; 
+                    hintButton.style.display = 'inline-block';
                 }
                 hintButton.addEventListener('click', function() {
                     const currentQuestionAnswerState = answersState[qIndex];
@@ -4029,13 +4065,13 @@
             if (currentMode === 'test') {
                 // Kiểm tra nếu nút submit đã có trong DOM thì không cần thêm lại, chỉ hiển thị nó
                 if (!document.getElementById('submit-test-button')) {
-                    allQuestionsDisplayArea.appendChild(submitTestButton); 
+                    allQuestionsDisplayArea.appendChild(submitTestButton);
                 }
-                submitTestButton.style.display = 'block'; 
+                submitTestButton.style.display = 'block';
             } else {
                 // Ẩn nút nếu không ở chế độ test
                 if (document.getElementById('submit-test-button')) {
-                    submitTestButton.style.display = 'none'; 
+                    submitTestButton.style.display = 'none';
                 }
             }
         }
@@ -4044,26 +4080,26 @@
         function restoreQuestionState(qIndex, questionElement, q, answerState) {
             // Trong practice mode, câu hỏi đã trả lời sẽ bị khóa và hiển thị màu
             if (currentMode === 'practice') {
-                questionElement.classList.add('answered'); 
+                questionElement.classList.add('answered');
                 const optionsList = questionElement.querySelector('.options');
-                const hintButton = questionElement.querySelector('.hint-button'); 
+                const hintButton = questionElement.querySelector('.hint-button');
 
-                Array.from(optionsList.children).forEach(item => { 
+                Array.from(optionsList.children).forEach(item => {
                     const radio = item.querySelector('input[type="radio"]');
                     item.style.pointerEvents = 'none'; // Vô hiệu hóa tương tác cho các option đã làm
                     radio.disabled = true;
 
                     // Xóa tất cả các style/class màu sắc đã áp dụng trước đó
                     item.classList.remove('selected-correct', 'selected-incorrect', 'correct-revealed', 'chosen-correct', 'chosen-incorrect', 'correct-answer-highlight');
-                    item.style.backgroundColor = ''; 
-                    item.style.borderColor = ''; 
-                    item.style.boxShadow = ''; 
-                    item.style.opacity = ''; 
-                    item.querySelector('label').style.color = ''; 
-                    item.querySelector('.custom-radio').style.backgroundColor = ''; 
-                    item.querySelector('.custom-radio').style.borderColor = ''; 
-                    item.querySelector('.custom-radio .icon').style.opacity = '0'; 
-                    radio.checked = false; 
+                    item.style.backgroundColor = '';
+                    item.style.borderColor = '';
+                    item.style.boxShadow = '';
+                    item.style.opacity = '';
+                    item.querySelector('label').style.color = '';
+                    item.querySelector('.custom-radio').style.backgroundColor = '';
+                    item.querySelector('.custom-radio').style.borderColor = '';
+                    item.querySelector('.custom-radio .icon').style.opacity = '0';
+                    radio.checked = false;
 
                     if (answerState.selected === 'revealed') {
                         if (radio.value === q.correct) {
@@ -4072,24 +4108,24 @@
                             item.style.opacity = '0.6';
                             item.querySelector('label').style.color = '#6c757d';
                         }
-                    } else if (answerState.selected) { 
-                        if (radio.value === answerState.selected) { 
+                    } else if (answerState.selected) {
+                        if (radio.value === answerState.selected) {
                             if (radio.value === q.correct) {
                                 item.classList.add('chosen-correct');
                             } else {
                                 item.classList.add('chosen-incorrect');
                             }
-                            radio.checked = true; 
-                        } else if (radio.value === q.correct) { 
+                            radio.checked = true;
+                        } else if (radio.value === q.correct) {
                             item.classList.add('correct-answer-highlight');
-                        } else { 
+                        } else {
                             item.style.opacity = '0.6';
                             item.querySelector('label').style.color = '#6c757d';
                         }
                     }
                 });
 
-                hintButton.disabled = true; 
+                hintButton.disabled = true;
                 hintButton.style.display = 'inline-block';
             } else { // Trong test mode, không vô hiệu hóa tương tác (cho phép chọn lại)
                 // Chỉ đảm bảo lựa chọn đã chọn trước đó được đánh dấu
@@ -4119,7 +4155,7 @@
             answersState[qIndex] = { selected: selectedValue, completed: true }; // Ghi nhận là đã có lựa chọn
 
             // Cập nhật điểm ngay trong chế độ luyện tập
-            if (currentMode === 'practice') { 
+            if (currentMode === 'practice') {
                 // Cần tính lại correctAnswersCount mỗi khi có thay đổi trong answersState
                 // Để đảm bảo điểm số chính xác nếu người dùng chọn lại đáp án
                 correctAnswersCount = 0; // Reset
@@ -4130,46 +4166,46 @@
                 });
                 updateScoreCounter(); // Cập nhật hiển thị điểm
             }
-            
+
             if (currentMode === 'practice') {
                 questionElement.classList.add('answered'); // Kích hoạt CSS vô hiệu hóa/màu sắc
-                Array.from(optionsList.children).forEach(item => { 
+                Array.from(optionsList.children).forEach(item => {
                     const radio = item.querySelector('input');
                     item.style.pointerEvents = 'none'; // Vô hiệu hóa tương tác
                     radio.disabled = true;
 
                     item.classList.remove('selected-correct', 'selected-incorrect', 'correct-revealed', 'chosen-correct', 'chosen-incorrect', 'correct-answer-highlight');
-                    item.style.backgroundColor = ''; 
-                    item.style.borderColor = ''; 
-                    item.style.boxShadow = ''; 
-                    item.style.opacity = ''; 
-                    item.querySelector('label').style.color = ''; 
-                    item.querySelector('.custom-radio .icon').style.opacity = '0'; 
+                    item.style.backgroundColor = '';
+                    item.style.borderColor = '';
+                    item.style.boxShadow = '';
+                    item.style.opacity = '';
+                    item.querySelector('label').style.color = '';
+                    item.querySelector('.custom-radio .icon').style.opacity = '0';
 
-                    if (radio.value === selectedValue) { 
+                    if (radio.value === selectedValue) {
                         if (selectedValue === q.correct) {
-                            item.classList.add('chosen-correct'); 
+                            item.classList.add('chosen-correct');
                         } else {
-                            item.classList.add('chosen-incorrect'); 
+                            item.classList.add('chosen-incorrect');
                         }
-                    } else if (radio.value === q.correct) { 
-                        if (selectedValue !== q.correct) { 
-                            item.classList.add('correct-answer-highlight'); 
+                    } else if (radio.value === q.correct) {
+                        if (selectedValue !== q.correct) {
+                            item.classList.add('correct-answer-highlight');
                         }
                     }
-                    else { 
+                    else {
                         item.style.opacity = '0.6';
                         item.querySelector('label').style.color = '#6c757d';
                     }
                 });
-                hintButton.disabled = true; 
+                hintButton.disabled = true;
 
                 // QUAN TRỌNG: Cập nhật màu nút điều hướng bên phải ngay sau khi xử lý câu trả lời trong luyện tập
-                updateNavPanelUI(); 
+                updateNavPanelUI();
 
                 const allCompleted = answersState.every(ans => ans.completed);
                 if (allCompleted) {
-                    setTimeout(showResult, 500); 
+                    setTimeout(showResult, 500);
                 }
             } else { // currentMode === 'test'
                 // Trong chế độ thi thử:
@@ -4186,49 +4222,51 @@
         function showCorrectAnswerSpecific(qIndex, correctAnswerValue, isReloading = false) {
             if (currentMode === 'test') return; // Không cho phép gợi ý trong chế độ test
 
-            const q = currentChapterQuestions[qIndex]; 
+            const q = currentChapterQuestions[qIndex];
             const questionElement = document.getElementById(`question-${qIndex}`);
             const optionsList = questionElement.querySelector('.options');
             const hintButton = questionElement.querySelector('.hint-button');
-            
+
             if (!isReloading && answersState[qIndex].selected !== 'revealed') {
                 answersState[qIndex].selected = 'revealed';
                 answersState[qIndex].completed = true;
             }
 
-            Array.from(optionsList.children).forEach(item => { 
+            Array.from(optionsList.children).forEach(item => {
                 const radio = item.querySelector('input');
-                item.style.pointerEvents = 'none'; 
+                item.style.pointerEvents = 'none';
                 radio.disabled = true;
 
                 item.classList.remove('selected-correct', 'selected-incorrect', 'chosen-correct', 'chosen-incorrect', 'correct-answer-highlight', 'correct-revealed');
-                item.style.opacity = ''; 
-                item.querySelector('label').style.color = ''; 
-                item.querySelector('.custom-radio .icon').style.opacity = '0'; 
+                item.style.opacity = '';
+                item.querySelector('label').style.color = '';
+                item.querySelector('.custom-radio').style.backgroundColor = '';
+                item.querySelector('.custom-radio').style.borderColor = '';
+                item.querySelector('.custom-radio .icon').style.opacity = '';
 
                 if (radio.value === correctAnswerValue) {
-                    item.classList.add('correct-revealed'); 
+                    item.classList.add('correct-revealed');
                 } else {
                     item.style.opacity = '0.6';
                     item.querySelector('label').style.color = '#6c757d';
                 }
             });
 
-            hintButton.disabled = true; 
-            updateNavPanelUI(); 
+            hintButton.disabled = true;
+            updateNavPanelUI();
 
             if (currentMode === 'practice') {
                 const allCompleted = answersState.every(ans => ans.completed);
                 if (allCompleted) {
-                    setTimeout(showResult, 500); 
+                    setTimeout(showResult, 500);
                 }
             }
         }
 
         // --- Hàm thời gian ---
         function startTimer() {
-            clearInterval(timerInterval); 
-            
+            clearInterval(timerInterval);
+
             // Nếu người dùng chọn "Không" sử dụng thời gian
             if (useTimerNoRadio.checked) {
                 totalTestDuration = 0; // Đặt tổng thời gian về 0
@@ -4243,9 +4281,9 @@
                     testMinutesInput.value = 10; // Đặt lại giá trị mặc định
                     totalTestDuration = 10 * 60;
                 } else {
-                    totalTestDuration = minutes * 60; 
+                    totalTestDuration = minutes * 60;
                 }
-                
+
                 timeLeft = totalTestDuration;
                 updateTimerDisplay(); // Cập nhật hiển thị ban đầu
 
@@ -4256,7 +4294,7 @@
                     if (timeLeft <= 0) {
                         clearInterval(timerInterval);
                         alert("Hết giờ làm bài!");
-                        showResult(); 
+                        showResult();
                     }
                 }, 1000);
             }
@@ -4280,24 +4318,24 @@
 
         // --- Điều hướng & Đặt lại ---
         function showResult() {
-            stopTimer(); 
+            stopTimer();
             audio.pause();
             quizContainer.style.display = 'none';
             finalResultContainer.style.display = 'block';
-            
+
             let finalCorrectAnswers = 0;
-            
-            resultsDetailTableBody.innerHTML = ''; 
+
+            resultsDetailTableBody.innerHTML = '';
 
             answersState.forEach((ans, index) => {
                 const q = currentChapterQuestions[index];
                 const row = resultsDetailTableBody.insertRow();
-                
+
                 const questionNumCell = row.insertCell();
                 questionNumCell.textContent = index + 1;
 
                 const questionTextCell = row.insertCell();
-                questionTextCell.textContent = q.question.replace(/\s*\(chương\s+\d+\)/i, ''); 
+                questionTextCell.textContent = q.question.replace(/\s*\(chương\s+\d+\)/i, '');
 
                 const userAnswerCell = row.insertCell();
                 const correctAnswerCell = row.insertCell();
@@ -4309,15 +4347,15 @@
 
                 if (ans.completed) {
                     if (ans.selected === q.correct) {
-                        finalCorrectAnswers++; 
+                        finalCorrectAnswers++;
                         userAnswerText = q.options[ans.selected];
                         statusText = 'Đúng';
                         statusClass = 'status-correct';
-                    } else if (ans.selected === 'revealed') { 
-                        userAnswerText = q.options[q.correct] + ' (Gợi ý)'; 
+                    } else if (ans.selected === 'revealed') {
+                        userAnswerText = q.options[q.correct] + ' (Gợi ý)';
                         statusText = 'Bỏ qua';
                         statusClass = 'status-skipped';
-                    } else { 
+                    } else {
                         userAnswerText = q.options[ans.selected];
                         statusText = 'Sai';
                         statusClass = 'status-incorrect';
@@ -4325,7 +4363,7 @@
                 } else {
                     userAnswerText = 'Chưa trả lời';
                     statusText = 'Bỏ qua';
-                    statusClass = 'status-skipped'; 
+                    statusClass = 'status-skipped';
                 }
 
                 userAnswerCell.textContent = userAnswerText;
@@ -4340,15 +4378,15 @@
             else if (score >= 8) message = "Rất tốt! Bạn nắm vững kiến thức. 👏";
             else if (score >= 5) message = "Khá tốt, nhưng bạn có thể cải thiện thêm. 💪";
             else message = "Bạn cần ôn tập thêm nhé! 📚";
-    
+
             // Hiển thị thời gian làm bài, nếu không giới hạn thời gian thì ghi "Không giới hạn"
             const timeTakenDisplay = (totalTestDuration === 0 && useTimerNoRadio.checked) ? "Không giới hạn" : formatTime(totalTestDuration - timeLeft);
 
             finalResultSummary.innerHTML = `
-                <h2>Kết quả của bạn</h2> 
-                <p>Số câu đúng: <span class="correct">${finalCorrectAnswers}</span>/${currentChapterQuestions.length}</p> 
+                <h2>Kết quả của bạn</h2>
+                <p>Số câu đúng: <span class="correct">${finalCorrectAnswers}</span>/${currentChapterQuestions.length}</p>
                 <p>Điểm của bạn: <span class="score-value">${score.toFixed(2)}</span></p>
-                <p>${message}</p> 
+                <p>${message}</p>
                 <p>Thời gian làm bài: ${timeTakenDisplay}</p>
             `;
 
@@ -4356,20 +4394,20 @@
             currentChapterQuestions.forEach((q, qIndex) => {
                 const questionElement = document.getElementById(`question-${qIndex}`);
                 const optionsList = questionElement.querySelector('.options');
-                const ansState = answersState[qIndex]; 
+                const ansState = answersState[qIndex];
 
-                questionElement.classList.add('answered'); 
+                questionElement.classList.add('answered');
                 // Xóa class test-mode để các style đúng/sai/gợi ý có thể áp dụng sau khi nộp bài
-                questionElement.classList.remove('test-mode'); 
+                questionElement.classList.remove('test-mode');
 
-                Array.from(optionsList.children).forEach(item => { 
+                Array.from(optionsList.children).forEach(item => {
                     const radio = item.querySelector('input[type="radio"]');
                     item.style.pointerEvents = 'none'; // Vô hiệu hóa tương tác
                     radio.disabled = true;
 
                     // Clear any previous generic test mode styling or initial states
                     item.classList.remove('chosen-correct', 'chosen-incorrect', 'correct-answer-highlight', 'correct-revealed');
-                    item.style.backgroundColor = ''; 
+                    item.style.backgroundColor = '';
                     item.style.borderColor = '';
                     item.style.boxShadow = '';
                     item.style.opacity = '';
@@ -4383,12 +4421,12 @@
                             item.classList.add('chosen-correct');
                         } else if (radio.value === ansState.selected && ansState.selected !== q.correct) {
                             item.classList.add('chosen-incorrect');
-                        } else if (radio.value === q.correct && ansState.selected !== q.correct && ansState.selected !== 'revealed') { 
+                        } else if (radio.value === q.correct && ansState.selected !== q.correct && ansState.selected !== 'revealed') {
                             item.classList.add('correct-answer-highlight');
                         } else if (radio.value === q.correct && ansState.selected === 'revealed') {
                             item.classList.add('correct-revealed');
                         }
-                        else { 
+                        else {
                             item.style.opacity = '0.6';
                             item.querySelector('label').style.color = '#6c757d';
                         }
@@ -4414,39 +4452,39 @@
                         customRadio.style.backgroundColor = 'var(--white-color)';
                         customRadio.style.borderColor = 'var(--white-color)';
                         icon.style.color = 'var(--incorrect-color)';
-                    } else if (item.classList.contains('correct-revealed')) { 
+                    } else if (item.classList.contains('correct-revealed')) {
                         icon.textContent = '✓';
                         icon.style.opacity = '1';
                         icon.style.transform = 'scale(1)';
                         customRadio.style.backgroundColor = 'var(--white-color)';
                         customRadio.style.borderColor = 'var(--white-color)';
-                        icon.style.color = 'var(--skipped-color)'; 
+                        icon.style.color = 'var(--skipped-color)';
                     }
                      else {
-                        icon.style.opacity = '0'; 
+                        icon.style.opacity = '0';
                     }
                 });
                 const hintButton = questionElement.querySelector('.hint-button');
-                if (hintButton) hintButton.style.display = 'none'; 
+                if (hintButton) hintButton.style.display = 'none';
             });
 
             // Cập nhật lại màu sắc cho các nút điều hướng bên phải sau khi nộp bài
             updateNavPanelUI();
             document.body.classList.remove('test-mode-active'); // Xóa class test-mode-active sau khi nộp
         }
-        
+
         function resetQuizState() {
             correctAnswersCount = 0;
             answersState = []; // Reset toàn bộ answersState
             finalResultContainer.style.display = 'none';
             updateScoreCounter();
-            stopTimer(); 
-            timerDisplay.style.display = 'none'; 
+            stopTimer();
+            timerDisplay.style.display = 'none';
             // Ẩn nút nộp bài khi reset (nếu nó đang hiển thị)
-            if (submitTestButton.parentNode) { 
-                submitTestButton.style.display = 'none'; 
+            if (submitTestButton.parentNode) {
+                submitTestButton.style.display = 'none';
             }
-            document.body.classList.remove('test-mode-active'); 
+            document.body.classList.remove('test-mode-active');
         }
 
         function restartQuiz() {
@@ -4455,16 +4493,16 @@
             answersState = Array(currentChapterQuestions.length).fill(null).map(() => ({ selected: null, completed: false }));
             updateScoreCounter();
             renderQuestionNavPanel();
-            renderAllQuestionsInChapter(); 
+            renderAllQuestionsInChapter();
             quizContainer.style.display = 'block';
             if (isAudioPlaying) audio.play().catch(e => console.log(e));
-            
+
             if (currentMode === 'test') {
-                startTimer(); 
+                startTimer();
                 timerDisplay.style.display = useTimerNoRadio.checked ? 'none' : 'block'; // Chỉ hiện timer nếu có dùng thời gian
-                document.body.classList.add('test-mode-active'); 
+                document.body.classList.add('test-mode-active');
             } else {
-                timerDisplay.style.display = 'none'; 
+                timerDisplay.style.display = 'none';
                 document.body.classList.remove('test-mode-active');
             }
         }
@@ -4473,11 +4511,11 @@
             resetQuizState();
             quizContainer.style.display = 'none';
             startScreen.style.display = 'block';
-            updateModeButtons(); 
-            testDurationOptionDiv.style.display = (currentMode === 'test') ? 'block' : 'none'; 
+            updateModeButtons();
+            testDurationOptionDiv.style.display = (currentMode === 'test') ? 'block' : 'none';
             testMinutesContainer.style.display = useTimerYesRadio.checked ? 'block' : 'none'; // Điều khiển hiển thị ô nhập phút
         }
-        
+
         // --- Event Listeners ---
         startQuizBtn.addEventListener('click', () => {
             const selectedChapterValue = chapterSelect.value;
@@ -4504,11 +4542,11 @@
             if (currentMode === 'test') {
                 startTimer();
                 timerDisplay.style.display = useTimerNoRadio.checked ? 'none' : 'block'; // Chỉ hiện timer nếu có dùng thời gian
-                document.body.classList.add('test-mode-active'); 
+                document.body.classList.add('test-mode-active');
             } else {
                 stopTimer();
-                timerDisplay.style.display = 'none'; 
-                document.body.classList.remove('test-mode-active'); 
+                timerDisplay.style.display = 'none';
+                document.body.classList.remove('test-mode-active');
             }
         });
 
@@ -4519,12 +4557,17 @@
             }
         });
 
+        // Add event listener for the new home button
+        homeButton.addEventListener('click', () => {
+            backToChapterSelection();
+        });
+
         practiceModeBtn.addEventListener('click', () => {
             currentMode = 'practice';
             updateModeButtons();
-            timerDisplay.style.display = 'none'; 
+            timerDisplay.style.display = 'none';
             testDurationOptionDiv.style.display = 'none'; // Ẩn toàn bộ phần tùy chỉnh thời gian
-            document.body.classList.remove('test-mode-active'); 
+            document.body.classList.remove('test-mode-active');
         });
 
         testModeBtn.addEventListener('click', () => {
@@ -4557,7 +4600,7 @@
         // --- Initialization ---
         initPlaylist();
         updateAudioButtonUI();
-        backToChapterSelection(); 
+        backToChapterSelection();
         updateModeButtons(); // Gọi lần đầu để thiết lập trạng thái mặc định (Luyện tập)
         timerDisplay.style.display = 'none'; // Đảm bảo đồng hồ ẩn khi khởi chạy
     </script>
