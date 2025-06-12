@@ -1,220 +1,836 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Quiz Kiến Trúc Máy Tính</title>
-  <style>
-    :root {
-      --primary-color: #4a69bd;
-      --secondary-color: #6a85b6;
-      --correct-color: #2ecc71;
-      --incorrect-color: #e74c3c;
-      --skipped-color: #f39c12;
-      --light-bg: #f4f4f9;
-      --white-color: #ffffff;
-      --dark-text: #333;
-      --background-image-url: url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1740&auto=format&fit=crop');
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Kiến Trúc Máy Tính</title>
+    <style>
+        :root {
+            --primary-color: #4a69bd;
+            --secondary-color: #6a85b6;
+            --correct-color: #82e0aa; /* Xanh lá nhạt hơn */
+            --incorrect-color: #f1948a; /* Đỏ nhạt hơn */
+            --skipped-color: #f7dc6f; /* Cam nhạt hơn */
+            --light-bg: #f4f4f9;
+            --white-color: #ffffff;
+            --dark-text: #333;
+            --background-image-url: url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1740&auto=format&fit=crop');
+            --border-radius-main: 12px;
+            --shadow-light: 0 4px 15px rgba(0,0,0,0.1);
+            --shadow-medium: 0 6px 20px rgba(0,0,0,0.15);
+            --shadow-deep: 0 8px 30px rgba(0,0,0,0.2);
+        }
 
-    body { 
-      font-family: sans-serif; color: var(--dark-text); background-image: var(--background-image-url);
-      background-size: cover; background-position: center center; background-attachment: fixed;
-      margin: 0; padding: 0;
-    }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font hiện đại hơn */
+            color: var(--dark-text); 
+            background-image: var(--background-image-url);
+            background-size: cover; 
+            background-position: center center; 
+            background-attachment: fixed;
+            margin: 0; 
+            padding: 0;
+            display: flex; /* Dùng flexbox cho toàn bộ body */
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-    header { 
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-      color: var(--white-color); padding: 30px 20px; text-align: center; 
-      font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    }
-    
-    .main-content {
-        display: flex; flex-direction: column; align-items: center; padding: 20px;
-        min-height: calc(100vh - 97px); 
-    }
-    
-    /*
-     ==================================================================
-     ===> CẢI TIẾN: KHUNG CHỨA CÁC NÚT ĐIỀU KHIỂN GÓC PHẢI      <===
-     ==================================================================
-    */
-    .top-right-controls {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1001; /* Đảm bảo cao hơn các lớp khác */
-      display: flex;
-      align-items: center;
-      gap: 20px; /* Khoảng cách giữa nút nhạc và translate */
-    }
+        header { 
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white-color); 
+            padding: 30px 20px; 
+            text-align: center; 
+            font-size: 2.5em; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .main-content {
+            flex-grow: 1; /* Cho phép nó mở rộng để chiếm không gian */
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px;
+            justify-content: center; /* Căn giữa nội dung chính */
+        }
+        
+        .top-right-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
 
-    #toggle-audio {
-        /* Bỏ position: fixed vì đã có container cha */
-        position: relative; 
-        width: 50px; height: 50px; background: rgba(255, 255, 255, 0.9); border-radius: 50%;
-        border: none; cursor: pointer; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        display: flex; justify-content: center; align-items: center; transition: all 0.3s ease;
-    }
-    #toggle-audio:hover { transform: scale(1.1); }
-    #toggle-audio svg { width: 24px; height: 24px; fill: #333; }
-    
-    #playlist {
-        position: fixed; top: 80px; right: 20px; background: var(--white-color); border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); padding: 10px; z-index: 999;
-        width: 220px; display: none;
-    }
-    .playlist-item { padding: 12px 15px; cursor: pointer; border-radius: 6px; transition: background-color 0.2s; font-size: 0.9em; color: #333; }
-    .playlist-item:hover { background-color: #f0f0f0; }
-    .playlist-item.playing { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
+        #toggle-audio {
+            position: relative; 
+            width: 50px; height: 50px; background: rgba(255, 255, 255, 0.9); border-radius: 50%;
+            border: none; cursor: pointer; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: flex; justify-content: center; align-items: center; transition: all 0.3s ease;
+        }
+        #toggle-audio:hover { transform: scale(1.1); }
+        #toggle-audio svg { width: 24px; height: 24px; fill: #333; }
+        
+        #playlist {
+            position: fixed; top: 80px; right: 20px; background: var(--white-color); border-radius: 8px;
+            box-shadow: var(--shadow-light); padding: 10px; z-index: 999;
+            width: 220px; display: none;
+        }
+        .playlist-item { padding: 12px 15px; cursor: pointer; border-radius: 6px; transition: background-color 0.2s; font-size: 0.9em; color: #333; }
+        .playlist-item:hover { background-color: #f0f0f0; }
+        .playlist-item.playing { background-color: var(--primary-color); color: var(--white-color); font-weight: bold; }
 
-    /* Làm cho widget của Google Translate trông đẹp hơn */
-    #google_translate_element .goog-te-gadget-simple {
-      background-color: rgba(255, 255, 255, 0.9);
-      border: 1px solid #ccc;
-      border-radius: 20px;
-      padding: 8px 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    }
-    #google_translate_element .goog-te-gadget-icon {
-          display: inline-block !important; /* Ẩn icon Google */
-    }
-    .goog-te-gadget-simple span {
-      color: #333 !important;
-    }
+        #google_translate_element .goog-te-gadget-simple {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 8px 12px;
+            box-shadow: var(--shadow-light);
+        }
+        #google_translate_element .goog-te-gadget-icon {
+            display: none !important;
+        }
+        .goog-te-gadget-simple span {
+            color: #333 !important;
+        }
+
+        .card-container {
+            width: 100%; 
+            max-width: 900px; /* Tăng max-width để màn hình bắt đầu rộng hơn */
+            background: rgba(255, 255, 255, 0.97); 
+            padding: 30px; 
+            border-radius: var(--border-radius-main); 
+            box-shadow: var(--shadow-medium); 
+            margin: 20px;
+            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước tổng thể */
+        }
+        
+        #start-screen { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center;
+        }
+        #final-result-container { 
+            max-width: 1000px; /* Giữ nguyên hoặc tăng tùy theo kích thước bảng kết quả */
+            display: none; 
+        }
+        
+        #chapter-selection { 
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* Khoảng cách giữa các phần tử chính */
+        }
+        #chapter-selection label { font-size: 1.1em;}
+        #chapter-selection select { 
+            padding: 12px 20px; 
+            font-size: 1.1em; 
+            border-radius: 8px; 
+            border: 1px solid #ced4da; 
+            width: 80%; /* Chiếm phần lớn chiều rộng */
+            max-width: 400px;
+            background-color: var(--light-bg);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            appearance: none; /* Bỏ style mặc định của select */
+            -webkit-appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234a69bd%22%20d%3D%22M287%20197.3L159.2%2069.5c-4.7-4.7-12.3-4.7-17%200L5.4%20197.3c-4.7%204.7-4.7%2012.3%200%2017l7.6%207.6c4.7%204.7%2012.3%204.7%2017%200l110.1-110.1c4.7-4.7%2012.3-4.7%2017%200l110.1%20110.1c4.7%204.7%2012.3%204.7%2017%200l7.6-7.6c4.7-4.7%204.7-12.3%200-17z%22%2F%3E%3C%2Fsvg%3E'); /* Mũi tên tùy chỉnh */
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 1em auto;
+        }
+
+        .quiz-button { 
+            background-color: var(--primary-color); 
+            color: var(--white-color); 
+            border-color: var(--primary-color); 
+            cursor: pointer; 
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s; 
+            padding: 12px 25px; 
+            font-size: 1.1em; 
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .quiz-button:hover { 
+            background-color: var(--secondary-color); 
+            transform: translateY(-2px); 
+            box-shadow: var(--shadow-medium);
+        }
+        
+        /* Cập nhật #quiz-container và #quiz-layout */
+        #quiz-container {
+            max-width: 1200px; /* Mở rộng tối đa */
+            width: 100%; /* Đảm bảo chiếm đủ chiều rộng */
+            margin: 20px auto; /* Căn giữa */
+            box-sizing: border-box;
+        }
+        #quiz-layout { 
+            display: flex; 
+            gap: 30px; 
+            align-items: flex-start;
+            width: 100%; /* Quan trọng: làm cho quiz-layout chiếm 100% của quiz-container */
+        }
+        #main-quiz-area { 
+            flex: 3; 
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+            padding-right: 15px;
+            position: relative; 
+            /* QUAN TRỌNG: Thêm scroll-padding-top */
+            scroll-padding-top: 100px; /* Điều chỉnh giá trị này lớn hơn chiều cao của quiz-header */
+        }
+
+        .quiz-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 20px; 
+            border-bottom: 1px solid #eee; 
+            padding-bottom: 15px;
+            background-color: var(--white-color); 
+            padding-top: 10px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 10; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            border-radius: 8px 8px 0 0; 
+        }
+        .quiz-header h2 { margin: 0; font-size: 1.6em; }
+        #score-counter { margin: 0; font-size: 1em; font-weight: bold; background-color: var(--light-bg); padding: 8px 15px; border-radius: 20px; color: var(--primary-color); }
+        
+        .single-question-display {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            position: relative; 
+        }
+        .single-question-display:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        #question-nav-panel {
+            flex: 1; 
+            background-color: var(--light-bg); 
+            border-radius: 8px;
+            padding: 15px; 
+            position: sticky;
+            top: 20px;
+            box-shadow: var(--shadow-light);
+        }
+        #question-nav-panel h3 { margin-top: 0; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; }
+        .nav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); gap: 10px; }
+        .nav-question-btn {
+            width: 100%; height: 45px; border: 1px solid #ccc; background-color: var(--white-color);
+            border-radius: 5px; cursor: pointer; transition: all 0.2s ease; font-weight: bold;
+            color: var(--dark-text); 
+        }
+        .nav-question-btn:hover { transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .nav-question-btn.current-question { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+        /* Các màu này chỉ hiện sau khi bài test đã nộp hoặc trong chế độ luyện tập */
+        .nav-question-btn.answered-correct { background-color: var(--correct-color); color: var(--dark-text); border-color: var(--correct-color); } 
+        .nav-question-btn.answered-incorrect { background-color: var(--incorrect-color); color: var(--dark-text); border-color: var(--incorrect-color); } 
+        .nav-question-btn.answered-skipped { background-color: var(--skipped-color); color: var(--dark-text); border-color: var(--skipped-color); } 
+        /* Màu cho nút điều hướng bên phải khi đã làm (chế độ thi thử, trước khi nộp) */
+        .nav-question-btn.answered-in-test {
+            background-color: var(--light-bg); /* Màu nền nhạt để báo hiệu đã làm */
+            color: var(--dark-text);
+            border-color: #ddd;
+        }
 
 
-    .card-container {
-        width: 100%; max-width: 1200px;
-        background: rgba(255, 255, 255, 0.97); padding: 30px; border-radius: 12px; 
-        box-shadow: 0 4px 25px rgba(0,0,0,0.15); margin: 20px;
-    }
-    
-    #start-screen { max-width: 800px; }
-    #final-result-container { max-width: 800px; display: none; }
-    
-    #chapter-selection { text-align: center; }
-    #chapter-selection label { margin-right: 10px; font-size: 1.1em;}
-    #chapter-selection select, #chapter-selection button { padding: 10px 15px; font-size: 1em; border-radius: 8px; border: 1px solid #ccc; margin: 5px; }
-    #start-quiz { background-color: var(--primary-color); color: var(--white-color); border-color: var(--primary-color); cursor: pointer; transition: background-color 0.3s; }
-    #start-quiz:hover { background-color: var(--secondary-color); }
-    
-    #quiz-layout { display: flex; gap: 30px; }
-    #main-quiz-area { flex: 3; }
-    #question-nav-panel {
-        flex: 1; background-color: var(--light-bg); border-radius: 8px;
-        padding: 15px; align-self: flex-start; 
-    }
-    #question-nav-panel h3 { margin-top: 0; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; }
-    .nav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); gap: 10px; }
-    .nav-question-btn {
-        width: 100%; height: 45px; border: 1px solid #ccc; background-color: var(--white-color);
-        border-radius: 5px; cursor: pointer; transition: all 0.2s ease; font-weight: bold;
-    }
-    .nav-question-btn:hover { transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .nav-question-btn.current-question { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
-    .nav-question-btn.answered-correct { background-color: var(--correct-color); color: white; border-color: var(--correct-color); }
-    .nav-question-btn.answered-incorrect { background-color: var(--incorrect-color); color: white; border-color: var(--incorrect-color); }
-    .nav-question-btn.answered-skipped { background-color: var(--skipped-color); color: white; border-color: var(--skipped-color); }
+        .question-text { margin-top: 0; font-size: 1.4em; }
+        
+        .options {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
 
-    .quiz-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;
-    }
-    .quiz-header h2 { margin: 0; font-size: 1.6em; }
-    #score-counter { margin: 0; font-size: 1em; font-weight: bold; background-color: var(--light-bg); padding: 8px 15px; border-radius: 20px; color: var(--primary-color); }
-    #question h3 { margin-top: 0; font-size: 1.4em; }
-    .options label { display: block; background: var(--light-bg); margin: 10px 0; padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; border: 1px solid transparent; }
-    .options label.disabled { cursor: not-allowed; opacity: 0.7; }
-    .options label:not(.disabled):hover { background: #e2e2e2; transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .options input[type="radio"] { display: none; }
-    
-    .button-group { margin-top: 20px; }
-    .button-group button { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; margin-right: 10px; font-size: 1em; transition: all 0.3s ease; }
-    .button-group button:hover { opacity: 0.9; transform: translateY(-2px); }
-    #submit { display: none; }
-    #next-btn { background-color: var(--primary-color); color: white; }
-    #skip { background-color: var(--incorrect-color); color: white; }
-    #back { background-color: #ff9800; color: white; }
-    
-    #result { margin-top: 20px; font-size: 1.2em; }
-    .correct { color: var(--correct-color); font-weight: bold; }
-    .incorrect { color: var(--incorrect-color); font-weight: bold; }
-    label.correct { background-color: #d4edda !important; border-color: #c3e6cb; }
-    label.incorrect { background-color: #f8d7da !important; border-color: #f5c6cb; }
-    
-    #final-result { text-align: center; }
-  </style>
+        .option-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+            padding: 12px 20px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            pointer-events: auto; /* Mặc định cho phép tương tác */
+        }
+
+        .option-item:hover {
+            background-color: #e2e6ea;
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+        }
+
+        .option-item input[type="radio"] {
+            display: none;
+        }
+
+        .custom-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #6c757d;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            background-color: #f8f9fa;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .option-item input[type="radio"]:checked + .custom-radio {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .option-item label {
+            flex-grow: 1;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #495057;
+        }
+
+        .custom-radio .icon {
+            font-family: 'Arial', sans-serif;
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #ffffff;
+            line-height: 1;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+        }
+
+        /* TRẠNG THÁI: Phủ màu toàn bộ ô đáp án khi chọn đúng/sai */
+        /* Chỉ áp dụng trong chế độ luyện tập hoặc sau khi nộp bài ở chế độ test */
+        .option-item.chosen-correct { /* Khi người dùng chọn đúng */
+            background-color: var(--correct-color) !important;
+            border-color: var(--correct-color) !important;
+            box-shadow: 0 0 0 0.25rem rgba(130,224,170,.25) !important; 
+        }
+        .option-item.chosen-correct .custom-radio {
+            background-color: var(--white-color) !important; 
+            border-color: var(--white-color) !important;
+        }
+        .option-item.chosen-correct .custom-radio .icon {
+            content: '✓';
+            opacity: 1;
+            transform: scale(1);
+            color: var(--correct-color); 
+        }
+        .option-item.chosen-correct label {
+            color: var(--dark-text); 
+        }
+
+        .option-item.chosen-incorrect { /* Khi người dùng chọn sai */
+            background-color: var(--incorrect-color) !important;
+            border-color: var(--incorrect-color) !important;
+            box-shadow: 0 0 0 0.25rem rgba(241,148,138,.25) !important; 
+        }
+        .option-item.chosen-incorrect .custom-radio {
+            background-color: var(--white-color) !important; 
+            border-color: var(--white-color) !important;
+        }
+        .option-item.chosen-incorrect .custom-radio .icon {
+            content: '✗';
+            opacity: 1;
+            transform: scale(1);
+            color: var(--incorrect-color); 
+        }
+        .option-item.chosen-incorrect label {
+            color: var(--dark-text); 
+        }
+        
+        /* Highlight đáp án đúng khi người dùng chọn sai */
+        /* Chỉ áp dụng trong chế độ luyện tập hoặc sau khi nộp bài ở chế độ test */
+        .single-question-display.answered .option-item.correct-answer-highlight {
+            background-color: var(--correct-color) !important; 
+            border-color: var(--correct-color) !important;
+            box-shadow: 0 0 0 0.25rem rgba(130,224,170,.25) !important;
+        }
+        .single-question-display.answered .option-item.correct-answer-highlight .custom-radio {
+            background-color: var(--white-color) !important; 
+            border-color: var(--white-color) !important;
+        }
+        .single-question-display.answered .option-item.correct-answer-highlight .custom-radio .icon {
+            content: '✓' !important;
+            opacity: 1 !important;
+            transform: scale(1) !important;
+            color: var(--correct-color) !important;
+        }
+        .single-question-display.answered .option-item.correct-answer-highlight label {
+            color: var(--dark-text) !important;
+        }
+
+        /* Vô hiệu hóa tương tác cho các option của câu hỏi đã làm */
+        /* Và làm mờ các option không được chọn */
+        /* LƯU Ý: Quy tắc này được áp dụng sau khi nộp bài hoặc trong chế độ luyện tập */
+        .single-question-display.answered .option-item {
+            cursor: default;
+            pointer-events: none; /* Vô hiệu hóa click cho tất cả các option của câu đã làm */
+        }
+        .single-question-display.answered .option-item:hover {
+            background-color: initial; /* Bỏ hover */
+            border-color: #ced4da;
+            box-shadow: none;
+        }
+        .single-question-display.answered .option-item:not(.chosen-correct):not(.chosen-incorrect):not(.correct-revealed):not(.correct-answer-highlight) {
+            opacity: 0.6; /* Làm mờ các đáp án không liên quan */
+        }
+        .single-question-display.answered .option-item:not(.chosen-correct):not(.chosen-incorrect):not(.correct-revealed):not(.correct-answer-highlight) label {
+            color: #6c757d; /* Màu chữ tối cho các tùy chọn không được chọn */
+        }
+        .single-question-display.answered .option-item input[type="radio"] {
+            pointer-events: none; /* Vô hiệu hóa radio button nếu câu hỏi đã trả lời */
+        }
+
+
+        /* Nút gợi ý bóng đèn */
+        .hint-button {
+            position: absolute;
+            top: 15px; 
+            right: 15px; 
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            display: inline-block; 
+            opacity: 0.7;
+            z-index: 5; 
+        }
+        .hint-button:hover:not(:disabled) {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+        .hint-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .hint-button img { 
+            width: 30px; 
+            height: 30px; 
+            border-radius: 50%; 
+        }
+
+        /* Vùng hiển thị feedback (cho nút Show Answer) */
+        .answer-feedback-area { 
+            display: none; 
+        }
+        
+        /* Class để làm nổi bật đáp án đúng khi nhấn "Hiện Đáp Án" */
+        .option-item.correct-revealed {
+            background-color: var(--skipped-color) !important; 
+            border-color: var(--skipped-color) !important;
+            box-shadow: 0 0 0 0.25rem rgba(247,220,111,.25) !important; 
+        }
+        .option-item.correct-revealed .custom-radio {
+            background-color: var(--white-color) !important; 
+            border-color: var(--white-color) !important;
+        }
+        .option-item.correct-revealed .custom-radio .icon {
+            content: '✓' !important;
+            opacity: 1 !important;
+            transform: scale(1) !important;
+            color: var(--skipped-color) !important; 
+        }
+        .option-item.correct-revealed label {
+            color: var(--dark-text) !important; 
+            font-weight: bold;
+        }
+
+        /* Styles for the new result table */
+        .final-results-summary {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .final-results-summary h2 {
+            font-size: 2em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .final-results-summary p {
+            font-size: 1.2em;
+            margin: 5px 0;
+        }
+
+        .final-results-summary p .correct {
+            color: var(--correct-color);
+            font-weight: bold;
+        }
+        .final-results-summary p .incorrect {
+            color: var(--incorrect-color);
+            font-weight: bold;
+        }
+
+        .final-results-table-wrapper {
+            max-height: 400px; 
+            overflow-y: auto;
+            width: 100%;
+            margin-bottom: 20px;
+            padding-right: 10px; 
+        }
+
+        .final-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto; 
+            box-shadow: var(--shadow-medium);
+            border-radius: var(--border-radius-main);
+            overflow: hidden; 
+        }
+
+        .final-results-table th, 
+        .final-results-table td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 0.95em;
+        }
+
+        .final-results-table th {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            z-index: 1; 
+        }
+
+        .final-results-table tbody tr:nth-child(even) {
+            background-color: var(--light-bg); 
+        }
+
+        .final-results-table tbody tr:hover {
+            background-color: #e9e9e9;
+        }
+
+        .final-results-table .status-correct {
+            color: var(--correct-color);
+            font-weight: bold;
+        }
+
+        .final-results-table .status-incorrect {
+            color: var(--incorrect-color);
+            font-weight: bold;
+        }
+
+        .final-results-table .status-skipped {
+            color: var(--skipped-color);
+            font-weight: bold;
+        }
+
+        /* New styles for mode selection buttons */
+        .mode-selection {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .mode-button {
+            flex: 1; /* Chia đều không gian */
+            max-width: 180px; /* Giới hạn kích thước */
+            background-color: var(--light-bg); /* Màu nền nhẹ nhàng */
+            color: var(--dark-text);
+            border: 1px solid #ced4da;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+            padding: 15px 20px; /* Tăng padding */
+            font-size: 1.2em; /* Tăng cỡ chữ */
+            font-weight: 600;
+            border-radius: 10px; /* Bo tròn góc hơn */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px; /* Khoảng cách giữa icon và text */
+        }
+        .mode-button:hover {
+            transform: translateY(-3px); /* Hiệu ứng nổi */
+            box-shadow: var(--shadow-medium);
+            background-color: #e9ecef; /* Nền sáng hơn khi hover */
+        }
+
+        .mode-button.selected {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border-color: var(--primary-color);
+            transform: translateY(-1px); /* Hơi nổi lên */
+            box-shadow: var(--shadow-deep);
+        }
+        .mode-button.selected:hover {
+            background-color: var(--secondary-color);
+            box-shadow: var(--shadow-deep);
+        }
+        .mode-button .icon {
+            font-size: 2.5em; /* Kích thước icon */
+            color: var(--primary-color); /* Màu icon mặc định */
+        }
+        .mode-button.selected .icon {
+            color: var(--white-color); /* Màu icon khi được chọn */
+        }
+
+        /* Custom test duration input */
+        #test-duration-option {
+            margin-top: 25px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius-main);
+            background-color: var(--light-bg);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+            display: none; /* Mặc định ẩn */
+            width: 80%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+        #test-duration-option label {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        #test-duration-option input[type="radio"] {
+            display: none; /* Ẩn radio mặc định */
+        }
+        #test-duration-option input[type="radio"] + label {
+            display: inline-flex; /* Để icon và text trên cùng một hàng */
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            background-color: var(--white-color);
+            transition: all 0.2s ease;
+            margin-right: 10px;
+            font-size: 1em;
+            color: var(--dark-text);
+        }
+        #test-duration-option input[type="radio"] + label::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            margin-right: 8px;
+            background-color: var(--white-color);
+            transition: all 0.2s ease;
+        }
+        #test-duration-option input[type="radio"]:checked + label {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border-color: var(--primary-color);
+        }
+        #test-duration-option input[type="radio"]:checked + label::before {
+            background-color: var(--white-color);
+            box-shadow: inset 0 0 0 5px var(--primary-color); /* Hiệu ứng chấm tròn */
+        }
+
+
+        #test-minutes-container {
+            margin-top: 15px;
+            text-align: center;
+            display: block; /* Mặc định hiển thị nếu use-timer-yes checked */
+        }
+        #test-minutes-container label {
+            font-weight: normal;
+        }
+        #test-minutes-container input[type="number"] {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            width: 80px;
+            text-align: center;
+            font-size: 1.1em;
+            margin-left: 10px;
+        }
+
+        /* Ẩn nút gợi ý trong chế độ Test */
+        .test-mode .hint-button {
+            display: none;
+        }
+
+        /* Các quy tắc cho chế độ Test TRƯỚC KHI NỘP BÀI */
+        /* body.test-mode-active được thêm/xóa bằng JS khi vào/thoát chế độ test */
+        body.test-mode-active .option-item {
+            background-color: var(--white-color) !important; /* Luôn màu trắng */
+            border-color: #ced4da !important; /* Viền xám */
+            box-shadow: none !important;
+            opacity: 1 !important; /* Không mờ */
+            pointer-events: auto !important; /* CHO PHÉP TƯƠNG TÁC LẠI */
+        }
+        body.test-mode-active .option-item input[type="radio"] {
+            pointer-events: auto !important; /* CHO PHÉP CHỌN RADIO BUTTON */
+        }
+        body.test-mode-active .option-item:hover {
+             background-color: #e2e6ea !important; /* Vẫn có hover nhẹ */
+        }
+        body.test-mode-active .option-item .custom-radio {
+            background-color: #f8f9fa !important; /* Nền radio trung tính */
+            border-color: #6c757d !important; /* Viền radio trung tính */
+        }
+        body.test-mode-active .option-item input[type="radio"]:checked + .custom-radio {
+             background-color: var(--primary-color) !important; /* Ô radio màu xanh khi chọn */
+             border-color: var(--primary-color) !important;
+        }
+        body.test-mode-active .option-item .custom-radio .icon {
+            opacity: 0 !important; /* Ẩn dấu tích/X */
+        }
+        body.test-mode-active .option-item label {
+            color: #495057 !important; /* Màu chữ mặc định */
+        }
+        /* Đảm bảo các tùy chọn đã làm trong test mode vẫn vô hiệu hóa nhưng không đổi màu cho đến khi nộp */
+        body.test-mode-active .single-question-display.answered .option-item {
+            /* Các kiểu vô hiệu hóa sẽ được áp dụng lại sau khi nộp bài qua showResult() */
+            /* Trước khi nộp bài, cho phép chọn lại */
+            pointer-events: auto !important; /* Cần đảm bảo auto */
+        }
+        body.test-mode-active .single-question-display.answered .option-item input[type="radio"] {
+            pointer-events: auto !important; /* Cần đảm bảo auto */
+        }
+
+
+        /* Hiển thị nút nộp bài chỉ trong chế độ Test */
+        #submit-test-button {
+            display: none; /* Mặc định ẩn, JS sẽ hiện */
+            margin-top: 30px;
+            background-color: #28a745; /* Màu xanh lá nổi bật */
+            border-color: #28a745;
+        }
+
+        #submit-test-button:hover {
+            background-color: #218838;
+        }
+
+        /* Căn giữa các nút ở màn hình kết quả */
+        #final-result-container .quiz-button {
+            margin: 10px;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    KIẾN TRÚC MÁY TÍNH
-  </header>
-  
-  <div class="top-right-controls">
-    <div id="google_translate_element"></div>
-    <button id="toggle-audio" title="Bật/Tắt nhạc">
-      <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-      <svg class="icon-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="display:none;"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
-    </button>
-  </div>
-  <div id="playlist"></div>
-
-  <div class="main-content">
-    <div id="start-screen" class="card-container">
-      <div id="chapter-selection">
-        <label for="chapter-select">Chọn chương:</label>
-        <select id="chapter-select">
-          <option value="all">Tất cả</option>
-          <option value="1">Chương 1: Tổng quan</option>
-          <option value="2">Chương 2: Biểu diễn dữ liệu</option>
-          <option value="3">Chương 3: CPU</option>
-          <option value="4">Chương 4: Bộ nhớ</option>
-        </select>
-        <button id="start-quiz">Bắt đầu</button>
-      </div>
+    <header>
+        KIẾN TRÚC MÁY TÍNH
+    </header>
+    
+    <div class="top-right-controls">
+        <div id="google_translate_element"></div>
+        <button id="toggle-audio" title="Bật/Tắt nhạc">
+            <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+            <svg class="icon-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="display:none;"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+        </button>
     </div>
+    <div id="playlist"></div>
 
-    <div class="card-container" id="quiz-container" style="display: none;">
-        <div id="quiz-layout">
-            <div id="main-quiz-area">
-                <div class="quiz-header"><h2>Câu hỏi trắc nghiệm</h2><div id="score-counter">Đã làm: 0/0</div></div>
-                <div id="question"></div>
-                <div class="options" id="options"></div>
-                <div id="result"></div>
-                <div class="button-group" id="controls">
-                    <button id="submit">Nộp</button>
-                    <button id="skip">Bỏ qua</button>
-                    <button id="back">Quay lại</button>
+    <div class="main-content">
+        <div class="card-container" id="start-screen">
+            <div id="chapter-selection">
+                <label for="chapter-select">Chọn chương:</label>
+                <select id="chapter-select">
+                    <option value="all">Tất cả</option>
+                    <option value="1">Chương 1: Computer Architecture Overview</option>
+                    <option value="2">Chương 2: CPU</option>
+                    <option value="3">Chương 3: Cache and Memory</option>
+                    <option value="4">Chương 4: Intel 8086/8088 and Assembly Programming</option>
+                    <option value="5">Chương 5: IO Connection and Interface Programming</option>
+                </select>
+                <div class="mode-selection">
+                    <button id="practice-mode-btn" class="quiz-button mode-button selected">
+                        <span class="icon">📚</span>Luyện tập
+                    </button>
+                    <button id="test-mode-btn" class="quiz-button mode-button">
+                        <span class="icon">⏱️</span>Thi thử
+                    </button>
                 </div>
-            </div>
-            <div id="question-nav-panel">
-                <h3>Danh sách câu hỏi</h3>
-                <div id="nav-grid" class="nav-grid"></div>
+                <div id="test-duration-option" style="display:none; margin-top: 15px;">
+                    <label>Giới hạn thời gian:</label><br>
+                    <input type="radio" id="use-timer-yes" name="use-timer" value="yes" checked>
+                    <label for="use-timer-yes">Có</label>
+                    <input type="radio" id="use-timer-no" name="use-timer" value="no">
+                    <label for="use-timer-no">Không</label>
+
+                    <div id="test-minutes-container" style="margin-top: 10px;">
+                        <label for="test-minutes">Thời gian (phút):</label>
+                        <input type="number" id="test-minutes" value="10" min="1" max="120" style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                    </div>
+                </div>
+                <button id="start-quiz" class="quiz-button">Bắt đầu</button>
             </div>
         </div>
+
+        <div class="card-container" id="quiz-container" style="display: none;">
+            <div id="quiz-layout">
+                <div id="main-quiz-area">
+                    <div class="quiz-header">
+                        <h2>Câu hỏi trắc nghiệm</h2>
+                        <div id="timer" style="font-size: 1.2em; font-weight: bold; color: var(--primary-color);">Thời gian: 00:00</div>
+                        <div id="score-counter">Số câu đúng: 0/0</div>
+                    </div>
+                    <div id="all-questions-display-area"></div> 
+                </div>
+                <div id="question-nav-panel">
+                    <h3>Danh sách câu hỏi</h3>
+                    <div id="nav-grid" class="nav-grid"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-container" id="final-result-container" style="display: none;">
+            <div id="final-result" class="final-results-summary"></div>
+            <div class="final-results-table-wrapper">
+                <table class="final-results-table" id="results-detail-table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Câu hỏi</th>
+                            <th>Đáp án của bạn</th>
+                            <th>Đáp án đúng</th>
+                            <th>Kết quả</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+            <button onclick="restartQuiz()" class="quiz-button">Làm lại chương này</button> 
+            <button onclick="backToChapterSelection()" class="quiz-button">Chọn chương khác</button>
+        </div>
     </div>
+
+    <audio id="background-music"></audio>
     
-    <div class="card-container" id="final-result-container">
-        <div id="final-result"></div>
-    </div>
-  </div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'vi', 
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-  <audio id="background-music"></audio>
-  
-  <script type="text/javascript">
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement({
-          pageLanguage: 'vi', 
-          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-        }, 'google_translate_element');
-    }
-  </script>
-
-  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-
-  <script>
-    const questions = [
+    <script>
+        const questions = [
         // CHUONG 1
 //P1
     {
@@ -2381,178 +2997,1566 @@
         "D": "Push down stack"
         },
         "correct": "D"
+    },
+//p3
+    {
+        "question": "The location to return to, from the subroutine is stored in _______ (chương 4)",
+        "options": {
+        "A": "Link registers",
+        "B": "PC",
+        "C": "MAR",
+        "D": "TLB"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The appropriate return addresses are obtained with the help of ____ in case of nested routines. (chương 4)",
+        "options": {
+        "A": "Stack-pointers",
+        "B": "MAR",
+        "C": "Buffers",
+        "D": "MDR"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "In case of nested subroutines the return addresses are stored in __________ (chương 4)",
+        "options": {
+        "A": "Processor stack",
+        "B": "Registers",
+        "C": "System heap",
+        "D": "Special memory buffers"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The most Flexible way of logging the return addresses of the subroutines is by using _______ (chương 4)",
+        "options": {
+        "A": "Registers",
+        "B": "None of the mentioned",
+        "C": "Stacks",
+        "D": "Memory locations"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "What is subroutine nesting? (chương 4)",
+        "options": {
+        "A": "Having one routine call the other",
+        "B": "Using a linking nest statement to put many subroutines under the same name",
+        "C": "None of the mentioned",
+        "D": "Having multiple subroutines in a program"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The order in which the return addresses are generated and used is _________ (chương 4)",
+        "options": {
+        "A": "Highest priority",
+        "B": "FIFO",
+        "C": "LIFO",
+        "D": "Random"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "When parameters are being passed on to the subroutines they are stored in ________ (chương 4)",
+        "options": {
+        "A": "Processor stacks",
+        "B": "All of the mentioned",
+        "C": "Memory locations",
+        "D": "Registers"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The return address of the Sub-routine is pointed to by _______ (chương 4)",
+        "options": {
+        "A": "MAR",
+        "B": "PC",
+        "C": "Special memory registers",
+        "D": "IR"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The most efficient way of handling parameter passing is by using ______ (chương 4)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "Memory locations",
+        "C": "Stacks",
+        "D": "General purpose registers"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "The wrong statement/s regarding interrupts and subroutines among the following is/are ______. i) The sub-routine and interrupts have a return statement; ii) Both of them alter the content of the PC; iii) Both are software oriented; iv) Both can be initiated by the user (chương 4)",
+        "options": {
+        "A": "iv",
+        "B": "i, ii and iv",
+        "C": "iii and iv",
+        "D": "ii and iii"
+        },
+        "correct": "C"
+    },
+//p4
+    {
+        "question": "The data structure suitable for scheduling processes is _______ (chương 4)",
+        "options": {
+        "A": "Stack",
+        "B": "Heap",
+        "C": "Queue",
+        "D": "List"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The sub-routine service procedure is similar to that of the interrupt service routine in ________ (chương 4)",
+        "options": {
+        "A": "Process execution",
+        "B": "Returning",
+        "C": "Method of context switch and Process execution",
+        "D": "Method of context switch"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "______ pointer is used to point to parameters passed or local parameters of the subroutine. (chương 4)",
+        "options": {
+        "A": "Frame pointer",
+        "B": "Parameter register",
+        "C": "Log register",
+        "D": "Stack pointer"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "If the subroutine exceeds the private space allocated to it then the values are pushed onto _________ (chương 4)",
+        "options": {
+        "A": "Stack",
+        "B": "Reserve Space",
+        "C": "System heap",
+        "D": "Stack frame"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The private work space dedicated to a subroutine is called as ________ (chương 4)",
+        "options": {
+        "A": "Stack frame",
+        "B": "Reserve",
+        "C": "System heap",
+        "D": "Allocation"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The reserved memory or private space of the subroutine gets deallocated when _______ (chương 4)",
+        "options": {
+        "A": "The stop instruction is executed by the routine",
+        "B": "When the routine’s return statement is executed",
+        "C": "None of the mentioned",
+        "D": "The pointer reaches the end of the space"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The private space gets allocated to each subroutine when _________ (chương 4)",
+        "options": {
+        "A": "When the context switch takes place",
+        "B": "When the Allocate instruction is executed",
+        "C": "The first statement of the routine is executed",
+        "D": "When the routine gets called"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "In the case of nested subroutines, the stack top is always _________ (chương 4)",
+        "options": {
+        "A": "The saved contents of the called sub routine",
+        "B": "None of the mentioned",
+        "C": "The saved contents of the calling sub routine",
+        "D": "The return addresses of the called sub routine"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The stack frame for each subroutine is present in ______ (chương 4)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "System Heap",
+        "C": "Main memory",
+        "D": "Processor Stack"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "_____ the most suitable data structure used to store the return addresses in the case of nested subroutines. (chương 4)",
+        "options": {
+        "A": "List",
+        "B": "Heap",
+        "C": "Queue",
+        "D": "Stack"
+        },
+        "correct": "D"
+    },
+// CHUONG 5
+//p1
+    {
+        "question": "It is ______ that in Intel IA-32 architecture there is a separate 16 bit address space for the I/O devices. (chương 5)",
+        "options": {
+        "A": "True",
+        "B": "False",
+        "C": "Not possible",
+        "D": "Not determined"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The advantage of I/O mapped devices to memory mapped is ___________ (chương 5)",
+        "options": {
+        "A": "The devices have to deal with fewer address lines",
+        "B": "No advantage as such",
+        "C": "The former offers faster transfer of data",
+        "D": "The devices connected using I/O mapping have a bigger buffer space"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The usual BUS structure used to connect the I/O devices is ___________ (chương 5)",
+        "options": {
+        "A": "Star BUS structure",
+        "B": "Multiple BUS structure",
+        "C": "Node to Node BUS structure",
+        "D": "Single BUS structure"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "In memory-mapped I/O ____________ (chương 5)",
+        "options": {
+        "A": "The memory and I/O devices have an associated address space",
+        "B": "A part of the memory is specifically set aside for the I/O operation",
+        "C": "The I/O devices have a separate address space",
+        "D": "The I/O devices and the memory share the same address space"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "The system is notified of a read or write operation by ___________ (chương 5)",
+        "options": {
+        "A": "Appending an extra bit of the address",
+        "B": "Enabling the read or write bits of the devices",
+        "C": "Raising an appropriate interrupt signal",
+        "D": "Sending a special signal along the BUS"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "To overcome the lag in the operating speeds of the I/O device and the processor we use ___________ (chương 5)",
+        "options": {
+        "A": "Exceptions",
+        "B": "Status flags",
+        "C": "BUffer spaces",
+        "D": "Interrupt signals"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The method which offers higher speeds of I/O transfers is ___________ (chương 5)",
+        "options": {
+        "A": "Program-controlled I/O",
+        "B": "DMA",
+        "C": "Memory mapping",
+        "D": "Interrupts"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The process wherein the processor constantly checks the status flags is called as ___________ (chương 5)",
+        "options": {
+        "A": "Reviewing",
+        "B": "Polling",
+        "C": "Inspection",
+        "D": "Echoing"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The method of accessing the I/O devices by repeatedly checking the status flags is ___________ (chương 5)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "Program-controlled I/O",
+        "C": "Memory-mapped I/O",
+        "D": "I/O mapped"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The method of synchronising the processor with the I/O device in which the device sends a signal when it is ready is? (chương 5)",
+        "options": {
+        "A": "Exceptions",
+        "B": "Interrupts",
+        "C": "DMA",
+        "D": "Signal handling"
+        },
+        "correct": "B"
+    },
+//p2
+    {
+        "question": "In daisy chaining device 0 will pass the signal only if it has _______ (chương 5)",
+        "options": {
+        "A": "No interrupt request",
+        "B": "None of the mentioned",
+        "C": "Interrupt request",
+        "D": "Both No interrupt and Interrupt request"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Interrupts form an important part of _____ systems. (chương 5)",
+        "options": {
+        "A": "Multi-user",
+        "B": "Multitasking",
+        "C": "Batch processing",
+        "D": "Real-time processing"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "______ type circuits are generally used for interrupt service lines. i) open-collector; ii) open-drain; iii) XOR; iv) XNOR (chương 5)",
+        "options": {
+        "A": "ii",
+        "B": "ii, iv",
+        "C": "i, ii",
+        "D": "ii, iii"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "How can the processor ignore other interrupts when it is servicing one ___________ (chương 5)",
+        "options": {
+        "A": "By turning off the interrupt request line",
+        "B": "All of the mentioned",
+        "C": "BY using edge-triggered request lines",
+        "D": "By disabling the devices from sending the interrupts"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "In vectored interrupts, how does the device identify itself to the processor? (chương 5)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "By sending the starting address of the service routine",
+        "C": "By sending the machine code for the interrupt service routine",
+        "D": "By sending its device id"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Interrupts initiated by an instruction is called as _______ (chương 5)",
+        "options": {
+        "A": "Hardware",
+        "B": "External",
+        "C": "Internal",
+        "D": "Software"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "______ interrupt method uses register whose bits are set separately by interrupt signal for each device. (chương 5)",
+        "options": {
+        "A": "Daisy chaining",
+        "B": "Serial priority interrupt",
+        "C": "None of the mentioned",
+        "D": "Parallel priority interrupt"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "An interrupt that can be temporarily ignored is ___________ (chương 5)",
+        "options": {
+        "A": "High priority interrupt",
+        "B": "Non-maskable interrupt",
+        "C": "Vectored interrupt",
+        "D": "Maskable interrupt"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "The starting address sent by the device in vectored interrupt is called as __________ (chương 5)",
+        "options": {
+        "A": "Interrupt vector",
+        "B": "Location id",
+        "C": "Service id",
+        "D": "Service location"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The interrupt-request line is a part of the ___________ (chương 5)",
+        "options": {
+        "A": "Control line",
+        "B": "Data line",
+        "C": "None of the mentioned",
+        "D": "Address line"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The signal sent to the device from the processor to the device after receiving an interrupt is ___________ (chương 5)",
+        "options": {
+        "A": "Service signal",
+        "B": "Return signal",
+        "C": "Interrupt-acknowledge",
+        "D": "Permission signal"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "We describe a protocol of input device communication below: i) Each device has a distinct address. ii) The BUS controller scans each device in a sequence of increasing address value to determine if the entity wishes to communicate. iii) The device ready to communicate leaves its data in the I/O register. iv) The data is picked up and the controller moves to the step i). Identify the form of communication best describes the I/O mode amongst the following. (chương 5)",
+        "options": {
+        "A": "Polling",
+        "B": "Interrupt mode",
+        "C": "Programmed mode of data transfer",
+        "D": "DMA"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The added output of the bits of the interrupt register and the mask register is set as an input of ______________ (chương 5)",
+        "options": {
+        "A": "Multiplexer",
+        "B": "Process id encoder",
+        "C": "Priority decoder",
+        "D": "Priority encoder"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "The return address from the interrupt-service routine is stored on the ___________ (chương 5)",
+        "options": {
+        "A": "Processor register",
+        "B": "Memory",
+        "C": "Processor stack",
+        "D": "System heap"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The time between the receiver of an interrupt and its service is ______ (chương 5)",
+        "options": {
+        "A": "Interrupt latency",
+        "B": "Interrupt delay",
+        "C": "Switching time",
+        "D": "Cycle time"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "_________ method is used to establish priority by serially connecting all devices that request an interrupt. (chương 5)",
+        "options": {
+        "A": "Daisy chain",
+        "B": "Vectored-interrupting",
+        "C": "Priority",
+        "D": "Polling"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "______________ register is used for the purpose of controlling the status of each interrupt request in parallel priority interrupt. (chương 5)",
+        "options": {
+        "A": "Mass",
+        "B": "Mask",
+        "C": "Mark",
+        "D": "Make"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "It is ______ that a single interrupt line can be used to service n different devices. (chương 5)",
+        "options": {
+        "A": "True",
+        "B": "Possible",
+        "C": "Not determined",
+        "D": "False"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "When dealing with multiple devices interrupts, which mechanism is easy to implement? (chương 5)",
+        "options": {
+        "A": "Polling method",
+        "B": "Vectored interrupts",
+        "C": "Interrupt nesting",
+        "D": "None of the mentioned"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "Which interrupt is unmaskable? (chương 5)",
+        "options": {
+        "A": "Both RST 5.5 and 7.5",
+        "B": "TRAP",
+        "C": "RST 5.5",
+        "D": "RST 7.5"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The resistor which is attached to the service line is called _____ (chương 5)",
+        "options": {
+        "A": "Push-down resistor",
+        "B": "Line resistor",
+        "C": "Pull-up resistor",
+        "D": "Break down resistor"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The code sent by the device in vectored interrupt is _____ long. (chương 5)",
+        "options": {
+        "A": "upto 16 bits",
+        "B": "upto 32 bits",
+        "C": "4-8 bits",
+        "D": "upto 24 bits"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The processor indicates to the devices that it is ready to receive interrupts ________ (chương 5)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "By activating the interrupt acknowledge line",
+        "C": "By enabling the interrupt request line",
+        "D": "By enabling the IRQ bits"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Which table handle stores the addresses of the interrupt handling sub-routines? (chương 5)",
+        "options": {
+        "A": "Interrupt-vector table",
+        "B": "Vector table",
+        "C": "None of the mentioned",
+        "D": "Symbol link table"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The interrupt servicing mechanism in which the requesting device identifies itself to the processor to be serviced is ___________ (chương 5)",
+        "options": {
+        "A": "Interrupt nesting",
+        "B": "Simultaneous requesting",
+        "C": "Polling",
+        "D": "Vectored interrupts"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "CPU as two modes privileged and non-privileged. In order to change the mode from privileged to non-privileged. (chương 5)",
+        "options": {
+        "A": "A software interrupt is needed",
+        "B": "A non-privileged instruction (which does not generate an interrupt) is needed",
+        "C": "A hardware interrupt is needed",
+        "D": "Either hardware or software interrupt is needed"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "When the process is returned after an interrupt service ______ should be loaded again. i) Register contents; ii) Condition codes; iii) Stack contents; iv) Return addresses (chương 5)",
+        "options": {
+        "A": "ii, iii and iv",
+        "B": "iii, iv",
+        "C": "i, iv",
+        "D": "i, ii"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "The 8085 microprocessor responds to the presence of an interrupt ___________ (chương 5)",
+        "options": {
+        "A": "As soon as the trap pin becomes ‘LOW’",
+        "B": "By checking the trap pin for ‘high’ status at the end of execution of each instruction",
+        "C": "By checking the trap pin for ‘high’ status at regular intervals",
+        "D": "By checking the trap pin for ‘high’ status at the end of each instruction fetch"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "Which one of the following is true with regard to a CPU having a single interrupt request line and single interrupt grant line? i) Neither vectored nor multiple interrupting devices is possible. ii) Vectored interrupts is not possible but multiple interrupting devices is possible. iii) Vectored interrupts is possible and multiple interrupting devices is not possible. iv) Both vectored and multiple interrupting devices are possible. (chương 5)",
+        "options": {
+        "A": "iii, iv",
+        "B": "i, iv",
+        "C": "iii",
+        "D": "ii, iii"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "From amongst the following given scenarios determine the right one to justify interrupt mode of data transfer. i) Bulk transfer of several kilo-byte; ii) Moderately large data transfer of more than 1kb; iii) Short events like mouse action; iv) Keyboard inputs (chương 5)",
+        "options": {
+        "A": "i, ii and iv",
+        "B": "iv",
+        "C": "i and ii",
+        "D": "ii"
+        },
+        "correct": "B"
+    },
+//p3
+    {
+        "question": "The DMA controller has _______ registers. (chương 5)",
+        "options": {
+        "A": "2",
+        "B": "4",
+        "C": "1",
+        "D": "3"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "To overcome the conflict over the possession of the BUS we use ______ (chương 5)",
+        "options": {
+        "A": "Multiple BUS structure",
+        "B": "None of the mentioned",
+        "C": "Optimizers",
+        "D": "BUS arbitrators"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "In DMA transfers, the required signals and addresses are given by the __________ (chương 5)",
+        "options": {
+        "A": "Device drivers",
+        "B": "The program itself",
+        "C": "Processor",
+        "D": "DMA controllers"
+        },
+        "correct": "D"
+    },
+    {
+        "question": "The registers of the controller are ______ (chương 5)",
+        "options": {
+        "A": "64 bits",
+        "B": "32 bits",
+        "C": "24 bits",
+        "D": "16 bits"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The DMA differs from the interrupt mode by __________ (chương 5)",
+        "options": {
+        "A": "The amount of data transfer possible",
+        "B": "None of the mentioned",
+        "C": "The involvement of the processor for the operation",
+        "D": "The method of accessing the I/O devices"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The DMA transfers are performed by a control circuit called as __________ (chương 5)",
+        "options": {
+        "A": "DMA controller",
+        "B": "Data controller",
+        "C": "Device interface",
+        "D": "Overlooker"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The technique where the controller is given complete access to main memory is __________ (chương 5)",
+        "options": {
+        "A": "Cycle stealing",
+        "B": "Burst mode",
+        "C": "Memory Con",
+        "D": "Memory stealing"
+        },
+        "correct": "B"
+    },
+    {
+        "question": "The DMA transfer is initiated by _____ (chương 5)",
+        "options": {
+        "A": "I/O devices",
+        "B": "The process being executed",
+        "C": "Processor",
+        "D": "OS"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "It is ______ that a single DMA controller can perform operations on two different disks simultaneously. (chương 5)",
+        "options": {
+        "A": "Not determined",
+        "B": "Not possible",
+        "C": "True",
+        "D": "False"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "When the process requests for a DMA transfer? (chương 5)",
+        "options": {
+        "A": "Then the process is temporarily suspended",
+        "B": "Another process gets executed",
+        "C": "Process is temporarily suspended and Another process gets executed",
+        "D": "The process continues execution"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "When the R/W bit of the status register of the DMA controller is set to 1. (chương 5)",
+        "options": {
+        "A": "Read operation is performed",
+        "B": "Read and Write operation is performed",
+        "C": "None of the mentioned",
+        "D": "Write operation is performed"
+        },
+        "correct": "A"
+    },
+    {
+        "question": "The controller uses _____ to help with the transfers when handling network interfaces. (chương 5)",
+        "options": {
+        "A": "Signal enhancers",
+        "B": "Bridge circuits",
+        "C": "Input Buffer storage",
+        "D": "All of the mentioned"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The controller is connected to the ____ (chương 5)",
+        "options": {
+        "A": "None of the mentioned",
+        "B": "External BUS",
+        "C": "System BUS",
+        "D": "Processor BUS"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "After the completion of the DMA transfer, the processor is notified by __________ (chương 5)",
+        "options": {
+        "A": "Acknowledge signal",
+        "B": "None of the mentioned",
+        "C": "Interrupt signal",
+        "D": "WMFC signal"
+        },
+        "correct": "C"
+    },
+    {
+        "question": "The technique whereby the DMA controller steals the access cycles of the processor to operate is called __________ (chương 5)",
+        "options": {
+        "A": "Memory Con",
+        "B": "Fast conning",
+        "C": "Memory stealing",
+        "D": "Cycle stealing"
+        },
+        "correct": "D"
     }
-    ];
-    const chapters = {
-      1: questions.filter(q => q.question.includes("(chương 1)")), 2: questions.filter(q => q.question.includes("(chương 2)")),
-      3: questions.filter(q => q.question.includes("(chương 3)")), 4: questions.filter(q => q.question.includes("(chương 4)"))
-    };
-    let currentQuestion = 0, correctAnswers = 0, totalAnswered = 0, selectedQuestions = [], isAudioPlaying = false, currentTrack = null, answers = [];
-    const audio = document.getElementById('background-music'), toggleAudioBtn = document.getElementById('toggle-audio'),
-    playlistContainer = document.getElementById('playlist'), skipBtn = document.getElementById('skip'), scoreCounter = document.getElementById('score-counter'),
-    backBtn = document.getElementById('back'), chapterSelect = document.getElementById('chapter-select'), startQuizBtn = document.getElementById('start-quiz'),
-    startScreen = document.getElementById('start-screen'), quizContainer = document.getElementById('quiz-container'), 
-    finalResultContainer = document.getElementById('final-result-container'), finalResultEl = document.getElementById('final-result'),
-    iconOn = document.querySelector('.icon-on'), iconOff = document.querySelector('.icon-off'), navGrid = document.getElementById('nav-grid');
-    const playlist = [ { value: 'tiktik.mp3', name: 'Clock Tick' }, { value: 'MatKetNoi.mp3', name: 'Mất Kết Nối' }, { value: 'NhacKhongLoiGuitar.mp3', name: 'Nhạc Không Lời Guitar' }, { value: 'GapEmDungLuc.mp3', name: 'Gặp Em Đúng Lúc' }, { value: 'TuoiTreTheHeBacHo.mp3', name: 'Tuổi Trẻ Thế Hệ Bác Hồ' }, { value: 'NhacThai.mp3', name: 'Nhạc Thái Lan' } ];
-    
-    function updateAudioButtonUI() { iconOn.style.display = isAudioPlaying ? 'block' : 'none'; iconOff.style.display = isAudioPlaying ? 'none' : 'block'; }
-    toggleAudioBtn.addEventListener('click', () => { isAudioPlaying = !isAudioPlaying; if (isAudioPlaying) { if (audio.src) audio.play().catch(e => console.log('Autoplay prevented')); playlistContainer.style.display = 'block'; } else { audio.pause(); playlistContainer.style.display = 'none'; } updateAudioButtonUI(); });
-    function initPlaylist() { playlistContainer.innerHTML = ''; playlist.forEach(track => { const item = document.createElement('div'); item.classList.add('playlist-item'); item.textContent = track.name; item.dataset.src = track.value; item.addEventListener('click', () => { selectTrack(track); playlistContainer.style.display = 'none'; }); playlistContainer.appendChild(item); }); selectTrack(playlist[2], false); }
-    function selectTrack(track, shouldPlay = true) { currentTrack = track; audio.src = track.value; audio.loop = true; updatePlaylistUI(); if (isAudioPlaying && shouldPlay) { audio.play().catch(e => console.log('Autoplay prevented')); } }
-    function updatePlaylistUI() { document.querySelectorAll('.playlist-item').forEach(item => { item.classList.toggle('playing', item.dataset.src === currentTrack.value); }); }
-    function updateScoreCounter() { scoreCounter.textContent = `Đã làm: ${totalAnswered}/${selectedQuestions.length}`; }
-    function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } return array; }
-    function shuffleOptions(question) { const optionsArray = shuffleArray(Object.entries(question.options)); return Object.fromEntries(optionsArray); }
-    function shuffleQuestions(questionsArray) { return shuffleArray([...questionsArray]).map(q => ({...q, options: shuffleOptions(q)})); }
-    
-    function renderQuestionNavPanel() {
-        navGrid.innerHTML = '';
-        selectedQuestions.forEach((_, index) => {
-            const navBtn = document.createElement('button');
-            navBtn.classList.add('nav-question-btn');
-            navBtn.textContent = index + 1;
-            navBtn.dataset.index = index;
-            navBtn.addEventListener('click', () => jumpToQuestion(index));
-            navGrid.appendChild(navBtn);
-        });
-        updateNavPanelUI();
-    }
-    function updateNavPanelUI() {
-        const navButtons = document.querySelectorAll('.nav-question-btn');
-        navButtons.forEach((btn, index) => {
-            btn.className = 'nav-question-btn'; // Reset class
-            const answer = answers[index];
-            if (answer.completed) {
-                if (answer.selected === selectedQuestions[index].correct) { btn.classList.add('answered-correct'); } 
-                else if (answer.selected === 'skipped') { btn.classList.add('answered-skipped'); } 
-                else { btn.classList.add('answered-incorrect'); }
-            }
-            if (index === currentQuestion) { btn.classList.add('current-question'); }
-        });
-    }
-    function jumpToQuestion(index) { currentQuestion = index; displayQuestion(); }
+        ];
 
-    function displayQuestion() {
-        startScreen.style.display = 'none';
-        quizContainer.style.display = 'block';
-        finalResultContainer.style.display = 'none';
-        if (currentQuestion >= selectedQuestions.length) { showResult(); return; }
+        const chapters = {
+            1: questions.filter(q => q.question.includes("(chương 1)")),
+            2: questions.filter(q => q.question.includes("(chương 2)")),
+            3: questions.filter(q => q.question.includes("(chương 3)")),
+            4: questions.filter(q => q.question.includes("(chương 4)")),
+            5: questions.filter(q => q.question.includes("(chương 5)"))
+        };
+        let currentChapterQuestions = [];
+        let correctAnswersCount = 0;
+        let answersState = []; // Stores the state of each question's answer: { selected: 'A'|'B'|null (chưa chọn), completed: true/false }
+
+        let currentMode = 'practice'; // 'practice' hoặc 'test'
+        let timerInterval;
+        let timeLeft = 0; // Giây
+        let totalTestDuration = 0; // Tổng thời gian làm bài thi thử (tính bằng giây, dựa trên input của người dùng)
+
+        // DOM elements
+        const audio = document.getElementById('background-music');
+        const toggleAudioBtn = document.getElementById('toggle-audio');
+        const playlistContainer = document.getElementById('playlist');
+        const scoreCounter = document.getElementById('score-counter');
+        const chapterSelect = document.getElementById('chapter-select');
+        const startQuizBtn = document.getElementById('start-quiz');
+        const startScreen = document.getElementById('start-screen');
+        const quizContainer = document.getElementById('quiz-container');
+        const finalResultContainer = document.getElementById('final-result-container');
+        const finalResultSummary = document.getElementById('final-result');
+        const resultsDetailTableBody = document.querySelector('#results-detail-table tbody'); 
+        const iconOn = document.querySelector('.icon-on');
+        const iconOff = document.querySelector('.icon-off');
+        const navGrid = document.getElementById('nav-grid');
+        const allQuestionsDisplayArea = document.getElementById('all-questions-display-area');
+
+        const practiceModeBtn = document.getElementById('practice-mode-btn');
+        const testModeBtn = document.getElementById('test-mode-btn');
+        const timerDisplay = document.getElementById('timer');
+        const testDurationOptionDiv = document.getElementById('test-duration-option');
+        const useTimerYesRadio = document.getElementById('use-timer-yes');
+        const useTimerNoRadio = document.getElementById('use-timer-no');
+        const testMinutesContainer = document.getElementById('test-minutes-container');
+        const testMinutesInput = document.getElementById('test-minutes');
+
+        const submitTestButton = document.createElement('button'); // Tạo nút submit động
+        submitTestButton.id = 'submit-test-button';
+        submitTestButton.classList.add('quiz-button');
+        submitTestButton.textContent = 'Nộp bài thi';
         
-        const q = selectedQuestions[currentQuestion];
-        const answer = answers[currentQuestion];
-        
-        backBtn.disabled = currentQuestion === 0;
-        skipBtn.style.display = (answer.completed) ? 'none' : 'inline-block';
-        document.getElementById('question').innerHTML = `<h3>Câu ${currentQuestion + 1}: ${q.question}</h3>`;
-        
-        const optionsDiv = document.getElementById('options');
-        optionsDiv.innerHTML = '';
-        for (const [key, value] of Object.entries(q.options)) {
-            const disabled = answer.completed ? 'disabled' : '';
-            const disabledClass = answer.completed ? 'disabled' : '';
-            /*
-             ==================================================================
-             ===> CẢI TIẾN 2: Bỏ hiển thị A, B, C, D trước đáp án       <===
-             ==================================================================
-            */
-            optionsDiv.innerHTML += `<label class="${disabledClass}"><input type="radio" name="answer" value="${key}" ${disabled}>${value}</label>`;
+
+        // Audio state variables
+        let isAudioPlaying = false;
+        let currentTrack = null;
+        const playlist = [
+            { value: 'tiktik.mp3', name: 'Clock Tick' },
+            { value: 'MatKetNoi.mp3', name: 'Mất Kết Nối' },
+            { value: 'NhacKhongLoiGuitar.mp3', name: 'Nhạc Không Lời Guitar' },
+            { value: 'GapEmDungLuc.mp3', name: 'Gặp Em Đúng Lúc' },
+            { value: 'TuoiTreTheHeBacHo.mp3', name: 'Tuổi Trẻ Thế Hệ Bác Hồ' },
+            { value: 'NhacThai.mp3', name: 'Nhạc Thái Lan' }
+        ];
+
+        // --- Audio Functions ---
+        function updateAudioButtonUI() {
+            iconOn.style.display = isAudioPlaying ? 'block' : 'none';
+            iconOff.style.display = isAudioPlaying ? 'none' : 'block';
         }
-        document.getElementById('result').innerHTML = '';
-        
-        const existingNextBtn = document.getElementById('next-btn');
-        if (existingNextBtn) existingNextBtn.remove();
-        if (answer.completed) {
-            showAnswerFeedback(q, answer);
-            addNextButton();
-        } else {
-            document.querySelectorAll('.options label').forEach(label => {
-                label.addEventListener('click', () => {
-                    if (answers[currentQuestion].completed) return;
-                    const selectedValue = label.querySelector('input').value;
-                    processAnswer(selectedValue);
+
+        toggleAudioBtn.addEventListener('click', () => {
+            isAudioPlaying = !isAudioPlaying;
+            if (isAudioPlaying) {
+                if (audio.src) audio.play().catch(e => console.log('Autoplay prevented'));
+                playlistContainer.style.display = 'block';
+            } else {
+                audio.pause();
+                playlistContainer.style.display = 'none';
+            }
+            updateAudioButtonUI();
+        });
+
+        function initPlaylist() {
+            playlistContainer.innerHTML = '';
+            playlist.forEach(track => {
+                const item = document.createElement('div');
+                item.classList.add('playlist-item');
+                item.textContent = track.name;
+                item.dataset.src = track.value;
+                item.addEventListener('click', () => {
+                    selectTrack(track);
+                    playlistContainer.style.display = 'none';
                 });
+                playlistContainer.appendChild(item);
+            });
+            selectTrack(playlist[2], false); 
+        }
+
+        function selectTrack(track, shouldPlay = true) {
+            currentTrack = track;
+            audio.src = track.value;
+            audio.loop = true;
+            updatePlaylistUI();
+            if (isAudioPlaying && shouldPlay) {
+                audio.play().catch(e => console.log('Autoplay prevented'));
+            }
+        }
+
+        function updatePlaylistUI() {
+            document.querySelectorAll('.playlist-item').forEach(item => {
+                item.classList.toggle('playing', item.dataset.src === currentTrack.value);
             });
         }
-        updateNavPanelUI();
-    }
-    
-    function showAnswerFeedback(question, answer) {
-        document.querySelectorAll('.options label').forEach(label => {
-            const radio = label.querySelector('input');
-            label.classList.add('disabled');
-            if (radio.value === question.correct) label.classList.add('correct');
-            if (radio.value === answer.selected && radio.value !== question.correct) label.classList.add('incorrect');
-        });
-        // const resultDiv = document.getElementById('result');
-        // if (answer.selected === question.correct) { resultDiv.innerHTML = `<span class="correct">Tuyệt Vời! 🎉🎉🎉</span>`; } 
-        // else if (answer.selected === 'skipped'){ resultDiv.innerHTML = `<span class="incorrect">Bạn đã bỏ qua. Đáp án là: ${question.correct}</span>`; } 
-        // else { resultDiv.innerHTML = `<span class="incorrect">Sai mất rùi! 😞😞😞</span>`; }
-    }
+        // --- End Audio Functions ---
 
-    function processAnswer(selectedValue) {
-        const q = selectedQuestions[currentQuestion];
-        if (!answers[currentQuestion].completed) {
-            answers[currentQuestion] = { selected: selectedValue, completed: true };
-            if (!answers[currentQuestion].isCounted) {
-                totalAnswered++;
-                if (selectedValue === q.correct) correctAnswers++;
-                answers[currentQuestion].isCounted = true;
+        // --- Utility Functions ---
+        function updateScoreCounter() {
+            scoreCounter.textContent = `Số câu đúng: ${correctAnswersCount}/${currentChapterQuestions.length}`;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function shuffleOptions(question) {
+            const optionsArray = shuffleArray(Object.entries(question.options));
+            return Object.fromEntries(optionsArray);
+        }
+
+        function shuffleQuestions(questionsArray) {
+            return shuffleArray([...questionsArray]).map(q => ({ ...q, options: shuffleOptions(q) }));
+        }
+        // --- End Utility Functions ---
+
+        // --- Question Navigation Panel Functions ---
+        function renderQuestionNavPanel() {
+            navGrid.innerHTML = '';
+            currentChapterQuestions.forEach((_, index) => {
+                const navBtn = document.createElement('button');
+                navBtn.classList.add('nav-question-btn');
+                navBtn.textContent = index + 1;
+                navBtn.dataset.index = index;
+                navBtn.addEventListener('click', () => jumpToQuestion(index));
+                navGrid.appendChild(navBtn);
+            });
+            updateNavPanelUI(); // Cập nhật màu ban đầu của các nút điều hướng
+        }
+
+        function updateNavPanelUI() {
+            const navButtons = document.querySelectorAll('.nav-question-btn');
+            navButtons.forEach((btn, index) => {
+                btn.className = 'nav-question-btn'; // Reset class
+                const answer = answersState[index];
+
+                if (currentMode === 'practice') { // Chế độ luyện tập: hiển thị màu ngay
+                    if (answer && answer.completed) {
+                        if (answer.selected === currentChapterQuestions[index].correct) {
+                            btn.classList.add('answered-correct');
+                        } else if (answer.selected === 'revealed') {
+                            btn.classList.add('answered-skipped'); 
+                        } else {
+                            btn.classList.add('answered-incorrect');
+                        }
+                    }
+                } else { // Chế độ thi thử: chỉ hiển thị màu sau khi nộp bài (được gọi từ showResult)
+                    if (answer && answer.completed) {
+                        // Trong chế độ thi thử, trước khi nộp bài, chỉ cần biết đã làm (không phân biệt đúng sai)
+                        // Nên thêm class 'answered-in-test' để đổi màu nhạt
+                        btn.classList.add('answered-in-test'); 
+                    }
+                    // Các màu đúng/sai/bỏ qua sẽ được áp dụng trong showResult()
+                }
+            });
+        }
+
+        function jumpToQuestion(index) {
+            const questionElement = document.getElementById(`question-${index}`);
+            if (questionElement) {
+                // Sử dụng scrollIntoView với options để tính đến padding cố định của header
+                questionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
-        updateScoreCounter();
-        showAnswerFeedback(q, answers[currentQuestion]);
-        skipBtn.style.display = 'none';
-        addNextButton();
-        updateNavPanelUI();
-    }
-    function skipQuestion() { processAnswer('skipped'); }
-    function goNext() { if (currentQuestion < selectedQuestions.length - 1) { jumpToQuestion(currentQuestion + 1); } else { showResult(); } }
-    function goBack() { if (currentQuestion > 0) { jumpToQuestion(currentQuestion - 1); } }
-    
-    function addNextButton() {
-        const controls = document.getElementById('controls');
-        let nextBtn = document.getElementById('next-btn');
-        if (!nextBtn) { nextBtn = document.createElement('button'); nextBtn.id = 'next-btn'; controls.appendChild(nextBtn); }
-        nextBtn.textContent = (currentQuestion < selectedQuestions.length - 1) ? 'Tiếp' : 'Xem Kết Quả';
-        nextBtn.onclick = goNext;
-    }
+        // --- End Question Navigation Panel Functions ---
 
-    function showResult() {
-        audio.pause();
-        quizContainer.style.display = 'none';
-        finalResultContainer.style.display = 'block';
-        const percentage = (totalAnswered > 0) ? (correctAnswers / totalAnswered) * 100 : 0;
-        let message = '';
-        if (percentage == 100) message = "Xuất sắc! Bạn đạt điểm tuyệt đối! 🌟";
-        else if (percentage >= 80) message = "Rất tốt! Bạn nắm vững kiến thức. 👏";
-        else if (percentage >= 50) message = "Khá tốt, nhưng bạn có thể cải thiện thêm. 💪";
-        else message = "Bạn cần ôn tập thêm nhé! 📚";
-        finalResultEl.innerHTML = `<h2>Kết quả của bạn</h2> <p>Số câu đã trả lời: ${totalAnswered}/${selectedQuestions.length}</p> <p>Số câu đúng: <span class="correct">${correctAnswers}</span></p> <p>Tỷ lệ đúng: ${percentage.toFixed(2)}%</p> <p>${message}</p> <button onclick="restartQuiz()">Làm lại chương này</button> <button onclick="backToChapterSelection()">Chọn chương khác</button>`;
-    }
-    
-    function resetState() { currentQuestion = 0; correctAnswers = 0; totalAnswered = 0; finalResultContainer.style.display = 'none'; updateScoreCounter(); }
-    function restartQuiz() { resetState(); selectedQuestions = shuffleQuestions(selectedQuestions); answers = Array(selectedQuestions.length).fill(null).map(() => ({ selected: null, completed: false, isCounted: false })); updateScoreCounter(); renderQuestionNavPanel(); displayQuestion(); if (isAudioPlaying) audio.play().catch(e => console.log(e)); }
-    function backToChapterSelection() { resetState(); quizContainer.style.display = 'none'; startScreen.style.display = 'block'; }
-    
-    startQuizBtn.addEventListener('click', () => {
-        const selectedChapter = chapterSelect.value;
-        if (selectedChapter === 'all') { selectedQuestions = shuffleQuestions(questions); } 
-        else { selectedQuestions = shuffleQuestions(chapters[selectedChapter]); }
-        if (selectedQuestions.length === 0){ alert("Chương này không có câu hỏi nào."); return; }
-        resetState();
-        answers = Array(selectedQuestions.length).fill(null).map(() => ({ selected: null, completed: false, isCounted: false }));
-        updateScoreCounter();
-        renderQuestionNavPanel();
-        displayQuestion();
-    });
+        // --- Render All Questions in Chapter ---
+        function renderAllQuestionsInChapter() {
+            allQuestionsDisplayArea.innerHTML = ''; 
+            
+            currentChapterQuestions.forEach((q, qIndex) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('single-question-display');
+                if (currentMode === 'test') { 
+                    questionDiv.classList.add('test-mode');
+                }
+                questionDiv.id = `question-${qIndex}`;
+                questionDiv.setAttribute('data-question-index', qIndex);
 
-    skipBtn.addEventListener('click', skipQuestion);
-    backBtn.addEventListener('click', goBack);
+                const questionImageHtml = q.imageUrl ? `<img src="${q.imageUrl}" alt="Hình ảnh câu hỏi ${qIndex + 1}">` : '';
 
-    initPlaylist();
-    updateAudioButtonUI();
-    backToChapterSelection();
-  </script>
+                questionDiv.innerHTML = `
+                    <p class="question-text">Câu ${qIndex + 1}: ${q.question}</p>
+                    ${questionImageHtml}
+                    <ul class="options" id="options-${qIndex}"></ul>
+                    <button class="hint-button" title="Gợi ý đáp án">
+                        <img src="https://img.icons8.com/fluency/48/light-on.png" alt="Gợi ý" style="width:24px; height:24px;">
+                    </button>
+                    <div class="answer-feedback-area" id="feedback-area-${qIndex}"></div> 
+                `;
+
+                allQuestionsDisplayArea.appendChild(questionDiv);
+
+                const optionsList = questionDiv.querySelector(`#options-${qIndex}`);
+                let optionCounter = 0;
+                for (const [key, value] of Object.entries(q.options)) {
+                    const optionId = `q${qIndex}_option_${optionCounter++}`;
+                    const optionItem = document.createElement('li');
+                    optionItem.classList.add('option-item');
+                    
+                    optionItem.innerHTML = `
+                        <input type="radio" name="q${qIndex}_answer" value="${key}" id="${optionId}">
+                        <span class="custom-radio"><span class="icon"></span></span>
+                        <label for="${optionId}">${value}</label>
+                    `;
+                    optionsList.appendChild(optionItem);
+
+                    // Add click event to each option item
+                    optionItem.addEventListener('click', function() {
+                        // Trong practice mode, khóa câu hỏi nếu đã trả lời
+                        // Trong test mode, luôn cho phép chọn lại đáp án cho đến khi nộp bài
+                        if (currentMode === 'practice' && (answersState[qIndex] && answersState[qIndex].completed)) {
+                            return; // Đã trả lời trong practice mode, không làm gì nữa.
+                        }
+
+                        const radio = this.querySelector('input[type="radio"]');
+                        radio.checked = true;
+                        
+                        // Cập nhật trạng thái câu trả lời
+                        answersState[qIndex] = { selected: radio.value, completed: true };
+
+                        // Gọi processAnswer để xử lý logic hiển thị và cập nhật điểm/UI
+                        processAnswer(qIndex, radio.value);
+                    });
+                }
+
+                const hintButton = questionDiv.querySelector('.hint-button');
+                if (currentMode === 'test') {
+                    hintButton.style.display = 'none'; 
+                } else {
+                    hintButton.style.display = 'inline-block'; 
+                }
+                hintButton.addEventListener('click', function() {
+                    const currentQuestionAnswerState = answersState[qIndex];
+                    if (!(currentQuestionAnswerState && currentQuestionAnswerState.completed)) {
+                                showCorrectAnswerSpecific(qIndex, q.correct);
+                    } else {
+                        hintButton.disabled = true;
+                    }
+                });
+
+                // Khôi phục trạng thái (lưu ý: chỉ vô hiệu hóa tương tác trong practice mode hoặc sau khi nộp bài)
+                const answerState = answersState[qIndex];
+                if (answerState && answerState.completed) {
+                    restoreQuestionState(qIndex, questionDiv, q, answerState);
+                }
+            });
+
+            // Quan trọng: Đảm bảo nút Nộp bài được thêm vào #main-quiz-area
+            if (currentMode === 'test') {
+                // Kiểm tra nếu nút submit đã có trong DOM thì không cần thêm lại, chỉ hiển thị nó
+                if (!document.getElementById('submit-test-button')) {
+                    allQuestionsDisplayArea.appendChild(submitTestButton); 
+                }
+                submitTestButton.style.display = 'block'; 
+            } else {
+                // Ẩn nút nếu không ở chế độ test
+                if (document.getElementById('submit-test-button')) {
+                    submitTestButton.style.display = 'none'; 
+                }
+            }
+        }
+
+        // Hàm khôi phục trạng thái UI của câu hỏi (dùng khi load lại hoặc chuyển chương)
+        function restoreQuestionState(qIndex, questionElement, q, answerState) {
+            // Trong practice mode, câu hỏi đã trả lời sẽ bị khóa và hiển thị màu
+            if (currentMode === 'practice') {
+                questionElement.classList.add('answered'); 
+                const optionsList = questionElement.querySelector('.options');
+                const hintButton = questionElement.querySelector('.hint-button'); 
+
+                Array.from(optionsList.children).forEach(item => { 
+                    const radio = item.querySelector('input[type="radio"]');
+                    item.style.pointerEvents = 'none'; // Vô hiệu hóa tương tác cho các option đã làm
+                    radio.disabled = true;
+
+                    // Xóa tất cả các style/class màu sắc đã áp dụng trước đó
+                    item.classList.remove('selected-correct', 'selected-incorrect', 'correct-revealed', 'chosen-correct', 'chosen-incorrect', 'correct-answer-highlight');
+                    item.style.backgroundColor = ''; 
+                    item.style.borderColor = ''; 
+                    item.style.boxShadow = ''; 
+                    item.style.opacity = ''; 
+                    item.querySelector('label').style.color = ''; 
+                    item.querySelector('.custom-radio').style.backgroundColor = ''; 
+                    item.querySelector('.custom-radio').style.borderColor = ''; 
+                    item.querySelector('.custom-radio .icon').style.opacity = '0'; 
+                    radio.checked = false; 
+
+                    if (answerState.selected === 'revealed') {
+                        if (radio.value === q.correct) {
+                            item.classList.add('correct-revealed');
+                        } else {
+                            item.style.opacity = '0.6';
+                            item.querySelector('label').style.color = '#6c757d';
+                        }
+                    } else if (answerState.selected) { 
+                        if (radio.value === answerState.selected) { 
+                            if (radio.value === q.correct) {
+                                item.classList.add('chosen-correct');
+                            } else {
+                                item.classList.add('chosen-incorrect');
+                            }
+                            radio.checked = true; 
+                        } else if (radio.value === q.correct) { 
+                            item.classList.add('correct-answer-highlight');
+                        } else { 
+                            item.style.opacity = '0.6';
+                            item.querySelector('label').style.color = '#6c757d';
+                        }
+                    }
+                });
+
+                hintButton.disabled = true; 
+                hintButton.style.display = 'inline-block';
+            } else { // Trong test mode, không vô hiệu hóa tương tác (cho phép chọn lại)
+                // Chỉ đảm bảo lựa chọn đã chọn trước đó được đánh dấu
+                const radio = questionElement.querySelector(`input[value="${answerState.selected}"]`);
+                if(radio) {
+                    radio.checked = true;
+                    const customRadio = radio.nextElementSibling;
+                    customRadio.style.backgroundColor = 'var(--primary-color)';
+                    customRadio.style.borderColor = 'var(--primary-color)';
+                }
+                questionElement.classList.remove('answered'); // Rất quan trọng: loại bỏ class answered để không kích hoạt CSS vô hiệu hóa
+                questionElement.classList.add('test-mode'); // Đảm bảo class test-mode được giữ
+                // Nút gợi ý đã bị ẩn bởi CSS nếu là .test-mode .hint-button { display: none; }
+                const hintButton = questionElement.querySelector('.hint-button');
+                if (hintButton) hintButton.style.display = 'none';
+            }
+        }
+
+        // --- Xử lý Đáp án & Phản hồi ---
+        function processAnswer(qIndex, selectedValue) {
+            const q = currentChapterQuestions[qIndex];
+            const questionElement = document.getElementById(`question-${qIndex}`);
+            const hintButton = questionElement.querySelector('.hint-button');
+            const optionsList = questionElement.querySelector('.options');
+
+            // Cập nhật answersState
+            answersState[qIndex] = { selected: selectedValue, completed: true }; // Ghi nhận là đã có lựa chọn
+
+            // Cập nhật điểm ngay trong chế độ luyện tập
+            if (currentMode === 'practice') { 
+                // Cần tính lại correctAnswersCount mỗi khi có thay đổi trong answersState
+                // Để đảm bảo điểm số chính xác nếu người dùng chọn lại đáp án
+                correctAnswersCount = 0; // Reset
+                answersState.forEach((ans, idx) => {
+                    if (ans && ans.selected === currentChapterQuestions[idx].correct) {
+                        correctAnswersCount++;
+                    }
+                });
+                updateScoreCounter(); // Cập nhật hiển thị điểm
+            }
+            
+            if (currentMode === 'practice') {
+                questionElement.classList.add('answered'); // Kích hoạt CSS vô hiệu hóa/màu sắc
+                Array.from(optionsList.children).forEach(item => { 
+                    const radio = item.querySelector('input');
+                    item.style.pointerEvents = 'none'; // Vô hiệu hóa tương tác
+                    radio.disabled = true;
+
+                    item.classList.remove('selected-correct', 'selected-incorrect', 'correct-revealed', 'chosen-correct', 'chosen-incorrect', 'correct-answer-highlight');
+                    item.style.backgroundColor = ''; 
+                    item.style.borderColor = ''; 
+                    item.style.boxShadow = ''; 
+                    item.style.opacity = ''; 
+                    item.querySelector('label').style.color = ''; 
+                    item.querySelector('.custom-radio .icon').style.opacity = '0'; 
+
+                    if (radio.value === selectedValue) { 
+                        if (selectedValue === q.correct) {
+                            item.classList.add('chosen-correct'); 
+                        } else {
+                            item.classList.add('chosen-incorrect'); 
+                        }
+                    } else if (radio.value === q.correct) { 
+                        if (selectedValue !== q.correct) { 
+                            item.classList.add('correct-answer-highlight'); 
+                        }
+                    }
+                    else { 
+                        item.style.opacity = '0.6';
+                        item.querySelector('label').style.color = '#6c757d';
+                    }
+                });
+                hintButton.disabled = true; 
+
+                // QUAN TRỌNG: Cập nhật màu nút điều hướng bên phải ngay sau khi xử lý câu trả lời trong luyện tập
+                updateNavPanelUI(); 
+
+                const allCompleted = answersState.every(ans => ans.completed);
+                if (allCompleted) {
+                    setTimeout(showResult, 500); 
+                }
+            } else { // currentMode === 'test'
+                // Trong chế độ thi thử:
+                // 1. Không thay đổi màu sắc của các option-item ngay lập tức (CSS body.test-mode-active lo liệu)
+                // 2. Vẫn cho phép thay đổi lựa chọn (không vô hiệu hóa pointer-events/disabled)
+                // 3. Đảm bảo radio button đã chọn được checked (logic HTML và CSS auto xử lý)
+                // 4. Cập nhật nút điều hướng bên phải để hiển thị trạng thái "đã làm" (màu xám nhạt)
+                updateNavPanelUI(); // Đây là nơi quan trọng để cập nhật màu nút bên phải
+                // Không gọi showResult() ở đây. Sẽ được gọi khi nộp bài hoặc hết giờ.
+            }
+        }
+
+        // Hàm để hiển thị đáp án đúng khi nhấn nút "Gợi ý" (chỉ trong chế độ luyện tập)
+        function showCorrectAnswerSpecific(qIndex, correctAnswerValue, isReloading = false) {
+            if (currentMode === 'test') return; // Không cho phép gợi ý trong chế độ test
+
+            const q = currentChapterQuestions[qIndex]; 
+            const questionElement = document.getElementById(`question-${qIndex}`);
+            const optionsList = questionElement.querySelector('.options');
+            const hintButton = questionElement.querySelector('.hint-button');
+            
+            if (!isReloading && answersState[qIndex].selected !== 'revealed') {
+                answersState[qIndex].selected = 'revealed';
+                answersState[qIndex].completed = true;
+            }
+
+            Array.from(optionsList.children).forEach(item => { 
+                const radio = item.querySelector('input');
+                item.style.pointerEvents = 'none'; 
+                radio.disabled = true;
+
+                item.classList.remove('selected-correct', 'selected-incorrect', 'chosen-correct', 'chosen-incorrect', 'correct-answer-highlight', 'correct-revealed');
+                item.style.opacity = ''; 
+                item.querySelector('label').style.color = ''; 
+                item.querySelector('.custom-radio .icon').style.opacity = '0'; 
+
+                if (radio.value === correctAnswerValue) {
+                    item.classList.add('correct-revealed'); 
+                } else {
+                    item.style.opacity = '0.6';
+                    item.querySelector('label').style.color = '#6c757d';
+                }
+            });
+
+            hintButton.disabled = true; 
+            updateNavPanelUI(); 
+
+            if (currentMode === 'practice') {
+                const allCompleted = answersState.every(ans => ans.completed);
+                if (allCompleted) {
+                    setTimeout(showResult, 500); 
+                }
+            }
+        }
+
+        // --- Hàm thời gian ---
+        function startTimer() {
+            clearInterval(timerInterval); 
+            
+            // Nếu người dùng chọn "Không" sử dụng thời gian
+            if (useTimerNoRadio.checked) {
+                totalTestDuration = 0; // Đặt tổng thời gian về 0
+                timeLeft = 0; // Đặt thời gian còn lại về 0
+                timerDisplay.style.display = 'none'; // Ẩn hiển thị thời gian
+                // Không khởi tạo setInterval nếu không sử dụng thời gian
+            } else {
+                const minutes = parseInt(testMinutesInput.value, 10);
+                // Kiểm tra giá trị hợp lệ của phút
+                if (isNaN(minutes) || minutes <= 0) {
+                    alert("Vui lòng nhập số phút hợp lệ (lớn hơn 0). Mặc định 10 phút.");
+                    testMinutesInput.value = 10; // Đặt lại giá trị mặc định
+                    totalTestDuration = 10 * 60;
+                } else {
+                    totalTestDuration = minutes * 60; 
+                }
+                
+                timeLeft = totalTestDuration;
+                updateTimerDisplay(); // Cập nhật hiển thị ban đầu
+
+                timerDisplay.style.display = 'block'; // Hiển thị thời gian
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        alert("Hết giờ làm bài!");
+                        showResult(); 
+                    }
+                }, 1000);
+            }
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `Thời gian: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // --- Điều hướng & Đặt lại ---
+        function showResult() {
+            stopTimer(); 
+            audio.pause();
+            quizContainer.style.display = 'none';
+            finalResultContainer.style.display = 'block';
+            
+            let finalCorrectAnswers = 0;
+            
+            resultsDetailTableBody.innerHTML = ''; 
+
+            answersState.forEach((ans, index) => {
+                const q = currentChapterQuestions[index];
+                const row = resultsDetailTableBody.insertRow();
+                
+                const questionNumCell = row.insertCell();
+                questionNumCell.textContent = index + 1;
+
+                const questionTextCell = row.insertCell();
+                questionTextCell.textContent = q.question.replace(/\s*\(chương\s+\d+\)/i, ''); 
+
+                const userAnswerCell = row.insertCell();
+                const correctAnswerCell = row.insertCell();
+                const statusCell = row.insertCell();
+
+                let statusText = '';
+                let statusClass = '';
+                let userAnswerText = 'Chưa trả lời';
+
+                if (ans.completed) {
+                    if (ans.selected === q.correct) {
+                        finalCorrectAnswers++; 
+                        userAnswerText = q.options[ans.selected];
+                        statusText = 'Đúng';
+                        statusClass = 'status-correct';
+                    } else if (ans.selected === 'revealed') { 
+                        userAnswerText = q.options[q.correct] + ' (Gợi ý)'; 
+                        statusText = 'Bỏ qua';
+                        statusClass = 'status-skipped';
+                    } else { 
+                        userAnswerText = q.options[ans.selected];
+                        statusText = 'Sai';
+                        statusClass = 'status-incorrect';
+                    }
+                } else {
+                    userAnswerText = 'Chưa trả lời';
+                    statusText = 'Bỏ qua';
+                    statusClass = 'status-skipped'; 
+                }
+
+                userAnswerCell.textContent = userAnswerText;
+                correctAnswerCell.textContent = q.options[q.correct];
+                statusCell.textContent = statusText;
+                statusCell.classList.add(statusClass);
+            });
+
+            const score = (finalCorrectAnswers / currentChapterQuestions.length) * 10;
+            let message = '';
+            if (score === 10) message = "Xuất sắc! Bạn đạt điểm tuyệt đối! 🌟";
+            else if (score >= 8) message = "Rất tốt! Bạn nắm vững kiến thức. 👏";
+            else if (score >= 5) message = "Khá tốt, nhưng bạn có thể cải thiện thêm. 💪";
+            else message = "Bạn cần ôn tập thêm nhé! 📚";
+    
+            // Hiển thị thời gian làm bài, nếu không giới hạn thời gian thì ghi "Không giới hạn"
+            const timeTakenDisplay = (totalTestDuration === 0 && useTimerNoRadio.checked) ? "Không giới hạn" : formatTime(totalTestDuration - timeLeft);
+
+            finalResultSummary.innerHTML = `
+                <h2>Kết quả của bạn</h2> 
+                <p>Số câu đúng: <span class="correct">${finalCorrectAnswers}</span>/${currentChapterQuestions.length}</p> 
+                <p>Điểm của bạn: <span class="score-value">${score.toFixed(2)}</span></p>
+                <p>${message}</p> 
+                <p>Thời gian làm bài: ${timeTakenDisplay}</p>
+            `;
+
+            // Áp dụng lại màu sắc và trạng thái cho các câu hỏi trên giao diện chính sau khi nộp bài (đặc biệt cho test mode)
+            currentChapterQuestions.forEach((q, qIndex) => {
+                const questionElement = document.getElementById(`question-${qIndex}`);
+                const optionsList = questionElement.querySelector('.options');
+                const ansState = answersState[qIndex]; 
+
+                questionElement.classList.add('answered'); 
+                // Xóa class test-mode để các style đúng/sai/gợi ý có thể áp dụng sau khi nộp bài
+                questionElement.classList.remove('test-mode'); 
+
+                Array.from(optionsList.children).forEach(item => { 
+                    const radio = item.querySelector('input[type="radio"]');
+                    item.style.pointerEvents = 'none'; // Vô hiệu hóa tương tác
+                    radio.disabled = true;
+
+                    // Clear any previous generic test mode styling or initial states
+                    item.classList.remove('chosen-correct', 'chosen-incorrect', 'correct-answer-highlight', 'correct-revealed');
+                    item.style.backgroundColor = ''; 
+                    item.style.borderColor = '';
+                    item.style.boxShadow = '';
+                    item.style.opacity = '';
+                    item.querySelector('label').style.color = '';
+                    item.querySelector('.custom-radio').style.backgroundColor = '';
+                    item.querySelector('.custom-radio').style.borderColor = '';
+                    item.querySelector('.custom-radio .icon').style.opacity = '';
+
+                    if (ansState.completed) {
+                        if (radio.value === ansState.selected && ansState.selected === q.correct) {
+                            item.classList.add('chosen-correct');
+                        } else if (radio.value === ansState.selected && ansState.selected !== q.correct) {
+                            item.classList.add('chosen-incorrect');
+                        } else if (radio.value === q.correct && ansState.selected !== q.correct && ansState.selected !== 'revealed') { 
+                            item.classList.add('correct-answer-highlight');
+                        } else if (radio.value === q.correct && ansState.selected === 'revealed') {
+                            item.classList.add('correct-revealed');
+                        }
+                        else { 
+                            item.style.opacity = '0.6';
+                            item.querySelector('label').style.color = '#6c757d';
+                        }
+                    } else { // Câu hỏi chưa được trả lời (bị bỏ qua)
+                        item.style.opacity = '0.6';
+                        item.querySelector('label').style.color = '#6c757d';
+                    }
+
+                     // Đảm bảo icon của custom-radio được cập nhật theo class mới
+                    const customRadio = item.querySelector('.custom-radio');
+                    const icon = customRadio.querySelector('.icon');
+                    if (item.classList.contains('chosen-correct') || item.classList.contains('correct-answer-highlight')) {
+                        icon.textContent = '✓';
+                        icon.style.opacity = '1';
+                        icon.style.transform = 'scale(1)';
+                        customRadio.style.backgroundColor = 'var(--white-color)';
+                        customRadio.style.borderColor = 'var(--white-color)';
+                        icon.style.color = 'var(--correct-color)';
+                    } else if (item.classList.contains('chosen-incorrect')) {
+                        icon.textContent = '✗';
+                        icon.style.opacity = '1';
+                        icon.style.transform = 'scale(1)';
+                        customRadio.style.backgroundColor = 'var(--white-color)';
+                        customRadio.style.borderColor = 'var(--white-color)';
+                        icon.style.color = 'var(--incorrect-color)';
+                    } else if (item.classList.contains('correct-revealed')) { 
+                        icon.textContent = '✓';
+                        icon.style.opacity = '1';
+                        icon.style.transform = 'scale(1)';
+                        customRadio.style.backgroundColor = 'var(--white-color)';
+                        customRadio.style.borderColor = 'var(--white-color)';
+                        icon.style.color = 'var(--skipped-color)'; 
+                    }
+                     else {
+                        icon.style.opacity = '0'; 
+                    }
+                });
+                const hintButton = questionElement.querySelector('.hint-button');
+                if (hintButton) hintButton.style.display = 'none'; 
+            });
+
+            // Cập nhật lại màu sắc cho các nút điều hướng bên phải sau khi nộp bài
+            updateNavPanelUI();
+            document.body.classList.remove('test-mode-active'); // Xóa class test-mode-active sau khi nộp
+        }
+        
+        function resetQuizState() {
+            correctAnswersCount = 0;
+            answersState = []; // Reset toàn bộ answersState
+            finalResultContainer.style.display = 'none';
+            updateScoreCounter();
+            stopTimer(); 
+            timerDisplay.style.display = 'none'; 
+            // Ẩn nút nộp bài khi reset (nếu nó đang hiển thị)
+            if (submitTestButton.parentNode) { 
+                submitTestButton.style.display = 'none'; 
+            }
+            document.body.classList.remove('test-mode-active'); 
+        }
+
+        function restartQuiz() {
+            resetQuizState();
+            currentChapterQuestions = shuffleQuestions(currentChapterQuestions);
+            answersState = Array(currentChapterQuestions.length).fill(null).map(() => ({ selected: null, completed: false }));
+            updateScoreCounter();
+            renderQuestionNavPanel();
+            renderAllQuestionsInChapter(); 
+            quizContainer.style.display = 'block';
+            if (isAudioPlaying) audio.play().catch(e => console.log(e));
+            
+            if (currentMode === 'test') {
+                startTimer(); 
+                timerDisplay.style.display = useTimerNoRadio.checked ? 'none' : 'block'; // Chỉ hiện timer nếu có dùng thời gian
+                document.body.classList.add('test-mode-active'); 
+            } else {
+                timerDisplay.style.display = 'none'; 
+                document.body.classList.remove('test-mode-active');
+            }
+        }
+
+        function backToChapterSelection() {
+            resetQuizState();
+            quizContainer.style.display = 'none';
+            startScreen.style.display = 'block';
+            updateModeButtons(); 
+            testDurationOptionDiv.style.display = (currentMode === 'test') ? 'block' : 'none'; 
+            testMinutesContainer.style.display = useTimerYesRadio.checked ? 'block' : 'none'; // Điều khiển hiển thị ô nhập phút
+        }
+        
+        // --- Event Listeners ---
+        startQuizBtn.addEventListener('click', () => {
+            const selectedChapterValue = chapterSelect.value;
+            if (selectedChapterValue === 'all') {
+                currentChapterQuestions = shuffleQuestions(questions);
+            } else {
+                currentChapterQuestions = shuffleQuestions(chapters[selectedChapterValue]);
+            }
+
+            if (currentChapterQuestions.length === 0) {
+                alert("Chương này không có câu hỏi nào.");
+                return;
+            }
+
+            resetQuizState();
+            answersState = Array(currentChapterQuestions.length).fill(null).map(() => ({ selected: null, completed: false }));
+
+            updateScoreCounter();
+            renderQuestionNavPanel();
+            renderAllQuestionsInChapter(); // Hàm này sẽ thêm/hiển thị nút Nộp bài nếu ở chế độ Test
+            startScreen.style.display = 'none';
+            quizContainer.style.display = 'block';
+
+            if (currentMode === 'test') {
+                startTimer();
+                timerDisplay.style.display = useTimerNoRadio.checked ? 'none' : 'block'; // Chỉ hiện timer nếu có dùng thời gian
+                document.body.classList.add('test-mode-active'); 
+            } else {
+                stopTimer();
+                timerDisplay.style.display = 'none'; 
+                document.body.classList.remove('test-mode-active'); 
+            }
+        });
+
+        submitTestButton.addEventListener('click', () => {
+            const confirmSubmit = confirm("Bạn có chắc chắn muốn nộp bài thi? Bạn sẽ không thể thay đổi đáp án sau khi nộp.");
+            if (confirmSubmit) {
+                showResult();
+            }
+        });
+
+        practiceModeBtn.addEventListener('click', () => {
+            currentMode = 'practice';
+            updateModeButtons();
+            timerDisplay.style.display = 'none'; 
+            testDurationOptionDiv.style.display = 'none'; // Ẩn toàn bộ phần tùy chỉnh thời gian
+            document.body.classList.remove('test-mode-active'); 
+        });
+
+        testModeBtn.addEventListener('click', () => {
+            currentMode = 'test';
+            updateModeButtons();
+            testDurationOptionDiv.style.display = 'block'; // Hiện toàn bộ phần tùy chỉnh thời gian
+            // submitTestButton sẽ được quản lý bởi renderAllQuestionsInChapter()
+            // document.body.classList.add('test-mode-active'); // Sẽ được thêm khi bắt đầu quiz
+        });
+
+        // Event listeners for "Có" / "Không" sử dụng thời gian
+        useTimerYesRadio.addEventListener('change', () => {
+            testMinutesContainer.style.display = useTimerYesRadio.checked ? 'block' : 'none';
+        });
+
+        useTimerNoRadio.addEventListener('change', () => {
+            testMinutesContainer.style.display = useTimerYesRadio.checked ? 'block' : 'none';
+        });
+
+
+        function updateModeButtons() {
+            practiceModeBtn.classList.toggle('selected', currentMode === 'practice');
+            testModeBtn.classList.toggle('selected', currentMode === 'test');
+            // Cập nhật hiển thị input thời gian khi chuyển đổi mode trên màn hình chính
+            testDurationOptionDiv.style.display = (currentMode === 'test') ? 'block' : 'none';
+            // Đảm bảo trạng thái của testMinutesContainer đúng theo useTimerYesRadio khi chuyển mode
+            testMinutesContainer.style.display = (currentMode === 'test' && useTimerYesRadio.checked) ? 'block' : 'none';
+        }
+
+        // --- Initialization ---
+        initPlaylist();
+        updateAudioButtonUI();
+        backToChapterSelection(); 
+        updateModeButtons(); // Gọi lần đầu để thiết lập trạng thái mặc định (Luyện tập)
+        timerDisplay.style.display = 'none'; // Đảm bảo đồng hồ ẩn khi khởi chạy
+    </script>
 </body>
 </html>
